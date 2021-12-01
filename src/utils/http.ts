@@ -8,12 +8,31 @@ declare module 'axios' {
   }
 }
 
+const info: {
+  [key: string]: any;
+} = {
+  normal: {
+    baseURL: 'https://scrm.juzhunshuyu.com',
+  },
+  dev: {
+    baseURL: 'https://test-scrm.juzhunshuyu.com',
+  },
+  test: {
+    baseURL: 'https://test-scrm.juzhunshuyu.com',
+  },
+  gray: {
+    baseURL: 'https://test-scrm.juzhunshuyu.com',
+  },
+};
+const { baseURL } = (process.env.REACT_APP_ENV && info[process.env.REACT_APP_ENV])
+  ? info[process.env.REACT_APP_ENV] : info.normal;
+
 const instance = axios.create({
-  baseURL: '',
+  baseURL,
 });
 // 请求拦截添加头部参数等
 instance.interceptors.request.use(
-  config => {
+  (config) => {
     const globalOptStr = sessionStorage.getItem('globalOpt');
     const globalOpt = !globalOptStr ? {} : JSON.parse(globalOptStr);
     const configTemp = config;
@@ -23,15 +42,15 @@ instance.interceptors.request.use(
     configTemp.headers.token = token || 'token';
     return config;
   },
-  error => {
+  (error) => {
     Promise.reject(error);
   },
 );
 
 // 响应拦截
 instance.interceptors.response.use(
-  response => response.data,
-  error => Promise.reject(error),
+  (response) => response.data,
+  (error) => Promise.reject(error),
 );
 
 const http = {
