@@ -34,7 +34,7 @@ const UserInformation = (props:Props) => {
     <UserBox>
       <Text>
         <i className="font_family icon-a-" style={{ color: '#1890FF', marginRight: 8 }} />
-        <span>企业编码和企业秘钥是与巨准scrm绑定的关键属性，请妥善保管！</span>
+        <span>企业编码和企业秘钥是与巨准scrm绑定的关键属性，请妥善保管!</span>
       </Text>
       <Msg>
         <Name>企业Id：</Name>
