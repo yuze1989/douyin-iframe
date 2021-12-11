@@ -15,7 +15,7 @@ const info: {
     baseURL: 'https://scrm.juzhunshuyu.com',
   },
   dev: {
-    baseURL: 'https://test-scrm.juzhunshuyu.com',
+    baseURL: 'https://scrm.juzhunshuyu.com/social-dev',
   },
   test: {
     baseURL: 'https://test-scrm.juzhunshuyu.com',
@@ -26,7 +26,6 @@ const info: {
 };
 const { baseURL } = (process.env.REACT_APP_ENV && info[process.env.REACT_APP_ENV])
   ? info[process.env.REACT_APP_ENV] : info.normal;
-
 const instance = axios.create({
   baseURL,
 });
