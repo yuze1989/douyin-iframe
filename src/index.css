@@ -31,8 +31,8 @@ code {
 }
 .search-btns{
   margin-left: 2rem;
-  /* margin-top: 1.2rem; */
   float: right;
-  /* text-align: center; */
-  /* width: 100%;s */
+}
+.ant-card-head-wrapper{
+  font-size: 1.8rem;
 }

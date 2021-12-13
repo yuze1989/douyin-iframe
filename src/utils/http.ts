@@ -18,7 +18,7 @@ const info: {
     baseURL: 'https://scrm.juzhunshuyu.com/social-dev',
   },
   test: {
-    baseURL: 'https://test-scrm.juzhunshuyu.com',
+    baseURL: 'https://test-scrm.juzhunshuyu.com/social',
   },
   gray: {
     baseURL: 'https://test-scrm.juzhunshuyu.com',

@@ -67,17 +67,6 @@ const UserManage = (props:Props) => {
       }
     });
   };
-  const placeholderValue = () => {
-    let value = '';
-    if (searchType === 'nickname') {
-      value = '请输入昵称';
-    } else if (searchType === 'mobile') {
-      value = '请输入手机号';
-    } else {
-      value = '请输入抖音号';
-    }
-    return value;
-  };
   useEffect(() => {
     getStatistics();
     getTiktokList();

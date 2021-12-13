@@ -15,11 +15,11 @@ const Home = () => {
   };
   return (
     <Card
-      title={urlParams?.channel === '3332' ? '抖音获客' : ''}
+      title={urlParams?.channel ? '抖音获客' : ''}
       style={{ margin: '2rem 2rem 0' }}
     >
       {
-        urlParams?.channel !== '3332' && (
+        !urlParams?.channel && (
           <Tabs activeKey={tabKey} onTabClick={(key) => goTabs(key)} tabBarStyle={{ padding: '0 2rem' }}>
             <TabPane tab="用户管理" key="1" />
             <TabPane tab="账号信息" key="2" />
