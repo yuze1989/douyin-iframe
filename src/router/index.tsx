@@ -3,8 +3,9 @@ import { BrowserRouter, Routes } from 'react-router-dom';
 import { routes } from 'utils/reactUtil';
 import routeConfig from './routerConfig';
 
+const baseName = process.env.PUBLIC_URL || '';
 const Router = () => (
-  <BrowserRouter>
+  <BrowserRouter basename={baseName}>
     <Routes>
       {routes(routeConfig)}
     </Routes>
