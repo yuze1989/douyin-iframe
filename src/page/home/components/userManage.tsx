@@ -5,7 +5,7 @@ import reply from 'assets/reply.png';
 import moment from 'moment';
 import dayjs from 'dayjs';
 import {
-  Form, Input, DatePicker, Select, Button, Table, Pagination, TablePaginationConfig,
+  Form, Input, DatePicker, Select, Button, Table, Pagination, TablePaginationConfig, InputNumber,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import http from 'utils/http';
@@ -66,6 +66,17 @@ const UserManage = (props:Props) => {
         setMarketStatistics(data);
       }
     });
+  };
+  const placeholderValue = () => {
+    let value = '';
+    if (searchType === 'nickname') {
+      value = '请输入昵称';
+    } else if (searchType === 'mobile') {
+      value = '请输入手机号';
+    } else {
+      value = '请输入抖音号';
+    }
+    return value;
   };
   useEffect(() => {
     getStatistics();
@@ -157,8 +168,8 @@ const UserManage = (props:Props) => {
             name="basic"
             layout="inline"
             onFinish={onFinish}
-            wrapperCol={{ style: { width: '224px' } }}
-            labelCol={{ style: { width: '98px' } }}
+            wrapperCol={{ style: { width: '216px' } }}
+            labelCol={{ style: { width: '95px' } }}
             initialValues={{
               searchType: 'nickname',
               lastReachedTime: [defaultSelectDate.startDate, defaultSelectDate.endDate],
@@ -178,45 +189,40 @@ const UserManage = (props:Props) => {
             >
               <Input placeholder="请输入地址" />
             </Form.Item>
-            <Form.Item name="searchType" label="" style={{ marginLeft: '90px', width: '120px', marginRight: '0px' }}>
+            <Form.Item name="searchType" label="" style={{ marginLeft: '80px', width: '90px', marginRight: '0px' }}>
               <Select onChange={(e:string) => setSearchType(e)}>
                 <Option value="nickname">昵称</Option>
                 <Option value="mobile">手机号</Option>
                 <Option value="unionId">抖音号</Option>
               </Select>
             </Form.Item>
-            {searchType === 'nickname' && (
-              <Form.Item name="searchValue">
-                <Input placeholder="请输入昵称" style={{ marginRight: '-18px' }} />
-              </Form.Item>
-            )}
             {searchType === 'mobile' && (
               <Form.Item name="searchValue">
-                <Input placeholder="请输入手机号" />
+                <InputNumber style={{ width: '100%' }} placeholder="请输入手机号" />
               </Form.Item>
             )}
-            {searchType === 'unionId' && (
-              <Form.Item name="searchValue">
-                <Input placeholder="请输入抖音号" />
-              </Form.Item>
-            )}
-            <Form.Item style={{ marginLeft: '40px' }}>
-              <div className="search-btns">
-                <Button
-                  style={{ marginRight: '20px' }}
-                  type="primary"
-                  htmlType="submit"
-                >
-                  <span style={{ fontSize: '14px' }} className="font_family icon-sousuo2">&nbsp;查询</span>
-                </Button>
-                <Button
-                  htmlType="reset"
-                  onClick={reset}
-                >
-                  <span style={{ fontSize: '14px' }} className="font_family icon-zhongzhi1">&nbsp;重置</span>
-                </Button>
-              </div>
+            {(searchType === 'unionId' || searchType === 'nickname') && (
+            <Form.Item name="searchValue">
+              <Input placeholder={searchType === 'nickname' ? '请输入昵称' : '请输入抖音号'} />
             </Form.Item>
+            )}
+            {/* <Form.Item style={{ marginLeft: '40px' }}> */}
+            <div className="search-btns">
+              <Button
+                style={{ marginRight: '20px' }}
+                type="primary"
+                htmlType="submit"
+              >
+                <span style={{ fontSize: '14px' }} className="font_family icon-sousuo2">&nbsp;查询</span>
+              </Button>
+              <Button
+                htmlType="reset"
+                onClick={reset}
+              >
+                <span style={{ fontSize: '14px' }} className="font_family icon-zhongzhi1">&nbsp;重置</span>
+              </Button>
+            </div>
+            {/* </Form.Item> */}
           </Form>
         </SearchBox>
         <Table
@@ -289,7 +295,7 @@ const User = styled.div`
 `;
 const BottomBox = styled.div`
     padding-top:2rem;
-    margin: 0 2rem 2rem 2rem;
+    margin: 0 2rem;
 `;
 const SearchBox = styled.div`
     margin-bottom:2rem;
