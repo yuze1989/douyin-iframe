@@ -5,7 +5,15 @@ import reply from 'assets/reply.png';
 import moment from 'moment';
 import dayjs from 'dayjs';
 import {
-  Form, Input, DatePicker, Select, Button, Table, Pagination, TablePaginationConfig, InputNumber,
+  Form,
+  Input,
+  DatePicker,
+  Select,
+  Button,
+  Table,
+  Pagination,
+  TablePaginationConfig,
+  InputNumber,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import http from 'utils/http';
@@ -15,9 +23,9 @@ import {
 
 const { Option } = Select;
 interface Props {
-  openId:string;
+  openId: string;
 }
-const UserManage = (props:Props) => {
+const UserManage = (props: Props) => {
   const { openId } = props;
   const [form] = Form.useForm();
   const [searchType, setSearchType] = useState<string>('nickname');
@@ -31,7 +39,7 @@ const UserManage = (props:Props) => {
   const onFinish = () => {
     getTiktokList();
   };
-  const getTiktokList = (parmas?:ParmasType) => {
+  const getTiktokList = (parmas?: ParmasType) => {
     const value = form.getFieldsValue();
     if (value.lastReachedTime) {
       const [startTime, endTime] = value.lastReachedTime;
@@ -72,7 +80,7 @@ const UserManage = (props:Props) => {
     getTiktokList();
   }, []);
 
-  const columns:ColumnsType<TableItem> = [
+  const columns: ColumnsType<TableItem> = [
     {
       title: '用户信息',
       width: 280,
@@ -132,9 +140,13 @@ const UserManage = (props:Props) => {
                   <User>今日触达用户数</User>
                   <Total>{marketStatistics.todayReachCount}</Total>
                 </div>
-                <div><img src={touch} alt="" /></div>
+                <div>
+                  <img src={touch} alt="" />
+                </div>
               </Flex>
-              <User>触达用户总数：<span>{marketStatistics.totalReachCount}</span></User>
+              <User>
+                触达用户总数：<span>{marketStatistics.totalReachCount}</span>
+              </User>
             </ShowBox>
             <ShowBox>
               <Flex>
@@ -142,13 +154,16 @@ const UserManage = (props:Props) => {
                   <User>消息回复总数</User>
                   <Total>{marketStatistics.todayReachCount}</Total>
                 </div>
-                <div><img src={reply} alt="" /></div>
+                <div>
+                  <img src={reply} alt="" />
+                </div>
               </Flex>
-              <User>触达用户总数：<span>{marketStatistics.todayReachCount}</span></User>
+              <User>
+                触达用户总数：<span>{marketStatistics.todayReachCount}</span>
+              </User>
             </ShowBox>
           </Box>
         </div>
-
       </TopBox>
       <BottomBox>
         <SearchBox>
@@ -157,29 +172,23 @@ const UserManage = (props:Props) => {
             name="basic"
             layout="inline"
             onFinish={onFinish}
-            wrapperCol={{ style: { width: '216px' } }}
-            labelCol={{ style: { width: '95px' } }}
             initialValues={{
               searchType: 'nickname',
               lastReachedTime: [defaultSelectDate.startDate, defaultSelectDate.endDate],
             }}
           >
-            <Form.Item
-              label="消息发送时间："
-              name="lastReachedTime"
-            >
-              <RangePicker
-                allowClear
-              />
+            <Form.Item label="消息发送时间" name="lastReachedTime">
+              <RangePicker allowClear />
             </Form.Item>
-            <Form.Item
-              label="地区"
-              name="address"
-            >
+            <Form.Item label="地区" name="address" style={{ marginLeft: '20px' }}>
               <Input placeholder="请输入地址" />
             </Form.Item>
-            <Form.Item name="searchType" label="" style={{ marginLeft: '80px', width: '90px', marginRight: '0px' }}>
-              <Select onChange={(e:string) => setSearchType(e)}>
+            <Form.Item
+              name="searchType"
+              label=""
+              style={{ marginLeft: '20px', width: '80px', marginRight: '0px' }}
+            >
+              <Select onChange={(e: string) => setSearchType(e)}>
                 <Option value="nickname">昵称</Option>
                 <Option value="mobile">手机号</Option>
                 <Option value="unionId">抖音号</Option>
@@ -191,27 +200,22 @@ const UserManage = (props:Props) => {
               </Form.Item>
             )}
             {(searchType === 'unionId' || searchType === 'nickname') && (
-            <Form.Item name="searchValue">
-              <Input placeholder={searchType === 'nickname' ? '请输入昵称' : '请输入抖音号'} />
-            </Form.Item>
+              <Form.Item name="searchValue">
+                <Input placeholder={searchType === 'nickname' ? '请输入昵称' : '请输入抖音号'} />
+              </Form.Item>
             )}
-            {/* <Form.Item style={{ marginLeft: '40px' }}> */}
             <div className="search-btns">
-              <Button
-                style={{ marginRight: '20px' }}
-                type="primary"
-                htmlType="submit"
-              >
-                <span style={{ fontSize: '14px' }} className="font_family icon-sousuo2">&nbsp;查询</span>
+              <Button style={{ marginRight: '10px' }} type="primary" htmlType="submit">
+                <span style={{ fontSize: '14px' }} className="font_family icon-sousuo2">
+                  &nbsp;查询
+                </span>
               </Button>
-              <Button
-                htmlType="reset"
-                onClick={reset}
-              >
-                <span style={{ fontSize: '14px' }} className="font_family icon-zhongzhi1">&nbsp;重置</span>
+              <Button htmlType="reset" onClick={reset}>
+                <span style={{ fontSize: '14px' }} className="font_family icon-zhongzhi1">
+                  &nbsp;重置
+                </span>
               </Button>
             </div>
-            {/* </Form.Item> */}
           </Form>
         </SearchBox>
         <Table
@@ -240,54 +244,54 @@ const Title = styled.div`
   mfont-family: PingFangSC-Medium;
   font-weight: Medium;
   font-size: 16px;
-  color: rgba(0,0,0,0.85);
+  color: rgba(0, 0, 0, 0.85);
 `;
 const MyAvatar = styled.div`
-  width:54px;
-  height:54px;
-  border-radius:50%;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
   overflow: hidden;
-  margin-right:10px;
+  margin-right: 10px;
 `;
 const TopBox = styled.div`
-    background:#f0f2f5;
-    padding-bottom:2rem;
+  background: #f0f2f5;
+  padding-bottom: 2rem;
 `;
 const Box = styled.div`
-    display:flex;
-    padding-bottom:2rem;
+  display: flex;
+  padding-bottom: 2rem;
 `;
 const ShowBox = styled.div`
-    margin-right:56px;
-    padding:25px 28px;
-    width: 252px;
-    height: 133px;
-    background: rgba(0,163,255,0.02);
-    border: 1px solid rgba(0,163,255,0.15);
-    border-radius: 8px;
+  margin-right: 56px;
+  padding: 25px 28px;
+  width: 252px;
+  height: 133px;
+  background: rgba(0, 163, 255, 0.02);
+  border: 1px solid rgba(0, 163, 255, 0.15);
+  border-radius: 8px;
 `;
 const Flex = styled.div`
-    display:flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 `;
 const Total = styled.div`
-    padding:5px 0;
-    font-family: PingFangSC-Medium;
-    font-weight: Medium;
-    font-size: 24px;
+  padding: 5px 0;
+  font-family: PingFangSC-Medium;
+  font-weight: Medium;
+  font-size: 24px;
 `;
 const User = styled.div`
-    font-family: PingFangSC-Regular;
-    font-weight: Regular;
-    font-size: 14px;
-    color: rgba(0,0,0,0.45);
+  font-family: PingFangSC-Regular;
+  font-weight: Regular;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.45);
 `;
 const BottomBox = styled.div`
-    padding-top:2rem;
-    margin: 0 2rem;
+  padding-top: 2rem;
+  margin: 0 2rem;
 `;
 const SearchBox = styled.div`
-    margin-bottom:2rem;
+  margin-bottom: 2rem;
 `;
 
 export default UserManage;
