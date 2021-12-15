@@ -101,14 +101,14 @@ const UserManage = (props: Props) => {
     },
     {
       title: '抖音号',
-      width: 280,
+      width: 200,
       key: 'unionId',
       dataIndex: 'unionId',
       align: 'center',
     },
     {
       title: '联系方式',
-      width: 280,
+      width: 180,
       key: 'mobile',
       dataIndex: 'mobile',
       align: 'center',
@@ -122,7 +122,7 @@ const UserManage = (props: Props) => {
     },
     {
       title: '最后发送时间',
-      width: 280,
+      width: 200,
       key: 'lastReachedTime',
       dataIndex: 'lastReachedTime',
       align: 'center',
