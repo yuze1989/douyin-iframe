@@ -101,7 +101,7 @@ const UserManage = (props: Props) => {
     },
     {
       title: '抖音号',
-      width: 200,
+      width: 180,
       key: 'unionId',
       dataIndex: 'unionId',
       align: 'center',
