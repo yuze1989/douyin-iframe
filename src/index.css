@@ -29,10 +29,10 @@ code {
   box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.12);
   text-align: right;
 }
-.search-btns{
-  margin-left: 2rem;
+.search-btns {
+  margin-left: 1rem;
   float: right;
 }
-.ant-card-head-wrapper{
+.ant-card-head-wrapper {
   font-size: 1.8rem;
 }

@@ -180,13 +180,13 @@ const UserManage = (props: Props) => {
             <Form.Item label="消息发送时间" name="lastReachedTime">
               <RangePicker allowClear />
             </Form.Item>
-            <Form.Item label="地区" name="address" style={{ marginLeft: '20px' }}>
+            <Form.Item label="地区" name="address" style={{ marginLeft: '10px' }}>
               <Input placeholder="请输入地址" />
             </Form.Item>
             <Form.Item
               name="searchType"
               label=""
-              style={{ marginLeft: '20px', width: '80px', marginRight: '0px' }}
+              style={{ marginLeft: '10px', width: '100px', marginRight: '0px' }}
             >
               <Select onChange={(e: string) => setSearchType(e)}>
                 <Option value="nickname">昵称</Option>
