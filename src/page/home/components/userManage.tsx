@@ -151,15 +151,15 @@ const UserManage = (props: Props) => {
             <ShowBox>
               <Flex>
                 <div>
-                  <User>消息回复总数</User>
-                  <Total>{marketStatistics.todayReachCount}</Total>
+                  <User>今日消息回复数</User>
+                  <Total>{marketStatistics.todayReplyCount}</Total>
                 </div>
                 <div>
                   <img src={reply} alt="" />
                 </div>
               </Flex>
               <User>
-                触达用户总数：<span>{marketStatistics.todayReachCount}</span>
+                消息回复总数：<span>{marketStatistics.totalReplyCount}</span>
               </User>
             </ShowBox>
           </Box>

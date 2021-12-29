@@ -15,10 +15,10 @@ const info: {
     baseURL: 'https://scrm.juzhunshuyu.com',
   },
   dev: {
-    baseURL: 'https://scrm.juzhunshuyu.com/social-dev',
+    baseURL: 'https://test-scrm.juzhunshuyu.com/social',
   },
   test: {
-    baseURL: 'https://scrm.juzhunshuyu.com/social-dev',
+    baseURL: 'https://test-scrm.juzhunshuyu.com/social',
   },
   gray: {
     baseURL: 'https://test-scrm.juzhunshuyu.com/social',
