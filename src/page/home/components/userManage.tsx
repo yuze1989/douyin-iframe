@@ -23,7 +23,7 @@ import {
 
 const { Option } = Select;
 interface Props {
-  openId: string;
+  openId: string | undefined;
 }
 const UserManage = (props: Props) => {
   const { openId } = props;
@@ -48,12 +48,14 @@ const UserManage = (props: Props) => {
     }
     value.openId = openId;
     delete value.lastReachedTime;
-    http.get('/service-market/list-reach-record', { ...value, ...parmas }).then((res) => {
-      const { success } = res;
-      if (success) {
-        setTableData(res);
-      }
-    });
+    if (openId) {
+      http.get('/service-market/list-reach-record', { ...value, ...parmas }).then((res) => {
+        const { success } = res;
+        if (success) {
+          setTableData(res);
+        }
+      });
+    }
   };
   const reset = () => {
     form.resetFields();
@@ -68,12 +70,14 @@ const UserManage = (props: Props) => {
     getTiktokList(page);
   };
   const getStatistics = () => {
-    http.get('/service-market/statistics', { openId }).then((res) => {
-      const { success, data } = res;
-      if (success) {
-        setMarketStatistics(data);
-      }
-    });
+    if (openId) {
+      http.get('/service-market/statistics', { openId }).then((res) => {
+        const { success, data } = res;
+        if (success) {
+          setMarketStatistics(data);
+        }
+      });
+    }
   };
   useEffect(() => {
     getStatistics();
@@ -87,12 +91,13 @@ const UserManage = (props: Props) => {
       key: 'nickname',
       dataIndex: 'nickname',
       fixed: 'left',
-      align: 'center',
+      align: 'left',
       render: (text, record) => (
         <>
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
             <MyAvatar>
               <img src={record.avatar} alt="" />
+              {record.isFans && <div>粉丝</div>}
             </MyAvatar>
             <div>{record.nickname}</div>
           </div>
@@ -102,30 +107,30 @@ const UserManage = (props: Props) => {
     {
       title: '抖音号',
       width: 180,
-      key: 'unionId',
-      dataIndex: 'unionId',
-      align: 'center',
+      key: 'tiktokNumber',
+      dataIndex: 'tiktokNumber',
+      align: 'left',
     },
     {
       title: '联系方式',
       width: 180,
       key: 'mobile',
       dataIndex: 'mobile',
-      align: 'center',
+      align: 'left',
     },
     {
       title: '地址',
       width: 280,
       key: 'address',
       dataIndex: 'address',
-      align: 'center',
+      align: 'left',
     },
     {
       title: '最后发送时间',
       width: 200,
       key: 'lastReachedTime',
       dataIndex: 'lastReachedTime',
-      align: 'center',
+      align: 'left',
     },
   ];
   return (
@@ -178,7 +183,7 @@ const UserManage = (props: Props) => {
             }}
           >
             <Form.Item label="消息发送时间" name="lastReachedTime">
-              <RangePicker allowClear />
+              <RangePicker allowClear={false} />
             </Form.Item>
             <Form.Item label="地区" name="address" style={{ marginLeft: '10px' }}>
               <Input placeholder="请输入地址" />
@@ -186,12 +191,12 @@ const UserManage = (props: Props) => {
             <Form.Item
               name="searchType"
               label=""
-              style={{ marginLeft: '10px', width: '100px', marginRight: '0px' }}
+              style={{ marginLeft: '10px', width: '90px', marginRight: '0px' }}
             >
               <Select onChange={(e: string) => setSearchType(e)}>
                 <Option value="nickname">昵称</Option>
                 <Option value="mobile">手机号</Option>
-                <Option value="unionId">抖音号</Option>
+                <Option value="tiktokNumber">抖音号</Option>
               </Select>
             </Form.Item>
             {searchType === 'mobile' && (
@@ -199,7 +204,7 @@ const UserManage = (props: Props) => {
                 <InputNumber style={{ width: '100%' }} placeholder="请输入手机号" />
               </Form.Item>
             )}
-            {(searchType === 'unionId' || searchType === 'nickname') && (
+            {(searchType === 'tiktokNumber' || searchType === 'nickname') && (
               <Form.Item name="searchValue">
                 <Input placeholder={searchType === 'nickname' ? '请输入昵称' : '请输入抖音号'} />
               </Form.Item>
@@ -219,6 +224,7 @@ const UserManage = (props: Props) => {
           </Form>
         </SearchBox>
         <Table
+          style={{ margin: '0 2rem' }}
           columns={columns}
           dataSource={tableData?.data}
           pagination={false}
@@ -247,11 +253,29 @@ const Title = styled.div`
   color: rgba(0, 0, 0, 0.85);
 `;
 const MyAvatar = styled.div`
-  width: 54px;
-  height: 54px;
-  border-radius: 50%;
-  overflow: hidden;
-  margin-right: 10px;
+  img {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #ccc;
+    margin-right: 5px;
+  }
+  div {
+    position: relative;
+    left: 8px;
+    top: -15px;
+    z-index: 100;
+    width: 38px;
+    height: 20px;
+    background: #f2867c;
+    border-radius: 10px;
+    font-family: PingFangSC-Regular;
+    font-weight: Regular;
+    font-size: 12px;
+    color: #ffffff;
+    text-align: center;
+  }
 `;
 const TopBox = styled.div`
   background: #f0f2f5;
@@ -288,10 +312,9 @@ const User = styled.div`
 `;
 const BottomBox = styled.div`
   padding-top: 2rem;
-  margin: 0 2rem;
 `;
 const SearchBox = styled.div`
-  margin-bottom: 2rem;
+  margin: 2rem 2rem;
 `;
 
 export default UserManage;

@@ -9,7 +9,6 @@ const Home = () => {
   const [tabKey, setTabKey] = useState<string>('1');
   const urlParams = getUrlOption(window.location.href);
   const openId = localStorage.getItem('openId') || urlParams?.openId;
-  console.log(openId, 'openId');
   const goTabs = (key: string) => {
     setTabKey(key);
   };

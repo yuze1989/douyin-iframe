@@ -2,14 +2,12 @@ import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import http from 'utils/http';
 import { message } from 'antd';
-import {
-  EnterpriseMsgType,
-} from 'types/home';
+import { EnterpriseMsgType } from 'types/home';
 
 interface Props {
-  openId:string;
+  openId: string | undefined;
 }
-const UserInformation = (props:Props) => {
+const UserInformation = (props: Props) => {
   const { openId } = props;
   const [enterpriseMsg, setEnterpriseMsg] = useState<EnterpriseMsgType>({});
   const getEnterpriseMsg = () => {
@@ -20,7 +18,7 @@ const UserInformation = (props:Props) => {
       }
     });
   };
-  const copy = (value:string | undefined) => {
+  const copy = (value: string | undefined) => {
     console.log(value);
     if (value) {
       navigator.clipboard.writeText(value);
@@ -51,37 +49,37 @@ const UserInformation = (props:Props) => {
 };
 
 const UserBox = styled.div`
-    margin:2rem;
-    margin-top:0;
+  margin: 2rem;
+  margin-top: 0;
 `;
 const Text = styled.div`
-    height: 40px;
-    background: #E6F7FF;
-    border: 1px solid #BAE7FF;
-    border-radius: 2px;
-    line-height: 40px;
-    margin-top:0;
-    margin-bottom:10px;
-    padding-left:10px;
+  height: 40px;
+  background: #e6f7ff;
+  border: 1px solid #bae7ff;
+  border-radius: 2px;
+  line-height: 40px;
+  margin-top: 0;
+  margin-bottom: 10px;
+  padding-left: 10px;
 `;
 const Name = styled.span`
-    font-family: PingFangSC-Medium;
-    font-weight: Medium;
-    font-size: 14px;
-    color: rgba(0,0,0,0.45);
+  font-family: PingFangSC-Medium;
+  font-weight: Medium;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.45);
 `;
 const Key = styled.span`
-    color: rgba(0,0,0,0.65);
+  color: rgba(0, 0, 0, 0.65);
 `;
 const Copy = styled.span`
-    font-family: PingFangSC-Regular;
-    font-weight: Regular;
-    font-size: 14px;
-    color: #1890FF;
-    margin-left:20px;
-    cursor:pointer;
+  font-family: PingFangSC-Regular;
+  font-weight: Regular;
+  font-size: 14px;
+  color: #1890ff;
+  margin-left: 20px;
+  cursor: pointer;
 `;
 const Msg = styled.div`
-    padding:10px 0;
+  padding: 10px 0;
 `;
 export default UserInformation;
