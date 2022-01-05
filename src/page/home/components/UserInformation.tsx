@@ -5,7 +5,7 @@ import { message } from 'antd';
 import { EnterpriseMsgType } from 'types/home';
 
 interface Props {
-  openId: string | undefined;
+  openId: string;
 }
 const UserInformation = (props: Props) => {
   const { openId } = props;

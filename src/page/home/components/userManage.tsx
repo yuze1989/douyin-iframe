@@ -23,7 +23,7 @@ import {
 
 const { Option } = Select;
 interface Props {
-  openId: string | undefined;
+  openId: string;
 }
 const UserManage = (props: Props) => {
   const { openId } = props;
@@ -96,10 +96,14 @@ const UserManage = (props: Props) => {
         <>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <MyAvatar>
-              <img src={record.avatar} alt="" />
-              {record.isFans && <div>粉丝</div>}
+              <div className="imgbox">
+                {record.avatar && (
+                  <img style={{ marginBottom: '-10px' }} src={record.avatar} alt="" />
+                )}
+              </div>
+              {record.isFans && <div className="fans">粉丝</div>}
             </MyAvatar>
-            <div>{record.nickname}</div>
+            <div className="nickname">{record.nickname}</div>
           </div>
         </>
       ),
@@ -146,7 +150,7 @@ const UserManage = (props: Props) => {
                   <Total>{marketStatistics.todayReachCount}</Total>
                 </div>
                 <div>
-                  <img src={touch} alt="" />
+                  <img style={{ width: '54px', height: '50px' }} src={touch} alt="" />
                 </div>
               </Flex>
               <User>
@@ -160,7 +164,7 @@ const UserManage = (props: Props) => {
                   <Total>{marketStatistics.todayReplyCount}</Total>
                 </div>
                 <div>
-                  <img src={reply} alt="" />
+                  <img style={{ width: '54px', height: '50px' }} src={reply} alt="" />
                 </div>
               </Flex>
               <User>
@@ -253,7 +257,7 @@ const Title = styled.div`
   color: rgba(0, 0, 0, 0.85);
 `;
 const MyAvatar = styled.div`
-  img {
+  .imgbox {
     width: 54px;
     height: 54px;
     border-radius: 50%;
@@ -261,7 +265,12 @@ const MyAvatar = styled.div`
     background: #ccc;
     margin-right: 5px;
   }
-  div {
+  img {
+    width: 100%;
+    height: 100%;
+  }
+  .fans {
+    margin-bottom: -16px !important;
     position: relative;
     left: 8px;
     top: -15px;
@@ -289,7 +298,6 @@ const ShowBox = styled.div`
   margin-right: 56px;
   padding: 25px 28px;
   width: 252px;
-  height: 133px;
   background: rgba(0, 163, 255, 0.02);
   border: 1px solid rgba(0, 163, 255, 0.15);
   border-radius: 8px;
@@ -311,10 +319,14 @@ const User = styled.div`
   color: rgba(0, 0, 0, 0.45);
 `;
 const BottomBox = styled.div`
-  padding-top: 2rem;
+  padding-top: 4px;
 `;
 const SearchBox = styled.div`
   margin: 2rem 2rem;
+  .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+    border-right: 0;
+    border-radius: 0;
+  }
 `;
 
 export default UserManage;
