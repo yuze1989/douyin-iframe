@@ -13,7 +13,7 @@ const Home = () => {
     setTabKey(key);
   };
   return (
-    <Card title={urlParams?.channel ? '抖音获客' : ''} style={{ margin: '2rem 2rem 0' }}>
+    <Card title={urlParams?.channel ? '蓝V获客' : ''} style={{ margin: '2rem 2rem 0' }}>
       {!urlParams?.channel && (
         <Tabs
           activeKey={tabKey}
