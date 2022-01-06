@@ -5,7 +5,34 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
+.font_14 {
+  font-size: 1.4rem;
+}
+html {
+  /*1rem === 10px*/
+  font-size: 62.5%;
+}
+.ant-card > .ant-card-body {
+  padding: 20px 0;
+  padding-bottom: 0;
+}
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+.footer-sticky {
+  position: sticky;
+  bottom: 0;
+  background-color: #fff;
+  color: rgba(0, 0, 0, 0.85);
+  z-index: 2;
+  padding: 1rem 2rem;
+  box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.12);
+  text-align: right;
+}
+.search-btns {
+  margin-left: 1rem;
+  float: right;
+}
+.ant-card-head-wrapper {
+  font-size: 1.8rem;
 }

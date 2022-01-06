@@ -9,7 +9,7 @@ const routes = [
     component: BasicLayout,
     children: [
       {
-        path: 'home',
+        path: '/home',
         name: 'home',
         component: Home,
         title: '首页-抖音',
