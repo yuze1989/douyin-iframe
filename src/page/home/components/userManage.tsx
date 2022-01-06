@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
-import touch from 'assets/touch.png';
-import reply from 'assets/reply.png';
 import moment from 'moment';
-import dayjs from 'dayjs';
 import {
   Form,
   Input,
@@ -28,7 +25,7 @@ interface Props {
 const UserManage = (props: Props) => {
   const { openId } = props;
   const [form] = Form.useForm();
-  const [searchType, setSearchType] = useState<string>('nickname');
+  const [searchType, setSearchType] = useState('nickname');
   const [marketStatistics, setMarketStatistics] = useState<MarketStatistics>({});
   const [tableData, setTableData] = useState<TableDataType>();
   const { RangePicker } = DatePicker;
@@ -43,8 +40,8 @@ const UserManage = (props: Props) => {
     const value = form.getFieldsValue();
     if (value.lastReachedTime) {
       const [startTime, endTime] = value.lastReachedTime;
-      value.lastReachedTimeGE = dayjs(startTime).format('YYYY/MM/DD');
-      value.lastReachedTimeLE = dayjs(endTime).format('YYYY/MM/DD');
+      value.lastReachedTimeGE = moment(startTime).format('YYYY/MM/DD');
+      value.lastReachedTimeLE = moment(endTime).format('YYYY/MM/DD');
     }
     value.openId = openId;
     delete value.lastReachedTime;
@@ -150,7 +147,11 @@ const UserManage = (props: Props) => {
                   <Total>{marketStatistics.todayReachCount}</Total>
                 </div>
                 <div>
-                  <img style={{ width: '54px', height: '50px' }} src={touch} alt="" />
+                  <img
+                    style={{ width: '54px', height: '50px' }}
+                    src="https://jz-scrm.oss-cn-hangzhou.aliyuncs.com/web/douyin/touch.png"
+                    alt=""
+                  />
                 </div>
               </Flex>
               <User>
@@ -164,7 +165,11 @@ const UserManage = (props: Props) => {
                   <Total>{marketStatistics.todayReplyCount}</Total>
                 </div>
                 <div>
-                  <img style={{ width: '54px', height: '50px' }} src={reply} alt="" />
+                  <img
+                    style={{ width: '54px', height: '50px' }}
+                    src="https://jz-scrm.oss-cn-hangzhou.aliyuncs.com/web/douyin/reply.png"
+                    alt=""
+                  />
                 </div>
               </Flex>
               <User>

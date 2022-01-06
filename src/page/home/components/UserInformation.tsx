@@ -18,8 +18,7 @@ const UserInformation = (props: Props) => {
       }
     });
   };
-  const copy = (value: string | undefined) => {
-    console.log(value);
+  const copy = (value?: string) => {
     if (value) {
       navigator.clipboard.writeText(value);
       message.success('复制完成');
@@ -37,12 +36,16 @@ const UserInformation = (props: Props) => {
       <Msg>
         <Name>企业Id：</Name>
         <Key>{enterpriseMsg?.enterpriseCode}</Key>
-        <Copy onClick={() => copy(enterpriseMsg?.enterpriseCode)}>复制</Copy>
+        {enterpriseMsg?.enterpriseCode && (
+          <Copy onClick={() => copy(enterpriseMsg?.enterpriseCode)}>复制</Copy>
+        )}
       </Msg>
       <Msg>
         <Name>企业秘钥：</Name>
         <Key>{enterpriseMsg?.enterpriseSecret}</Key>
-        <Copy onClick={() => copy(enterpriseMsg?.enterpriseSecret)}>复制</Copy>
+        {enterpriseMsg?.enterpriseSecret && (
+          <Copy onClick={() => copy(enterpriseMsg?.enterpriseSecret)}>复制</Copy>
+        )}
       </Msg>
     </UserBox>
   );
