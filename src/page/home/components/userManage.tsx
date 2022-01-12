@@ -46,7 +46,7 @@ const UserManage = (props: Props) => {
     value.openId = openId;
     delete value.lastReachedTime;
     if (openId) {
-      http.get('/service-market/list-reach-record', { ...value, ...parmas }).then((res) => {
+      http.get('/social/service-market/list-reach-record', { ...value, ...parmas }).then((res) => {
         const { success } = res;
         if (success) {
           setTableData(res);
@@ -68,7 +68,7 @@ const UserManage = (props: Props) => {
   };
   const getStatistics = () => {
     if (openId) {
-      http.get('/service-market/statistics', { openId }).then((res) => {
+      http.get('/social/service-market/statistics', { openId }).then((res) => {
         const { success, data } = res;
         if (success) {
           setMarketStatistics(data);
