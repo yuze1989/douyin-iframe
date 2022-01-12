@@ -15,13 +15,13 @@ const info: {
     baseURL: 'https://scrm.juzhunshuyu.com',
   },
   dev: {
-    baseURL: 'https://test-scrm.juzhunshuyu.com/social',
+    baseURL: 'https://test-scrm.juzhunshuyu.com',
   },
   test: {
-    baseURL: 'https://test-scrm.juzhunshuyu.com/social',
+    baseURL: 'https://test-scrm.juzhunshuyu.com',
   },
   gray: {
-    baseURL: 'https://test-scrm.juzhunshuyu.com/social',
+    baseURL: 'https://test-scrm.juzhunshuyu.com',
   },
 };
 const { baseURL } = (process.env.REACT_APP_ENV && info[process.env.REACT_APP_ENV])
