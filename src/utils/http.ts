@@ -36,7 +36,10 @@ instance.interceptors.request.use(
     const globalOpt = !globalOptStr ? {} : JSON.parse(globalOptStr);
     const configTemp = config;
     const token = localStorage.getItem('token');
-    configTemp.headers = config.headers || {};
+    const tiktokToken = localStorage.getItem('tiktok-token') || 'tiktok-token';
+    configTemp.headers = {
+      'tiktok-token': tiktokToken,
+    };
     Object.assign(config.headers, globalOpt);
     configTemp.headers.token = token || 'token';
     return config;

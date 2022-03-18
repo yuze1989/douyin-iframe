@@ -11,6 +11,7 @@ import {
   Pagination,
   TablePaginationConfig,
   InputNumber,
+  Radio,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import http from 'utils/http';
@@ -136,6 +137,16 @@ const UserManage = (props: Props) => {
   ];
   return (
     <div>
+      <AccountBox>
+        <div>
+          匹配蓝V号：
+          <Radio.Group defaultValue="a" buttonStyle="solid">
+            <Radio.Button value="a">全部</Radio.Button>
+            <Radio.Button value="b">抖音A</Radio.Button>
+            <Radio.Button value="c">抖音B</Radio.Button>
+          </Radio.Group>
+        </div>
+      </AccountBox>
       <TopBox>
         <div style={{ background: '#fff', padding: '0 2rem' }}>
           <Title>今日实时监控数据</Title>
@@ -289,6 +300,34 @@ const MyAvatar = styled.div`
     font-size: 12px;
     color: #ffffff;
     text-align: center;
+  }
+`;
+const AccountBox = styled.div`
+  margin-bottom: 16px; 
+  padding: 0 2rem;
+  .ant-radio-button-wrapper{
+    margin: 0 16px;
+    padding: 0 40px;
+    height: 36px;
+    line-height: 36px;
+    border-radius: 4px;
+    border: none;
+    color: #000000;
+    background: #F9F9F9;
+  }
+  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):hover,
+  .ant-radio-button-wrapper-checked:hover{
+    color: #1890FF;
+    border:none;
+    background: rgba(24,144,255,0.06);
+  }
+  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled){
+    color: #1890FF;
+    border:none;
+    background: rgba(24,144,255,0.06);
+  }
+  .ant-radio-button-wrapper:not(:first-child)::before{
+    content: none;
   }
 `;
 const TopBox = styled.div`
