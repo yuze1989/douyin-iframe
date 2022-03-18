@@ -8,6 +8,7 @@ import {
   Form,
   Input,
   Select,
+  Switch,
   Button,
   Table,
   Pagination,
@@ -25,8 +26,8 @@ const { Option } = Select;
 const CommentRules = () => {
   const navigate = useNavigate();
   const layout = {
-    labelCol: { span: 6 },
-    wrapperCol: { span: 12 },
+    labelCol: { span: 3 },
+    wrapperCol: { span: 8 },
   };
   const onFinish = (values: any) => {
     console.log(values);
@@ -60,22 +61,59 @@ const CommentRules = () => {
         <Form {...layout} name="nest-messages" onFinish={onFinish} validateMessages={validateMessages}>
           <Form.Item name={['user', 'Account']} label="适用账号" rules={[{ required: true }]}>
             <Select
-              style={{ width: '273px' }}
+              style={{ width: 200 }}
               placeholder="请选择"
               options={optionsArray}
             />
           </Form.Item>
-          <Form.Item name={['user', 'email']} label="功能名称" rules={[{ type: 'email' }]}>
-            <InputShowCount style={{ width: '500px' }} placeholder="请输入" maxLength={20} />
-            {/* <Input style={{ width: '500px' }} maxLength={20} /> */}
+          <Form.Item name={['user', 'email']} label="规则名称" rules={[{ required: true, type: 'email' }]}>
+            <InputShowCount style={{ width: 400 }} placeholder="请输入规则名称" maxLength={30} />
           </Form.Item>
-          <Form.Item name={['user', 'age']} label="关键词" rules={[{ type: 'number', min: 0, max: 99 }]}>
-            <InputNumber />
+          <Form.Item name={['user', 'switch']} label="功能启用" valuePropName="checked" rules={[{ required: true }]}>
+            <Switch />
           </Form.Item>
-          <Form.Item name={['user', 'introduction']} label="回复内容">
-            <Input.TextArea />
+          <Form.Item name={['user', 'age']} label="关键词" rules={[{ required: true }]}>
+            <div>
+              <Select
+                style={{ width: 100, display: 'inline-block' }}
+                placeholder="请选择"
+                options={optionsArray}
+              />
+              <InputShowCount style={{ width: 300 }} placeholder="请输入规则名称" maxLength={30} />
+            </div>
+            <div>
+              <Select
+                style={{ width: 100, display: 'inline-block' }}
+                placeholder="请选择"
+                options={optionsArray}
+              />
+              <InputShowCount style={{ width: 300 }} placeholder="请输入规则名称" maxLength={30} />
+            </div>
+            <div>
+              <Select
+                style={{ width: 100, display: 'inline-block' }}
+                placeholder="请选择"
+                options={optionsArray}
+              />
+              <InputShowCount style={{ width: 300 }} placeholder="请输入规则名称" maxLength={30} />
+            </div>
           </Form.Item>
-          <Form.Item name={['user', 'count']} label="单个视频回复条数" rules={[{ type: 'number', min: 0, max: 50 }]}>
+          <Form.Item name={['user', 'introduction']} label="回复内容" rules={[{ required: true }]}>
+            <Input.TextArea
+              style={{ width: 400 }}
+              autoSize={{ minRows: 4, maxRows: 6 }}
+            />
+          </Form.Item>
+          <Form.Item
+            name={['user', 'count']}
+            label="单个视频回复条数"
+            rules={[{
+              required: true,
+              type: 'number',
+              min: 0,
+              max: 50,
+            }]}
+          >
             <InputNumber />
           </Form.Item>
           <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
