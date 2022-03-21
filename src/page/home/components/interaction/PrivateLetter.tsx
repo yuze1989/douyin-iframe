@@ -108,7 +108,7 @@ const PrivateLetter = (props: Props) => {
         </Form.Item>
       </Form>
       <ButtonBox>
-        <Link to="/save-channel">
+        <Link to="/save-rules-private-letter">
           <Button type="primary">
             <span style={{ fontSize: '14px' }} className="font_family icon-xinjiansvg1">
               &nbsp;添加规则

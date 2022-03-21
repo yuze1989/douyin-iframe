@@ -94,7 +94,7 @@ const Conversation = (props: Props) => {
         </Form.Item>
       </Form>
       <ButtonBox>
-        <Link to="/save-channel">
+        <Link to="/save-rules-conversation">
           <Button type="primary">
             <span style={{ fontSize: '14px' }} className="font_family icon-xinjiansvg1">
               &nbsp;添加规则
