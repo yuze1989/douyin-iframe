@@ -17,12 +17,14 @@ import PrivateLetter from './interaction/PrivateLetter';
 const { Option } = Select;
 
 interface Props {
-  openId: string;
+  // openId: string;
 }
 const UserActiveSetting = (props: Props) => {
-  const { openId } = props;
+  // const { openId } = props;
+  const openId = localStorage.getItem('openId') || '';
   const [optionKey, setOptionKey] = useState<string>('1');
   const changeOptionKey = (key: string) => {
+    localStorage.setItem('childIndex', key);
     setOptionKey(key);
   };
   useEffect(() => {
