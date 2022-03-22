@@ -36,12 +36,12 @@ instance.interceptors.request.use(
     const globalOpt = !globalOptStr ? {} : JSON.parse(globalOptStr);
     const configTemp = config;
     const token = localStorage.getItem('token');
-    const tiktokToken = localStorage.getItem('tiktok-token') || 'tiktok-token';
+    const tiktokToken = localStorage.getItem('openId') || 'tiktok-token';
     configTemp.headers = {
       'tiktok-token': tiktokToken,
     };
     Object.assign(config.headers, globalOpt);
-    configTemp.headers.token = token || 'token';
+    configTemp.headers.token = token || '';
     return config;
   },
   (error) => {

@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import http from 'utils/http';
-import { EnterpriseMsgType, TableItem, TableDataType } from 'types/home';
+import {
+  EnterpriseMsgType,
+  TableItem,
+  TableDataType,
+  TiktokList,
+} from 'types/home';
 import { Link } from 'react-router-dom';
 
 import {
@@ -23,11 +28,23 @@ const UserActiveSetting = (props: Props) => {
   // const { openId } = props;
   const openId = localStorage.getItem('openId') || '';
   const [optionKey, setOptionKey] = useState<string>('1');
+  const [tiktokList, setTiktokList] = useState<TiktokList[]>();
   const changeOptionKey = (key: string) => {
     localStorage.setItem('childIndex', key);
     setOptionKey(key);
   };
+  const getTiktokAccount = () => {
+    if (openId) {
+      http.get('/social/auto-reply-rule/list-tiktok-user', {}).then((res) => {
+        const { success, data } = res;
+        if (success) {
+          setTiktokList(data);
+        }
+      });
+    }
+  };
   useEffect(() => {
+    getTiktokAccount();
   }, []);
   return (
     <div>
@@ -45,7 +62,7 @@ const UserActiveSetting = (props: Props) => {
         </Radio.Group>
       </TabsBox>
       <div>
-        {optionKey === '1' && <Comments openId={openId} />}
+        {optionKey === '1' && <Comments openId={openId} tiktokList={tiktokList} />}
         {optionKey === '2' && <Conversation openId={openId} />}
         {optionKey === '3' && <PrivateLetter openId={openId} />}
       </div>

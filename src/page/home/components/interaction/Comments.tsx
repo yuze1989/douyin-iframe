@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import http from 'utils/http';
-import { EnterpriseMsgType, TableItem, TableDataType } from 'types/home';
+import {
+  EnterpriseMsgType,
+  TableItem,
+  TableDataType,
+  TiktokList,
+} from 'types/home';
 import { Link } from 'react-router-dom';
 import {
   Form,
@@ -21,10 +26,11 @@ const { Option } = Select;
 
 interface Props {
   openId: String
+  tiktokList?: TiktokList[]
 }
 
 const Comments = (props: Props) => {
-  const { openId } = props;
+  const { openId, tiktokList } = props;
   const [tableData, setTableData] = useState<TableDataType>();
   const pageChange = (pagination: TablePaginationConfig) => {
     const page = {
@@ -84,11 +90,21 @@ const Comments = (props: Props) => {
           <Select
             style={{ width: 200 }}
             placeholder="请选择"
-            optionFilterProp="children"
+            optionFilterProp="label"
           >
-            <Option value="jack">Jack</Option>
+            {
+              tiktokList && tiktokList.map((item) => (
+                <Option
+                  value={item.id}
+                  key={item.apiAuthorId}
+                >
+                  {item.nickname}
+                </Option>
+              ))
+            }
+            {/* <Option value="jack">Jack</Option>
             <Option value="lucy">Lucy</Option>
-            <Option value="tom">Tom</Option>
+            <Option value="tom">Tom</Option> */}
           </Select>
         </Form.Item>
         <Form.Item label="关键词/回复内容：">

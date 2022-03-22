@@ -28,11 +28,13 @@ const getAuth = async () => {
 const App = () => {
   const urlParams = getUrlOption(window.location.href);
   const channel = urlParams?.channel || localStorage.getItem('channel');
+  const openId = urlParams?.openId;
   // !!urlParams?.channel: 其他环境; !urlParams?.channel: 抖音环境
   if (!channel) {
     getAuth();
   } else {
     localStorage.setItem('channel', channel);
+    localStorage.setItem('openId', openId);
   }
   const customizeRenderEmpty = () => (
     <div style={{ textAlign: 'center' }}>

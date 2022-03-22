@@ -36,3 +36,22 @@ export interface EnterpriseMsgType {
   enterpriseCode?: string;
   enterpriseSecret?: string;
   }
+
+export interface TiktokList {
+  apiAuthorId?: number
+  avatar?: string
+  city?: string
+  country?: string
+  creator?: string
+  gender?: number
+  gmtCreate?: string
+  gmtModified?: string
+  id?: number | ''
+  mobile?: number | null
+  modifier?: string
+  nickname?: string
+  openId?: string
+  province?: string
+  tenantId?: string | null
+  unionId?: string
+}
