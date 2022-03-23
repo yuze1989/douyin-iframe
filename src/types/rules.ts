@@ -10,6 +10,6 @@ export interface IProps {
 }
 
 export interface KeyWordListType {
-  keyboard?: string;
-  type?: string;
+  keyWord?: string;
+  type?: string | number;
 }

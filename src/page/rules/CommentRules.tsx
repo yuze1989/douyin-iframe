@@ -40,10 +40,11 @@ const CommentRules = () => {
   const urlParams = getUrlOption(window.location.href);
   const id = urlParams?.id || '';
   const [form] = Form.useForm();
+  const messageList: object[] = [{ content: '' }];
   const [accountList, setAccountList] = useState<TiktokList[]>([]);
   const [keyWordList, setKeyWordList] = useState<KeyWordListType[]>([{
-    type: '1',
-    keyboard: '',
+    type: '请选择',
+    keyWord: '',
   }]);
   const setKey = (item: number) => {
     const key = item + new Date().getMilliseconds() * item;
@@ -69,8 +70,8 @@ const CommentRules = () => {
   };
   /* eslint-enable no-template-curly-in-string */
   const rulesOption = [
-    { label: '半匹配', value: '1' },
-    { label: '全匹配', value: '2' },
+    { label: '半匹配', value: 1 },
+    { label: '全匹配', value: 2 },
   ];
 
   // 获取适用账号
@@ -87,8 +88,23 @@ const CommentRules = () => {
   // 保存
   const saveRegulation = () => {
     const value = form.getFieldsValue();
+    const { data, keywords, messages } = value;
+    const content: object[] = [];
+    // const content = messages.map((msg: any) => (
+    //   msgType: 'text',
+    //   text: msg,
+    //   businessId: new Date().getTime()
+    // ));
+    messages?.forEach((item:any) => {
+      content.push({ msgType: 'text', text: item, businessId: new Date().getTime() });
+    });
     value.businessType = 3;
-    http.post('/social/auto-reply-rule/save-rule', { ...value }).then((res) => {
+    http.post('/social/auto-reply-rule/save-rule', {
+      businessType: 3,
+      ...data,
+      keyWordList: keywords,
+      messageList: content,
+    }).then((res) => {
       console.log('res:::::', res);
     });
   };
@@ -97,7 +113,7 @@ const CommentRules = () => {
   }, []);
   const increaseKeywords = () => {
     const temporary = keyWordList;
-    temporary.push({ type: '1', keyboard: '' });
+    temporary.push({ type: '1', keyWord: '' });
     setKeyWordList([...temporary]);
   };
   const removeKeyWord = (e: any) => {
@@ -144,7 +160,56 @@ const CommentRules = () => {
           <Form.Item name={['data', 'status']} label="功能启用" valuePropName="checked" rules={[{ required: true }]}>
             <Switch checked />
           </Form.Item>
-          <Form.Item label="关键词" style={{ marginBottom: 0 }}>
+          <Form.Item label="关键词" rules={[{ required: true }]}>
+            <Form.List name="keywords" initialValue={keyWordList}>
+              {(fields, { add, remove }) => (
+                <>
+                  {fields.map(({ key, name, ...restField }) => (
+                    <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
+                      <Form.Item
+                        {...restField}
+                        name={[name, 'type']}
+                        rules={[{ required: true, message: 'Missing first name' }]}
+                      >
+                        <Select
+                          style={{ width: 100, display: 'inline-block', margin: '0 10px 0 0' }}
+                          placeholder="请选择"
+                          // defaultValue={{ value: 1 }}
+                          options={rulesOption}
+                        />
+                      </Form.Item>
+                      <Form.Item
+                        {...restField}
+                        name={[name, 'keyWord']}
+                        rules={[{ required: true, message: 'Missing last name' }]}
+                      >
+                        <InputShowCount style={{ width: 290 }} placeholder="请输入关键词" maxLength={30} />
+                      </Form.Item>
+                      {
+                        key === 0 ? null : <span style={{ fontSize: '14px', color: '#999999' }} className="font_family icon-shanchu" onClick={() => remove(name)} />
+                      }
+                    </Space>
+                  ))}
+                  <Form.Item>
+                    {
+                      fields.length < 10 && (
+                        <Button type="primary" onClick={() => add()} ghost>
+                          <span style={{ fontSize: '14px' }} className="font_family icon-tianjia1 font_14">
+                            &nbsp;添加关键词
+                          </span>
+                        </Button>
+                      )
+                    }
+                  </Form.Item>
+                </>
+              )}
+            </Form.List>
+            <Space direction="vertical" style={{ display: 'block' }}>
+              <Text type="secondary">半匹配是指评论中命中一个关键词就执行自动回复。</Text>
+              <Text type="secondary">全匹配是指评论中所有关键词全部命中执行自动回复。</Text>
+            </Space>
+          </Form.Item>
+          {/* <Form.Item label="关键词" style={{ marginBottom: 0 }}>
             {
               keyWordList && keyWordList?.map((item: KeyWordListType, index: number) => (
                 <KeyboardItem
@@ -157,17 +222,25 @@ const CommentRules = () => {
                     defaultValue="1"
                     options={rulesOption}
                   />
-                  <Form.Item name={['data', `keyword${index}`]} style={{ display: 'inline-block', width: 290, marginBottom: 0 }} rules={[{ required: true, message: '关键词不能为空' }]}>
+                  <Form.Item name={['data', `keyword${index}`]}
+                    style={{ display: 'inline-block', width: 290, marginBottom: 0 }}
+                    rules={[{ required: true, message: '关键词不能为空' }]}>
                     <InputShowCount style={{ width: 290 }} placeholder="请输入关键词" maxLength={30} />
                   </Form.Item>
                   {
-                    index !== 0 ? <span style={{ fontSize: '14px', color: '#999999' }} className="font_family icon-shanchu" data-index={index} onClick={(e) => { removeKeyWord(e); }} /> : null
+                    index !== 0
+                    ? <span
+                      style={{ fontSize: '14px', color: '#999999' }}
+                      className="font_family icon-shanchu"
+                      data-index={index} onClick={(e) => { removeKeyWord(e); }}
+                    />
+                    : null
                   }
                 </KeyboardItem>
               ))
             }
-          </Form.Item>
-          <Form.Item label=" " colon={false}>
+          </Form.Item> */}
+          {/* <Form.Item label=" " colon={false} style={{ margin: 0 }}>
             {
               keyWordList.length < 10 && (
                 <Button
@@ -182,12 +255,51 @@ const CommentRules = () => {
                 </Button>
               )
             }
-            <Space direction="vertical" style={{ display: 'block' }}>
-              <Text type="secondary">半匹配是指评论中命中一个关键词就执行自动回复。</Text>
-              <Text type="secondary">全匹配是指评论中所有关键词全部命中执行自动回复。</Text>
-            </Space>
-          </Form.Item>
+          {/* </Form.Item> */}
           <Form.Item
+            label="回复内容"
+            rules={[{ required: true }]}
+            extra="当回复内容有多条时，随机回复一条"
+          >
+            <Form.List name="messages" initialValue={messageList}>
+              {(fields, { add, remove }) => (
+                <>
+                  {fields.map(({ key, name, ...restField }) => (
+                    <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
+                      <Form.Item
+                        {...restField}
+                        name={[name, 'content']}
+                        rules={[{ required: true, message: 'Missing first name' }]}
+                      >
+                        <TextareaBox>
+                          <TextAreaShowCount
+                            style={{ position: 'relative', width: 400 }}
+                            autoSize={{ minRows: 4, maxRows: 6 }}
+                            maxLength={300}
+                          />
+                        </TextareaBox>
+                      </Form.Item>
+                      {
+                        key === 0 ? null : <span style={{ fontSize: '14px', color: '#999999' }} className="font_family icon-shanchu" onClick={() => remove(name)} />
+                      }
+                    </Space>
+                  ))}
+                  <Form.Item>
+                    {
+                      fields.length < 10 && (
+                        <Button type="primary" onClick={() => add()} ghost>
+                          <span style={{ fontSize: '14px' }} className="font_family icon-tianjia1 font_14">
+                            &nbsp;添加回复内容
+                          </span>
+                        </Button>
+                      )
+                    }
+                  </Form.Item>
+                </>
+              )}
+            </Form.List>
+          </Form.Item>
+          {/* <Form.Item
             name={['data', 'messageList']}
             label="回复内容"
             rules={[{ required: true }]}
@@ -207,7 +319,7 @@ const CommentRules = () => {
                 &nbsp;添加回复内容
               </span>
             </Button>
-          </Form.Item>
+          </Form.Item> */}
           <Form.Item
             name={['data', 'replyTimesLimit']}
             label="单个视频回复条数"
