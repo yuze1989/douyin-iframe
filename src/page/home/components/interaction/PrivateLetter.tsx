@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import http from 'utils/http';
-import { EnterpriseMsgType, TableItem, TableDataType } from 'types/home';
+import {
+  EnterpriseMsgType,
+  RegulationDataType,
+  TableDataType,
+  ParmasType,
+  RegulationItem,
+  TiktokList,
+} from 'types/home';
 import { Link } from 'react-router-dom';
 import {
   Form,
@@ -13,9 +20,11 @@ import {
   TablePaginationConfig,
   InputNumber,
   message,
-  Radio,
+  Switch,
+  Popconfirm,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
+import Item from 'antd/lib/list/Item';
 
 const { Option } = Select;
 
@@ -25,73 +34,190 @@ interface Props {
 
 const PrivateLetter = (props: Props) => {
   const { openId } = props;
+  const [form] = Form.useForm();
+  const [accountList, setAccountList] = useState<TiktokList[]>([]);
   const [tableData, setTableData] = useState<TableDataType>();
+  // 获取适用账号
+  const getTiktokAccount = () => {
+    if (openId) {
+      http.get('/social/auto-reply-rule/list-tiktok-user', {}).then((res) => {
+        const { success, data } = res;
+        if (success) {
+          setAccountList(data);
+        }
+      });
+    }
+  };
+  const changeStatus = (status: number | string, record: RegulationDataType, index: number) => {
+    console.log(status, record, index);
+    changeStatusHandler({ ruleStatus: status, id: record?.id, index });
+  };
+  const toDetail = (record: RegulationDataType, index: number) => {
+    console.log(record, index);
+    getDetail({ id: record?.id });
+  };
+  const toEdit = (record: RegulationDataType, index: number) => {
+    console.log(record, index);
+  };
+  const confirm = (record: RegulationDataType, index: number) => {
+    console.log(record, index);
+    deleteHandler({ id: record?.id });
+  };
+  // 启用/关闭
+  const changeStatusHandler = (params: {}) => {
+    http.post('/social/auto-reply-rule/rule-status', { ...params }).then((res) => {
+      const { success, data } = res;
+      console.log('changeStatusHandler', res);
+    });
+  };
+  // 删除规则
+  const deleteHandler = (params: {}) => {
+    http.get('/social/auto-reply-rule/del-rule', { ...params }).then((res) => {
+      const { success, data } = res;
+      console.log('===', res);
+    });
+  };
+  // 规则详情
+  const getDetail = (params: {}) => {
+    http.get('/social/auto-reply-rule/get_rule_detail', { ...params }).then((res) => {
+      const { success, data } = res;
+      console.log('getDetail::::', res);
+    });
+  };
+  // 查询
+  const getRegulationList = (parmas?: ParmasType) => {
+    const value = form.getFieldsValue();
+    console.log('getRegulationList', value);
+    // businessType 业务类型，1-评论规则，2-会话规则，3-私信规则
+    value.businessType = 3;
+    http.post('/social/auto-reply-rule/page-rule', { ...value, ...parmas }).then((res) => {
+      const { success, data } = res;
+      if (success) {
+        setTableData(res);
+      }
+    });
+  };
+  const onFinish = () => {
+    getRegulationList();
+  };
+  useEffect(() => {
+    getTiktokAccount();
+    getRegulationList();
+  }, []);
   const pageChange = (pagination: TablePaginationConfig) => {
     const page = {
       pageIndex: pagination.current,
       pageSize: pagination.pageSize,
-      openId,
     };
+    getRegulationList(page);
   };
-  const columns: ColumnsType<TableItem> = [
+  const columns: ColumnsType<RegulationDataType> = [
     {
       title: '规则名称',
       width: 180,
-      key: 'tiktokNumber',
-      dataIndex: 'tiktokNumber',
+      key: 'name',
+      dataIndex: 'name',
       align: 'left',
     },
     {
       title: '适用账号',
       width: 180,
-      key: 'tiktokNumber',
-      dataIndex: 'tiktokNumber',
+      key: 'tiktokUserId',
+      dataIndex: 'tiktokUserId',
       align: 'left',
+      render: (tiktokUserId?: number) => (
+        accountList.find((item: any) => item.id === tiktokUserId)?.nickname
+      ),
     },
     {
       title: '关键词',
       width: 180,
-      key: 'tiktokNumber',
-      dataIndex: 'tiktokNumber',
+      key: 'keyWordList',
+      dataIndex: 'keyWordList',
       align: 'left',
+      render: (keyWordList?: object[]) => (
+        keyWordList?.map((item: any) => (
+          <span key={item.id}>{item.keyWord},</span>
+        ))
+      ),
     },
     {
       title: '回复内容',
       // width: 180,
-      key: 'tiktokNumber',
-      dataIndex: 'tiktokNumber',
+      key: 'messageList',
+      dataIndex: 'messageList',
       align: 'left',
+      render: (messageList: object[]) => (
+        messageList?.map((item: any) => (
+          item.msgType === 'text' ? <span key={item.id}>{item?.text.content}</span> : <span style={{ color: '#65B083' }} key={item.id}>[图片]</span>
+        ))
+      ),
     },
     {
       title: '启用规则',
       width: 180,
-      key: 'tiktokNumber',
-      dataIndex: 'tiktokNumber',
+      key: 'status',
+      dataIndex: 'status',
       align: 'left',
+      render: (status: number, record, index) => (
+        <Switch
+          defaultChecked={Boolean(status)}
+          onChange={() => changeStatus(status, record, index)}
+        />
+      ),
     },
     {
       title: '操作',
-      width: 180,
-      key: 'tiktokNumber',
-      dataIndex: 'tiktokNumber',
+      width: 220,
+      key: 'handler',
+      dataIndex: 'handler',
       align: 'left',
+      render: (text, record, index) => (
+        <>
+          <Button type="link" onClick={() => toDetail(record, index)}>详情</Button>
+          <Button type="link" onClick={() => toEdit(record, index)}>编辑</Button>
+          <Popconfirm
+            placement="topLeft"
+            title="确认删除这条规则？"
+            onConfirm={() => confirm(record, index)}
+            okText="确认"
+            cancelText="取消"
+          >
+            <Button type="link">删除</Button>
+          </Popconfirm>
+        </>
+      ),
     },
   ];
   return (
     <SearchBox>
-      <Form layout="inline">
-        <Form.Item label="适用账号：">
+      <Form
+        layout="inline"
+        form={form}
+        onFinish={onFinish}
+        initialValues={{
+          tiktokUserId: '',
+          content: '',
+        }}
+      >
+        <Form.Item label="适用账号：" name="tiktokUserId">
           <Select
             style={{ width: 200 }}
             placeholder="请选择"
-            optionFilterProp="children"
           >
-            <Option value="jack">Jack</Option>
-            <Option value="lucy">Lucy</Option>
-            <Option value="tom">Tom</Option>
+            {
+              accountList && accountList.map((item: any) => (
+                <Select.Option
+                  value={item.id}
+                  key={item.apiAuthorId}
+                >
+                  {item.nickname}
+                </Select.Option>
+              ))
+            }
           </Select>
         </Form.Item>
-        <Form.Item label="关键词/回复内容：">
+        <Form.Item label="关键词/回复内容：" name="content">
           <Input placeholder="请输入" />
         </Form.Item>
         <Form.Item>
@@ -118,6 +244,7 @@ const PrivateLetter = (props: Props) => {
       </ButtonBox>
       <Table
         // style={{ margin: '0 2rem' }}
+        bordered
         columns={columns}
         dataSource={tableData?.data}
         pagination={false}

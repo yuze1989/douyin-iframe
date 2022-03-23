@@ -25,7 +25,39 @@ interface Props {
 
 const Conversation = (props: Props) => {
   const { openId } = props;
+  const [form] = Form.useForm();
+  const [accountList, setAccountList] = useState([]);
   const [tableData, setTableData] = useState<TableDataType>();
+  // 获取适用账号
+  const getTiktokAccount = () => {
+    if (openId) {
+      http.get('/social/auto-reply-rule/list-tiktok-user', {}).then((res) => {
+        const { success, data } = res;
+        if (success) {
+          setAccountList(data);
+        }
+      });
+    }
+  };
+  // 查询
+  const getRegulationList = () => {
+    const value = form.getFieldsValue();
+    console.log('getRegulationList', value);
+    // businessType 业务类型，1-评论规则，2-会话规则，3-私信规则
+    value.businessType = 2;
+    http.post('/social/auto-reply-rule/page-rule', { ...value }).then((res) => {
+      const { success, data } = res;
+      console.log(' success;', success, data);
+    });
+  };
+  const onFinish = () => {
+    console.log('onFinish');
+    getRegulationList();
+  };
+  useEffect(() => {
+    getTiktokAccount();
+    getRegulationList();
+  }, []);
   const pageChange = (pagination: TablePaginationConfig) => {
     const page = {
       pageIndex: pagination.current,
@@ -65,16 +97,30 @@ const Conversation = (props: Props) => {
   ];
   return (
     <SearchBox>
-      <Form layout="inline">
-        <Form.Item label="适用账号：">
+      <Form
+        layout="inline"
+        form={form}
+        onFinish={onFinish}
+        initialValues={{
+          tiktokUserId: '',
+          content: '',
+        }}
+      >
+        <Form.Item label="适用账号：" name="tiktokUserId">
           <Select
             style={{ width: 200 }}
             placeholder="请选择"
-            optionFilterProp="children"
           >
-            <Option value="jack">Jack</Option>
-            <Option value="lucy">Lucy</Option>
-            <Option value="tom">Tom</Option>
+            {
+              accountList && accountList.map((item: any) => (
+                <Select.Option
+                  value={item.id}
+                  key={item.apiAuthorId}
+                >
+                  {item.nickname}
+                </Select.Option>
+              ))
+            }
           </Select>
         </Form.Item>
         <Form.Item label="回复内容：">

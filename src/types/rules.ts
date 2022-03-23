@@ -8,3 +8,8 @@ export interface IProps {
   disabled?: boolean;
   trim?: boolean;
 }
+
+export interface KeyWordListType {
+  keyboard?: string;
+  type?: string;
+}

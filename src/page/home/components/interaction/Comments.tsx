@@ -26,12 +26,36 @@ const { Option } = Select;
 
 interface Props {
   openId: String
-  tiktokList?: TiktokList[]
 }
 
 const Comments = (props: Props) => {
-  const { openId, tiktokList } = props;
+  const { openId } = props;
+  // const businessType
+  const [form] = Form.useForm();
+  const [accountList, setAccountList] = useState([]);
   const [tableData, setTableData] = useState<TableDataType>();
+  // 获取适用账号
+  const getTiktokAccount = () => {
+    if (openId) {
+      http.get('/social/auto-reply-rule/list-tiktok-user', {}).then((res) => {
+        const { success, data } = res;
+        if (success) {
+          setAccountList(data);
+        }
+      });
+    }
+  };
+  // 查询
+  const getRegulationList = () => {
+    const value = form.getFieldsValue();
+    console.log('getRegulationList', value);
+    // businessType 业务类型，1-评论规则，2-会话规则，3-私信规则
+    value.businessType = 1;
+    http.post('/social/auto-reply-rule/page-rule', { ...value }).then((res) => {
+      const { success, data } = res;
+      console.log(' success;', success, data);
+    });
+  };
   const pageChange = (pagination: TablePaginationConfig) => {
     const page = {
       pageIndex: pagination.current,
@@ -39,6 +63,14 @@ const Comments = (props: Props) => {
       openId,
     };
   };
+  const onFinish = () => {
+    console.log('onFinish');
+    getRegulationList();
+  };
+  useEffect(() => {
+    getTiktokAccount();
+    getRegulationList();
+  }, []);
   const columns: ColumnsType<TableItem> = [
     {
       title: '规则名称',
@@ -85,29 +117,33 @@ const Comments = (props: Props) => {
   ];
   return (
     <SearchBox>
-      <Form layout="inline">
-        <Form.Item label="适用账号：">
+      <Form
+        layout="inline"
+        form={form}
+        onFinish={onFinish}
+        initialValues={{
+          tiktokUserId: '',
+          content: '',
+        }}
+      >
+        <Form.Item label="适用账号：" name="tiktokUserId">
           <Select
             style={{ width: 200 }}
             placeholder="请选择"
-            optionFilterProp="label"
           >
             {
-              tiktokList && tiktokList.map((item) => (
-                <Option
+              accountList && accountList.map((item: any) => (
+                <Select.Option
                   value={item.id}
                   key={item.apiAuthorId}
                 >
                   {item.nickname}
-                </Option>
+                </Select.Option>
               ))
             }
-            {/* <Option value="jack">Jack</Option>
-            <Option value="lucy">Lucy</Option>
-            <Option value="tom">Tom</Option> */}
           </Select>
         </Form.Item>
-        <Form.Item label="关键词/回复内容：">
+        <Form.Item label="关键词/回复内容：" name="content">
           <Input placeholder="请输入" />
         </Form.Item>
         <Form.Item>

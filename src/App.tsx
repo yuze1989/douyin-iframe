@@ -28,7 +28,7 @@ const getAuth = async () => {
 const App = () => {
   const urlParams = getUrlOption(window.location.href);
   const channel = urlParams?.channel || localStorage.getItem('channel');
-  const openId = urlParams?.openId;
+  const openId = urlParams?.openId || localStorage.getItem('openId');
   // !!urlParams?.channel: 其他环境; !urlParams?.channel: 抖音环境
   if (!channel) {
     getAuth();

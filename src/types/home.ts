@@ -55,3 +55,38 @@ export interface TiktokList {
   tenantId?: string | null
   unionId?: string
 }
+
+export interface RegulationDataType {
+  id?: string;
+  name?: string;
+  tenantId?: number;
+  tiktokUserId?: number;
+  status?: number;
+  keyWordList?: object[];
+  messageList?: object[];
+}
+
+export interface KeyWordListType {
+  creator?: string;
+  gmtCreate?: string;
+  gmtModified?: string;
+  id?: number;
+  keyWord?: string;
+  modifier?: string;
+  ruleId?: number;
+  tenantId?: string;
+  type?: number;
+}
+
+export interface MessageListType {
+
+}
+
+export interface RegulationItem {
+  data?: RegulationDataType[];
+  pageIndex?: number;
+  pageSize?: number;
+  success?: boolean;
+  totalCount?: number;
+  totalPages?: number;
+}

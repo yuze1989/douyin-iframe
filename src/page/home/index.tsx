@@ -9,17 +9,15 @@ import UserInformation from './components/UserInformation';
 const { TabPane } = Tabs;
 const Home = () => {
   const navigate = useNavigate();
-  const ChildRouter: Array<string> = ['/', '/home', '/home/interaction'];
-  const [tabKey, setTabKey] = useState<string>('1');
+  const tabsIndex = localStorage.getItem('tabsIndex') || '1';
+  const [tabKey, setTabKey] = useState<string>(tabsIndex);
   const urlParams = getUrlOption(window.location.href);
-  console.log('====', urlParams);
   const channel = urlParams?.channel || localStorage.getItem('channel');
   const openId = localStorage.getItem('openId') || urlParams?.openId;
   localStorage.setItem('openId', openId);
   const goTabs = (key: string) => {
     localStorage.setItem('tabsIndex', key);
     setTabKey(key);
-    navigate(ChildRouter[Number(key)]);
   };
   return (
     <Card title={channel ? '蓝V获客' : ''} style={{ margin: '2rem 2rem 0' }}>

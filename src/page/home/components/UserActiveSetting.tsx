@@ -27,30 +27,19 @@ interface Props {
 const UserActiveSetting = (props: Props) => {
   // const { openId } = props;
   const openId = localStorage.getItem('openId') || '';
-  const [optionKey, setOptionKey] = useState<string>('1');
-  const [tiktokList, setTiktokList] = useState<TiktokList[]>();
+  const childIndex = localStorage.getItem('childIndex') || '1';
+  const [optionKey, setOptionKey] = useState<string>(childIndex);
   const changeOptionKey = (key: string) => {
     localStorage.setItem('childIndex', key);
     setOptionKey(key);
   };
-  const getTiktokAccount = () => {
-    if (openId) {
-      http.get('/social/auto-reply-rule/list-tiktok-user', {}).then((res) => {
-        const { success, data } = res;
-        if (success) {
-          setTiktokList(data);
-        }
-      });
-    }
-  };
   useEffect(() => {
-    getTiktokAccount();
   }, []);
   return (
     <div>
       <TabsBox>
         <Radio.Group
-          defaultValue="1"
+          defaultValue={optionKey}
           style={{ padding: '0 2rem', margin: '4px 0 20px' }}
           onChange={(e) => {
             changeOptionKey(e.target.value);
@@ -62,7 +51,7 @@ const UserActiveSetting = (props: Props) => {
         </Radio.Group>
       </TabsBox>
       <div>
-        {optionKey === '1' && <Comments openId={openId} tiktokList={tiktokList} />}
+        {optionKey === '1' && <Comments openId={openId} />}
         {optionKey === '2' && <Conversation openId={openId} />}
         {optionKey === '3' && <PrivateLetter openId={openId} />}
       </div>
