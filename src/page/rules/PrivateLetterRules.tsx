@@ -3,6 +3,8 @@ import styled from '@emotion/styled';
 import http from 'utils/http';
 import { getUrlOption } from 'utils';
 import { TiktokList } from 'types/home';
+import { UploadChangeParam } from 'antd/lib/upload';
+import { UploadFile } from 'antd/lib/upload/interface';
 import { KeyWordListType, ContentListType } from 'types/rules';
 import { useNavigate } from 'react-router-dom';
 import { useCloudUpload } from 'utils/upload';
@@ -17,6 +19,7 @@ import {
   Button,
   message,
   Upload,
+  Spin,
 } from 'antd';
 
 import InputShowCount from './components/InputShowCount';
@@ -33,6 +36,7 @@ const PrivateLetterRules = () => {
   const id = urlParams?.id || '';
   const [form] = Form.useForm();
   const headers = { 'tiktok-token': openId };
+  const [loading, setLoading] = useState(true);
   const messageList: object[] = [{ content: '' }];
   const [action, setAction] = useState('');
   const [accountList, setAccountList] = useState<TiktokList[]>([]);
@@ -99,8 +103,8 @@ const PrivateLetterRules = () => {
   const beforeUpload = (file: any) => {
     console.log('beforeUpload', file);
   };
-  const handleChange = () => {
-    console.log('handleChange');
+  const handleChange = async (fileInfo: UploadChangeParam<UploadFile<any>>) => {
+    console.log(fileInfo);
   };
   const delSelectRule = (index: number) => {
     const arr = [...msgContentList];
@@ -117,6 +121,12 @@ const PrivateLetterRules = () => {
     arr.push({ msgType: type });
     setMsgContentList([...arr]);
   };
+  // 上传按钮
+  const uploadButton = (
+    <div>
+      <span style={{ fontSize: '14px' }} className="font_family icon-tianjiafujian">添加</span>
+    </div>
+  );
   useEffect(() => {
     getTiktokAccount();
   }, []);
@@ -264,7 +274,8 @@ const PrivateLetterRules = () => {
                                 maxCount={1}
                                 onChange={handleChange}
                               >
-                                上传
+                                <Spin spinning={loading}>上传中...</Spin>
+                                {msgContentList[key].imgUrl ? <img src={msgContentList[key].imgUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
                               </Upload>
                             </Form.Item>
                             <span
