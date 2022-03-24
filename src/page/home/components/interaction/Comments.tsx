@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import http from 'utils/http';
 import {
-  EnterpriseMsgType,
   TableItem,
   TableDataType,
   TiktokList,
+  RegulationDataType,
 } from 'types/home';
 import { Link } from 'react-router-dom';
 import {
@@ -16,9 +16,9 @@ import {
   Table,
   Pagination,
   TablePaginationConfig,
-  InputNumber,
   message,
-  Radio,
+  Switch,
+  Popconfirm,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 
@@ -32,7 +32,7 @@ const Comments = (props: Props) => {
   const { openId } = props;
   // const businessType
   const [form] = Form.useForm();
-  const [accountList, setAccountList] = useState([]);
+  const [accountList, setAccountList] = useState<TiktokList[]>([]);
   const [tableData, setTableData] = useState<TableDataType>();
   // 获取适用账号
   const getTiktokAccount = () => {
@@ -48,12 +48,13 @@ const Comments = (props: Props) => {
   // 查询
   const getRegulationList = () => {
     const value = form.getFieldsValue();
-    console.log('getRegulationList', value);
     // businessType 业务类型，1-评论规则，2-会话规则，3-私信规则
     value.businessType = 1;
     http.post('/social/auto-reply-rule/page-rule', { ...value }).then((res) => {
       const { success, data } = res;
-      console.log(' success;', success, data);
+      if (success) {
+        setTableData(res);
+      }
     });
   };
   const pageChange = (pagination: TablePaginationConfig) => {
@@ -63,56 +64,134 @@ const Comments = (props: Props) => {
       openId,
     };
   };
+  const changeStatus = (status: number | string, record: RegulationDataType, index: number) => {
+    // console.log(status, record, index);
+    changeStatusHandler({ ruleStatus: status === 1 ? 2 : 1, id: record?.id }, index);
+  };
+  const toDetail = (record: RegulationDataType, index: number) => {
+    // console.log(record, index);
+    getDetail({ id: record?.id });
+  };
+  const toEdit = (record: RegulationDataType, index: number) => {
+    console.log(record, index);
+  };
+  const confirm = (record: RegulationDataType, index: number) => {
+    // console.log(record, index);
+    deleteHandler({ id: record?.id });
+  };
+  // 启用/关闭
+  const changeStatusHandler = (params: {}, index: number) => {
+    http.post('/social/auto-reply-rule/rule-status', { ...params }).then((res) => {
+      const { success, data, errMessage } = res;
+      if (success) {
+        message.success('操作成功！');
+      } else {
+        message.error(errMessage);
+      }
+    });
+  };
+  // 删除规则
+  const deleteHandler = (params: {}) => {
+    http.get('/social/auto-reply-rule/del-rule', { ...params }).then((res) => {
+      const { success, data, errMessage } = res;
+      if (success) {
+        getRegulationList();
+        message.success('删除成功！');
+      } else {
+        message.error(errMessage);
+      }
+    });
+  };
+  // 规则详情
+  const getDetail = (params: {}) => {
+    http.get('/social/auto-reply-rule/get_rule_detail', { ...params }).then((res) => {
+      const { success, data } = res;
+      console.log('getDetail::::', res);
+    });
+  };
   const onFinish = () => {
-    console.log('onFinish');
     getRegulationList();
   };
   useEffect(() => {
     getTiktokAccount();
     getRegulationList();
   }, []);
-  const columns: ColumnsType<TableItem> = [
+  const columns: ColumnsType<RegulationDataType> = [
     {
       title: '规则名称',
       width: 180,
-      key: 'tiktokNumber',
-      dataIndex: 'tiktokNumber',
+      key: 'name',
+      dataIndex: 'name',
       align: 'left',
     },
     {
       title: '适用账号',
       width: 180,
-      key: 'tiktokNumber',
-      dataIndex: 'tiktokNumber',
+      key: 'tiktokUserId',
+      dataIndex: 'tiktokUserId',
       align: 'left',
+      render: (tiktokUserId?: number) => (
+        accountList.find((item: any) => item.id === tiktokUserId)?.nickname
+      ),
     },
     {
       title: '关键词',
       width: 180,
-      key: 'tiktokNumber',
-      dataIndex: 'tiktokNumber',
+      key: 'keyWordList',
+      dataIndex: 'keyWordList',
       align: 'left',
+      render: (keyWordList?: object[]) => (
+        keyWordList?.map((item: any) => (
+          <span key={item.id}>{item.keyWord},</span>
+        ))
+      ),
     },
     {
       title: '回复内容',
       // width: 180,
-      key: 'tiktokNumber',
-      dataIndex: 'tiktokNumber',
+      key: 'messageList',
+      dataIndex: 'messageList',
       align: 'left',
+      render: (messageList: object[]) => (
+        messageList?.map((item: any) => (
+          item.msgType === 'text' ? <span key={item.id}>{item?.text.content}</span> : <span style={{ color: '#65B083' }} key={item.id}>[图片]</span>
+        ))
+      ),
     },
     {
       title: '启用规则',
-      width: 100,
-      key: 'tiktokNumber',
-      dataIndex: 'tiktokNumber',
+      width: 180,
+      key: 'status',
+      dataIndex: 'status',
       align: 'left',
+      render: (status: number, record, index) => (
+        <Switch
+          defaultChecked={Boolean(status === 1)}
+          onChange={() => changeStatus(status, record, index)}
+        />
+      ),
     },
     {
       title: '操作',
-      // width: 180,
-      key: 'tiktokNumber',
-      dataIndex: 'tiktokNumber',
+      width: 220,
+      key: 'handler',
+      dataIndex: 'handler',
       align: 'left',
+      render: (text, record, index) => (
+        <>
+          <Button type="link" onClick={() => toDetail(record, index)}>详情</Button>
+          <Button type="link" onClick={() => toEdit(record, index)}>编辑</Button>
+          <Popconfirm
+            placement="topLeft"
+            title="确认删除这条规则？"
+            onConfirm={() => confirm(record, index)}
+            okText="确认"
+            cancelText="取消"
+          >
+            <Button type="link">删除</Button>
+          </Popconfirm>
+        </>
+      ),
     },
   ];
   return (
@@ -170,6 +249,7 @@ const Comments = (props: Props) => {
       </ButtonBox>
       <Table
         // style={{ margin: '0 2rem' }}
+        bordered
         columns={columns}
         dataSource={tableData?.data}
         pagination={false}

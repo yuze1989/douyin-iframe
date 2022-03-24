@@ -3,9 +3,6 @@ import styled from '@emotion/styled';
 import http from 'utils/http';
 import { getUrlOption } from 'utils';
 import {
-  EnterpriseMsgType,
-  TableItem,
-  TableDataType,
   TiktokList,
 } from 'types/home';
 import { KeyWordListType } from 'types/rules';
@@ -15,18 +12,12 @@ import {
   Typography,
   Card,
   Form,
-  Input,
   Select,
   Switch,
   Button,
-  Table,
-  Pagination,
-  TablePaginationConfig,
   InputNumber,
   message,
-  Radio,
 } from 'antd';
-import { ColumnsType } from 'antd/lib/table';
 
 import InputShowCount from './components/InputShowCount';
 import TextAreaShowCount from './components/TextAreaShowCount';
@@ -46,16 +37,11 @@ const CommentRules = () => {
     type: '请选择',
     keyWord: '',
   }]);
-  const setKey = (item: number) => {
-    const key = item + new Date().getMilliseconds() * item;
-    return key;
-  };
   const layout = {
     labelCol: { span: 3 },
     wrapperCol: { span: 13 },
   };
   const onFinish = (values: any) => {
-    console.log('onFinish:::', values);
     saveRegulation();
   };
   /* eslint-disable no-template-curly-in-string */
@@ -102,6 +88,7 @@ const CommentRules = () => {
     }).then((res) => {
       const { success } = res;
       if (success) {
+        navigate(-1);
         message.success('保存成功！');
       } else {
         message.error(res?.errMessage);
@@ -111,17 +98,6 @@ const CommentRules = () => {
   useEffect(() => {
     getTiktokAccount();
   }, []);
-  const increaseKeywords = () => {
-    const temporary = keyWordList;
-    temporary.push({ type: '1', keyWord: '' });
-    setKeyWordList([...temporary]);
-  };
-  const removeKeyWord = (e: any) => {
-    const { index } = e.target.dataset;
-    const temporary = keyWordList;
-    temporary.splice(index, 1);
-    setKeyWordList([...temporary]);
-  };
   return (
     <ContentBox>
       <Card
@@ -209,53 +185,6 @@ const CommentRules = () => {
               <Text type="secondary">全匹配是指评论中所有关键词全部命中执行自动回复。</Text>
             </Space>
           </Form.Item>
-          {/* <Form.Item label="关键词" style={{ marginBottom: 0 }}>
-            {
-              keyWordList && keyWordList?.map((item: KeyWordListType, index: number) => (
-                <KeyboardItem
-                  style={{ marginTop: 0 }}
-                  key={setKey(index)}
-                >
-                  <Select
-                    style={{ width: 100, display: 'inline-block', margin: '0 10px 0 0' }}
-                    placeholder="请选择"
-                    defaultValue="1"
-                    options={rulesOption}
-                  />
-                  <Form.Item name={['data', `keyword${index}`]}
-                    style={{ display: 'inline-block', width: 290, marginBottom: 0 }}
-                    rules={[{ required: true, message: '关键词不能为空' }]}>
-                    <InputShowCount style={{ width: 290 }} placeholder="请输入关键词" maxLength={30} />
-                  </Form.Item>
-                  {
-                    index !== 0
-                    ? <span
-                      style={{ fontSize: '14px', color: '#999999' }}
-                      className="font_family icon-shanchu"
-                      data-index={index} onClick={(e) => { removeKeyWord(e); }}
-                    />
-                    : null
-                  }
-                </KeyboardItem>
-              ))
-            }
-          </Form.Item> */}
-          {/* <Form.Item label=" " colon={false} style={{ margin: 0 }}>
-            {
-              keyWordList.length < 10 && (
-                <Button
-                  style={{ marginRight: '10px' }}
-                  type="primary"
-                  ghost
-                  onClick={() => { increaseKeywords(); }}
-                >
-                  <span style={{ fontSize: '14px' }} className="font_family icon-tianjia1 font_14">
-                    &nbsp;添加关键词
-                  </span>
-                </Button>
-              )
-            }
-          {/* </Form.Item> */}
           <Form.Item
             label="回复内容"
             rules={[{ required: true }]}
@@ -299,27 +228,6 @@ const CommentRules = () => {
               )}
             </Form.List>
           </Form.Item>
-          {/* <Form.Item
-            name={['data', 'messageList']}
-            label="回复内容"
-            rules={[{ required: true }]}
-            extra="当回复内容有多条时，随机回复一条"
-          >
-            <TextareaBox>
-              <TextAreaShowCount
-                style={{ position: 'relative', width: 400 }}
-                autoSize={{ minRows: 4, maxRows: 6 }}
-                maxLength={300}
-              />
-            </TextareaBox>
-          </Form.Item>
-          <Form.Item label=" " colon={false}>
-            <Button style={{ marginRight: '10px' }} type="primary" ghost>
-              <span style={{ fontSize: '14px' }} className="font_family icon-tianjia1 font_14">
-                &nbsp;添加回复内容
-              </span>
-            </Button>
-          </Form.Item> */}
           <Form.Item
             name={['data', 'replyTimesLimit']}
             label="单个视频回复条数"
@@ -335,7 +243,6 @@ const CommentRules = () => {
           </Form.Item>
           <ButtonBox>
             <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
-              {/* <Button type="primary" size="large"  onClick={() => saveRegulation()}> */}
               <Button type="primary" size="large" htmlType="submit">
                 保存
               </Button>

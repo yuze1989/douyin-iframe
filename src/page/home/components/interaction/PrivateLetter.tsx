@@ -2,11 +2,9 @@ import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import http from 'utils/http';
 import {
-  EnterpriseMsgType,
   RegulationDataType,
   TableDataType,
   ParmasType,
-  RegulationItem,
   TiktokList,
 } from 'types/home';
 import { Link } from 'react-router-dom';
@@ -18,13 +16,11 @@ import {
   Table,
   Pagination,
   TablePaginationConfig,
-  InputNumber,
   message,
   Switch,
   Popconfirm,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import Item from 'antd/lib/list/Item';
 
 const { Option } = Select;
 
@@ -49,32 +45,41 @@ const PrivateLetter = (props: Props) => {
     }
   };
   const changeStatus = (status: number | string, record: RegulationDataType, index: number) => {
-    console.log(status, record, index);
-    changeStatusHandler({ ruleStatus: status, id: record?.id, index });
+    // console.log(status, record, index);
+    changeStatusHandler({ ruleStatus: status === 1 ? 2 : 1, id: record?.id }, index);
   };
   const toDetail = (record: RegulationDataType, index: number) => {
-    console.log(record, index);
+    // console.log(record, index);
     getDetail({ id: record?.id });
   };
   const toEdit = (record: RegulationDataType, index: number) => {
     console.log(record, index);
   };
   const confirm = (record: RegulationDataType, index: number) => {
-    console.log(record, index);
+    // console.log(record, index);
     deleteHandler({ id: record?.id });
   };
   // 启用/关闭
-  const changeStatusHandler = (params: {}) => {
+  const changeStatusHandler = (params: {}, index: number) => {
     http.post('/social/auto-reply-rule/rule-status', { ...params }).then((res) => {
-      const { success, data } = res;
-      console.log('changeStatusHandler', res);
+      const { success, data, errMessage } = res;
+      if (success) {
+        message.success('操作成功！');
+      } else {
+        message.error(errMessage);
+      }
     });
   };
   // 删除规则
   const deleteHandler = (params: {}) => {
     http.get('/social/auto-reply-rule/del-rule', { ...params }).then((res) => {
-      const { success, data } = res;
-      console.log('===', res);
+      const { success, data, errMessage } = res;
+      if (success) {
+        getRegulationList();
+        message.success('删除成功！');
+      } else {
+        message.error(errMessage);
+      }
     });
   };
   // 规则详情
@@ -87,7 +92,6 @@ const PrivateLetter = (props: Props) => {
   // 查询
   const getRegulationList = (parmas?: ParmasType) => {
     const value = form.getFieldsValue();
-    console.log('getRegulationList', value);
     // businessType 业务类型，1-评论规则，2-会话规则，3-私信规则
     value.businessType = 3;
     http.post('/social/auto-reply-rule/page-rule', { ...value, ...parmas }).then((res) => {
@@ -161,7 +165,7 @@ const PrivateLetter = (props: Props) => {
       align: 'left',
       render: (status: number, record, index) => (
         <Switch
-          defaultChecked={Boolean(status)}
+          defaultChecked={Boolean(status === 1)}
           onChange={() => changeStatus(status, record, index)}
         />
       ),

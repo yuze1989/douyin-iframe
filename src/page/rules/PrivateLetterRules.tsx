@@ -36,12 +36,12 @@ const PrivateLetterRules = () => {
   const id = urlParams?.id || '';
   const [form] = Form.useForm();
   const headers = { 'tiktok-token': openId };
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const messageList: object[] = [{ content: '' }];
   const [action, setAction] = useState('');
   const [accountList, setAccountList] = useState<TiktokList[]>([]);
   const [keyWordList, setKeyWordList] = useState<KeyWordListType[]>([{ type: '请选择', keyWord: '' }]);
-  const [msgContentList, setMsgContentList] = useState<ContentListType[]>([{ msgType: 'text' }, { msgType: 'img' }]);
+  const [msgContentList, setMsgContentList] = useState<ContentListType[]>([{ msgType: 'text' }, { msgType: 'image' }]);
   const layout = {
     labelCol: { span: 3 },
     wrapperCol: { span: 13 },
@@ -91,6 +91,7 @@ const PrivateLetterRules = () => {
       status: data.status === false ? 2 : 1,
       keyWordList: keywords,
       messageList: content,
+      replyTimesLimit: 1,
     }).then((res) => {
       const { success } = res;
       if (success) {
@@ -103,8 +104,38 @@ const PrivateLetterRules = () => {
   const beforeUpload = (file: any) => {
     console.log('beforeUpload', file);
   };
-  const handleChange = async (fileInfo: UploadChangeParam<UploadFile<any>>) => {
-    console.log(fileInfo);
+  const handleChange = async (fileInfo: UploadChangeParam<UploadFile<any>>, index: number) => {
+    console.log(fileInfo, index);
+    const {
+      status,
+      uid,
+      name,
+      size,
+    } = fileInfo.file;
+    if (status === 'uploading') {
+      setLoading(true);
+      return;
+    }
+    if (status === 'done' && fileInfo.file.response.success) {
+      setLoading(false);
+      const { response } = fileInfo.file;
+      const contentArr = [...msgContentList];
+      const obj = contentArr[index];
+      Object.assign(obj, { uid, imgUrl: response?.data?.filename });
+      contentArr.splice(index, 1, obj);
+      setMsgContentList(contentArr);
+      const data = await uploadAttachment(name, 'image', response?.data?.filename, size, 1);
+      const tempObj = {
+        title: data?.title,
+        attachmentId: data?.id,
+        attachmentPath: data?.path,
+      };
+      console.log('data', data, tempObj);
+    }
+    if (fileInfo.file.status === 'error') {
+      message.error('接口超时，请刷新后重试');
+      setLoading(true);
+    }
   };
   const delSelectRule = (index: number) => {
     const arr = [...msgContentList];
@@ -222,92 +253,92 @@ const PrivateLetterRules = () => {
             rules={[{ required: true }]}
             extra="当回复内容有多条时，随机回复一条"
           >
-            {/* <Form.List name="messages" initialValue={messageList}> */}
-            <Form.List name="messages" initialValue={msgContentList}>
-              {(fields, { add }) => (
-                <>
-                  {fields.map(({ key, name, ...restField }, index) => (
-                    <div key={key} style={{ display: 'flex', alignItems: 'center' }}>
-                      {
-                        msgContentList[key]?.msgType === 'text' && (
-                          <ItemBox>
-                            <Form.Item
-                              {...restField}
-                              style={{ marginBottom: 0 }}
-                              name={[name, 'content']}
-                              rules={[{ required: true, message: 'Missing first name' }]}
-                            >
-                              <TextareaBox>
-                                <TextAreaShowCount
-                                  style={{ position: 'relative', width: 400 }}
-                                  autoSize={{ minRows: 4, maxRows: 6 }}
-                                  maxLength={300}
-                                />
-                              </TextareaBox>
-                            </Form.Item>
-                            <span
-                              style={{ fontSize: '14px', color: '#999999', marginLeft: 10 }}
-                              className="font_family icon-shanchu"
-                              onClick={() => delSelectRule(index)}
-                            />
-                          </ItemBox>
-                        )
-                      }
-                      {
-                        msgContentList[key]?.msgType === 'img' && (
-                          <ItemBox>
-                            <Form.Item
-                              {...restField}
-                              style={{ marginBottom: 0, display: 'block' }}
-                              name={[name, 'imageUrl']}
-                              rules={[{ required: true, message: 'Missing first name' }]}
-                            >
-                              <Upload
-                                name="file"
-                                listType="picture-card"
-                                className="avatar-uploader"
-                                headers={headers}
-                                showUploadList={false}
-                                beforeUpload={(file) => beforeUpload(file)}
-                                action={ossData?.host}
-                                data={getExtraData}
-                                maxCount={1}
-                                onChange={handleChange}
+            <Spin spinning={loading}>
+              <Form.List name="messages" initialValue={msgContentList}>
+                {(fields, { add }) => (
+                  <>
+                    {fields.map(({ key, name, ...restField }, index) => (
+                      <div key={key} style={{ display: 'flex', alignItems: 'center' }}>
+                        {
+                          msgContentList[key]?.msgType === 'text' && (
+                            <ItemBox>
+                              <Form.Item
+                                {...restField}
+                                style={{ marginBottom: 0 }}
+                                name={[name, 'content']}
+                                rules={[{ required: true, message: 'Missing first name' }]}
                               >
-                                <Spin spinning={loading}>上传中...</Spin>
-                                {msgContentList[key].imgUrl ? <img src={msgContentList[key].imgUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
-                              </Upload>
-                            </Form.Item>
-                            <span
-                              style={{ fontSize: '14px', color: '#999999', marginLeft: 10 }}
-                              className="font_family icon-shanchu"
-                              onClick={() => delSelectRule(index)}
-                            />
-                          </ItemBox>
+                                <TextareaBox>
+                                  <TextAreaShowCount
+                                    style={{ position: 'relative', width: 400 }}
+                                    autoSize={{ minRows: 4, maxRows: 6 }}
+                                    maxLength={300}
+                                  />
+                                </TextareaBox>
+                              </Form.Item>
+                              <span
+                                style={{ fontSize: '14px', color: '#999999', marginLeft: 10 }}
+                                className="font_family icon-shanchu"
+                                onClick={() => delSelectRule(index)}
+                              />
+                            </ItemBox>
+                          )
+                        }
+                        {
+                          msgContentList[key]?.msgType === 'image' && (
+                            <ItemBox>
+                              <Form.Item
+                                {...restField}
+                                style={{ marginBottom: 0, display: 'block' }}
+                                name={[name, 'imageUrl']}
+                                rules={[{ required: true, message: 'Missing first name' }]}
+                              >
+                                <Upload
+                                  name="file"
+                                  listType="picture-card"
+                                  className="avatar-uploader"
+                                  headers={headers}
+                                  showUploadList={false}
+                                  beforeUpload={(file) => beforeUpload(file)}
+                                  action={ossData?.host}
+                                  data={getExtraData}
+                                  maxCount={1}
+                                  onChange={(fileInfo) => handleChange(fileInfo, index)}
+                                >
+                                  {msgContentList[key].imgUrl ? <img src={msgContentList[key].imgUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+                                </Upload>
+                              </Form.Item>
+                              <span
+                                style={{ fontSize: '14px', color: '#999999', marginLeft: 10 }}
+                                className="font_family icon-shanchu"
+                                onClick={() => delSelectRule(index)}
+                              />
+                            </ItemBox>
+                          )
+                        }
+                      </div>
+                    ))}
+                    <Form.Item>
+                      {
+                        fields.length < 10 && (
+                          <DropdownBox>
+                            <nav className="dropBox">
+                              <div className="dropItem" onClick={() => addRuleType(add, 'text')}>文字</div>
+                              <div className="dropItem" onClick={() => addRuleType(add, 'image')}>图片</div>
+                            </nav>
+                            <Button type="primary" ghost>
+                              <span style={{ fontSize: '14px' }} className="font_family icon-tianjia1 font_14">
+                                &nbsp;添加回复内容
+                              </span>
+                            </Button>
+                          </DropdownBox>
                         )
                       }
-                    </div>
-                  ))}
-                  <Form.Item>
-                    {
-                      fields.length < 10 && (
-                        <DropdownBox>
-                          <nav className="dropBox">
-                            <div className="dropItem" onClick={() => addRuleType(add, 'text')}>文字</div>
-                            <div className="dropItem" onClick={() => addRuleType(add, 'img')}>图片</div>
-                          </nav>
-                          <Button type="primary" ghost>
-                            <span style={{ fontSize: '14px' }} className="font_family icon-tianjia1 font_14">
-                              &nbsp;添加回复内容
-                            </span>
-                          </Button>
-                        </DropdownBox>
-                      )
-                    }
-                  </Form.Item>
-                </>
-              )}
-            </Form.List>
+                    </Form.Item>
+                  </>
+                )}
+              </Form.List>
+            </Spin>
           </Form.Item>
           <ButtonBox>
             <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>

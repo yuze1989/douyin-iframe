@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import http from 'utils/http';
-import { EnterpriseMsgType, TableItem, TableDataType } from 'types/home';
+import {
+  TableItem,
+  TableDataType,
+  TiktokList,
+  RegulationDataType,
+} from 'types/home';
+import { DetailContextType } from 'types/rules';
 import { Link } from 'react-router-dom';
 import {
   Form,
@@ -11,14 +17,17 @@ import {
   Table,
   Pagination,
   TablePaginationConfig,
-  InputNumber,
+  Switch,
+  Popconfirm,
   message,
-  Radio,
+  Modal,
+  Space,
+  Typography,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 
 const { Option } = Select;
-
+const { Title, Text } = Typography;
 interface Props {
   openId: String
 }
@@ -26,8 +35,10 @@ interface Props {
 const Conversation = (props: Props) => {
   const { openId } = props;
   const [form] = Form.useForm();
-  const [accountList, setAccountList] = useState([]);
+  const [accountList, setAccountList] = useState<TiktokList[]>([]);
   const [tableData, setTableData] = useState<TableDataType>();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [detailContent, setDetailContent] = useState<DetailContextType>();
   // 获取适用账号
   const getTiktokAccount = () => {
     if (openId) {
@@ -48,11 +59,74 @@ const Conversation = (props: Props) => {
     http.post('/social/auto-reply-rule/page-rule', { ...value }).then((res) => {
       const { success, data } = res;
       console.log(' success;', success, data);
+      if (success) {
+        setTableData(res);
+      }
+    });
+  };
+  const changeStatus = (status: number | string, record: RegulationDataType, index: number) => {
+    console.log(status, record, index);
+    changeStatusHandler({ ruleStatus: status === 1 ? 2 : 1, id: record?.id }, index);
+  };
+  const toDetail = (record: RegulationDataType, index: number) => {
+    // console.log(record, index);
+    setIsModalVisible(true);
+    getDetail({ id: record?.id });
+  };
+  const toEdit = (record: RegulationDataType, index: number) => {
+    console.log(record, index);
+  };
+  const confirm = (record: RegulationDataType, index: number) => {
+    deleteHandler({ id: record?.id });
+  };
+  // 启用/关闭
+  const changeStatusHandler = (params: {}, index: number) => {
+    http.post('/social/auto-reply-rule/rule-status', { ...params }).then((res) => {
+      const { success, data } = res;
+      console.log('changeStatusHandler', res);
+      if (success) {
+        message.success('操作成功！');
+      }
+    });
+  };
+  // 删除规则
+  const deleteHandler = (params: {}) => {
+    http.get('/social/auto-reply-rule/del-rule', { ...params }).then((res) => {
+      const { success, data, errMessage } = res;
+      if (success) {
+        getRegulationList();
+        message.success('删除成功！');
+      } else {
+        message.error(errMessage);
+      }
+    });
+  };
+  // 规则详情
+  const getDetail = (params: {}) => {
+    http.get('/social/auto-reply-rule/get_rule_detail', { ...params }).then((res) => {
+      const { success, data, errMessage } = res;
+      console.log('getDetail::::', res);
+      if (success) {
+        setDetailContent(data);
+      } else {
+        message.error(errMessage);
+      }
     });
   };
   const onFinish = () => {
     console.log('onFinish');
     getRegulationList();
+  };
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
   };
   useEffect(() => {
     getTiktokAccount();
@@ -69,9 +143,12 @@ const Conversation = (props: Props) => {
     {
       title: '适用账号',
       width: 180,
-      key: 'tiktokNumber',
-      dataIndex: 'tiktokNumber',
+      key: 'tiktokUserId',
+      dataIndex: 'tiktokUserId',
       align: 'left',
+      render: (tiktokUserId?: number) => (
+        accountList.find((item: any) => item.id === tiktokUserId)?.nickname
+      ),
     },
     {
       title: '回复内容',
@@ -83,16 +160,37 @@ const Conversation = (props: Props) => {
     {
       title: '启用规则',
       width: 180,
-      key: 'tiktokNumber',
-      dataIndex: 'tiktokNumber',
+      key: 'status',
+      dataIndex: 'status',
       align: 'left',
+      render: (status: number, record, index) => (
+        <Switch
+          defaultChecked={Boolean(status === 1)}
+          onChange={() => changeStatus(status, record, index)}
+        />
+      ),
     },
     {
       title: '操作',
-      width: 180,
-      key: 'tiktokNumber',
-      dataIndex: 'tiktokNumber',
+      width: 220,
+      key: 'handler',
+      dataIndex: 'handler',
       align: 'left',
+      render: (text, record, index) => (
+        <>
+          <Button type="link" onClick={() => toDetail(record, index)}>详情</Button>
+          <Button type="link" onClick={() => toEdit(record, index)}>编辑</Button>
+          <Popconfirm
+            placement="topLeft"
+            title="确认删除这条规则？"
+            onConfirm={() => confirm(record, index)}
+            okText="确认"
+            cancelText="取消"
+          >
+            <Button type="link">删除</Button>
+          </Popconfirm>
+        </>
+      ),
     },
   ];
   return (
@@ -150,6 +248,7 @@ const Conversation = (props: Props) => {
       </ButtonBox>
       <Table
         // style={{ margin: '0 2rem' }}
+        bordered
         columns={columns}
         dataSource={tableData?.data}
         pagination={false}
@@ -165,6 +264,33 @@ const Conversation = (props: Props) => {
           onChange={(current, pageSize) => pageChange({ current, pageSize })}
         />
       </div>
+      <Modal
+        title="规则详情"
+        visible={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={null}
+        bodyStyle={{ minHeight: 350, maxHeight: 400, overflow: 'scroll' }}
+        destroyOnClose
+      >
+        <Space className="keyBox" direction="vertical">
+          <Title level={3}>关键词</Title>
+          <div>
+            <Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text>
+            <Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text>
+          </div>
+        </Space>
+        <Space className="keyBox" style={{ marginTop: 10 }} direction="vertical">
+          <Title level={3}>回复内容</Title>
+          <Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text>
+          <Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text>
+          <Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text>
+        </Space>
+        <Typography className="keyBox" style={{ marginTop: 10 }}>
+          <Title level={3}>单个视频回复条数</Title>
+          <Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text>
+        </Typography>
+      </Modal>
     </SearchBox>
   );
 };

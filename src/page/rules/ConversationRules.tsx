@@ -8,15 +8,9 @@ import {
   Typography,
   Card,
   Form,
-  Input,
   Select,
   Button,
-  Table,
-  Pagination,
-  TablePaginationConfig,
-  InputNumber,
   message,
-  Radio,
   Switch,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
@@ -26,8 +20,8 @@ import ChatInput from 'assets/chat-input.png';
 
 import TextAreaShowCount from './components/TextAreaShowCount';
 
-const { Title, Text, Paragraph } = Typography;
-const { Option } = Select;
+const { Title, Paragraph } = Typography;
+// const { Option } = Select;
 
 interface Props { }
 
@@ -39,6 +33,7 @@ const ConversationRules = (props: Props) => {
   const [form] = Form.useForm();
   const [accountList, setAccountList] = useState<TiktokList[]>([]);
   const [msg, setMsg] = useState('亲，您好！');
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const onChange = (checked: boolean) => {
     console.log(checked);
   };
@@ -80,6 +75,7 @@ const ConversationRules = (props: Props) => {
     }).then((res) => {
       const { success } = res;
       if (success) {
+        navigate(-1);
         message.success('保存成功！');
       } else {
         message.error(res?.errMessage);

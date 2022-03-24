@@ -18,4 +18,19 @@ export interface ContentListType {
   msgType?: string;
   content?: string;
   imgUrl?: string;
+  uid?: string;
+}
+
+export interface DetailContextType {
+  businessType?: number;
+  gmtCreate?: string | null;
+  gmtModified?: string | null;
+  id?: number;
+  keyWordList: object[];
+  messageList: object[];
+  name?: string;
+  replyTimesLimit?: number;
+  status?: number;
+  tenantId?: number;
+  tiktokUserId?: number;
 }
