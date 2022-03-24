@@ -4,7 +4,8 @@ import http from 'utils/http';
 import { getUrlOption } from 'utils';
 import { TiktokList } from 'types/home';
 import { KeyWordListType, ContentListType } from 'types/rules';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useCloudUpload } from 'utils/upload';
 import {
   Space,
   Typography,
@@ -25,15 +26,15 @@ const { Option } = Select;
 const { Text } = Typography;
 
 const PrivateLetterRules = () => {
+  const { ossData, getExtraData, uploadAttachment } = useCloudUpload('messagecenter');
   const navigate = useNavigate();
   const openId = localStorage.getItem('openId') || '';
   const urlParams = getUrlOption(window.location.href);
   const id = urlParams?.id || '';
   const [form] = Form.useForm();
   const headers = { 'tiktok-token': openId };
-  const uploadData = { businessType: 3 };
   const messageList: object[] = [{ content: '' }];
-  const action = 'https://test-scrm.juzhunshuyu.com/social/oss-upload/get-upload-policy';
+  const [action, setAction] = useState('');
   const [accountList, setAccountList] = useState<TiktokList[]>([]);
   const [keyWordList, setKeyWordList] = useState<KeyWordListType[]>([{ type: '请选择', keyWord: '' }]);
   const [msgContentList, setMsgContentList] = useState<ContentListType[]>([{ msgType: 'text' }, { msgType: 'img' }]);
@@ -95,8 +96,8 @@ const PrivateLetterRules = () => {
       }
     });
   };
-  const beforeUpload = () => {
-    console.log('beforeUpload');
+  const beforeUpload = (file: any) => {
+    console.log('beforeUpload', file);
   };
   const handleChange = () => {
     console.log('handleChange');
@@ -105,12 +106,6 @@ const PrivateLetterRules = () => {
     const arr = [...msgContentList];
     arr.splice(index, 1);
     setMsgContentList(arr);
-  };
-  // 获取上传文件的权限
-  const getUploadPolicy = () => {
-    http.post('/scrm/upload/get-upload-policy', { businessType: 'messagecenter' }).then((res) => {
-      console.log('090909', res);
-    });
   };
   // 新增回复内容
   const addRuleType = (
@@ -124,7 +119,6 @@ const PrivateLetterRules = () => {
   };
   useEffect(() => {
     getTiktokAccount();
-    getUploadPolicy();
   }, []);
   return (
     <ContentBox>
@@ -226,52 +220,61 @@ const PrivateLetterRules = () => {
                     <div key={key} style={{ display: 'flex', alignItems: 'center' }}>
                       {
                         msgContentList[key]?.msgType === 'text' && (
-                          <Form.Item
-                            {...restField}
-                            style={{ marginBottom: 0 }}
-                            name={[name, 'content']}
-                            rules={[{ required: true, message: 'Missing first name' }]}
-                          >
-                            <TextareaBox>
-                              <TextAreaShowCount
-                                style={{ position: 'relative', width: 400 }}
-                                autoSize={{ minRows: 4, maxRows: 6 }}
-                                maxLength={300}
-                              />
-                            </TextareaBox>
-                          </Form.Item>
+                          <ItemBox>
+                            <Form.Item
+                              {...restField}
+                              style={{ marginBottom: 0 }}
+                              name={[name, 'content']}
+                              rules={[{ required: true, message: 'Missing first name' }]}
+                            >
+                              <TextareaBox>
+                                <TextAreaShowCount
+                                  style={{ position: 'relative', width: 400 }}
+                                  autoSize={{ minRows: 4, maxRows: 6 }}
+                                  maxLength={300}
+                                />
+                              </TextareaBox>
+                            </Form.Item>
+                            <span
+                              style={{ fontSize: '14px', color: '#999999', marginLeft: 10 }}
+                              className="font_family icon-shanchu"
+                              onClick={() => delSelectRule(index)}
+                            />
+                          </ItemBox>
                         )
                       }
                       {
                         msgContentList[key]?.msgType === 'img' && (
-                          <Form.Item
-                            {...restField}
-                            style={{ marginBottom: 0, display: 'block' }}
-                            name={[name, 'imageUrl']}
-                            rules={[{ required: true, message: 'Missing first name' }]}
-                          >
-                            <Upload
-                              name="file"
-                              listType="picture-card"
-                              className="avatar-uploader"
-                              withCredentials
-                              data={uploadData}
-                              showUploadList={false}
-                              headers={headers}
-                              action={action}
-                              beforeUpload={beforeUpload}
-                              onChange={handleChange}
+                          <ItemBox>
+                            <Form.Item
+                              {...restField}
+                              style={{ marginBottom: 0, display: 'block' }}
+                              name={[name, 'imageUrl']}
+                              rules={[{ required: true, message: 'Missing first name' }]}
                             >
-                              上传
-                            </Upload>
-                          </Form.Item>
+                              <Upload
+                                name="file"
+                                listType="picture-card"
+                                className="avatar-uploader"
+                                headers={headers}
+                                showUploadList={false}
+                                beforeUpload={(file) => beforeUpload(file)}
+                                action={ossData?.host}
+                                data={getExtraData}
+                                maxCount={1}
+                                onChange={handleChange}
+                              >
+                                上传
+                              </Upload>
+                            </Form.Item>
+                            <span
+                              style={{ fontSize: '14px', color: '#999999', marginLeft: 10 }}
+                              className="font_family icon-shanchu"
+                              onClick={() => delSelectRule(index)}
+                            />
+                          </ItemBox>
                         )
                       }
-                      <span
-                        style={{ fontSize: '14px', color: '#999999', marginLeft: 10 }}
-                        className="font_family icon-shanchu"
-                        onClick={() => delSelectRule(index)}
-                      />
                     </div>
                   ))}
                   <Form.Item>
@@ -375,5 +378,9 @@ const DropdownBox = styled.div`
       }
     }
   }
+`;
+const ItemBox = styled.div`
+  display: flex;
+  align-items: center;
 `;
 export default PrivateLetterRules;
