@@ -90,22 +90,22 @@ const CommentRules = () => {
     const value = form.getFieldsValue();
     const { data, keywords, messages } = value;
     const content: object[] = [];
-    // const content = messages.map((msg: any) => (
-    //   msgType: 'text',
-    //   text: msg,
-    //   businessId: new Date().getTime()
-    // ));
     messages?.forEach((item:any) => {
       content.push({ msgType: 'text', text: item, businessId: new Date().getTime() });
     });
-    value.businessType = 3;
     http.post('/social/auto-reply-rule/save-rule', {
-      businessType: 3,
+      businessType: 1,
       ...data,
+      status: data.status === false ? 2 : 1,
       keyWordList: keywords,
       messageList: content,
     }).then((res) => {
-      console.log('res:::::', res);
+      const { success } = res;
+      if (success) {
+        message.success('保存成功！');
+      } else {
+        message.error(res?.errMessage);
+      }
     });
   };
   useEffect(() => {
@@ -123,7 +123,7 @@ const CommentRules = () => {
     setKeyWordList([...temporary]);
   };
   return (
-    <SearchBox>
+    <ContentBox>
       <Card
         title={id ? '编辑规则' : '添加规则'}
         style={{ margin: '2rem 2rem 0' }}
@@ -343,10 +343,10 @@ const CommentRules = () => {
           </ButtonBox>
         </Form>
       </Card>
-    </SearchBox>
+    </ContentBox>
   );
 };
-const SearchBox = styled.div`
+const ContentBox = styled.div`
   margin:0 0 16px 0;
   padding: 0 2rem;
   `;

@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import http from 'utils/http';
-import { EnterpriseMsgType, TableItem, TableDataType } from 'types/home';
-import { Link } from 'react-router-dom';
+import { getUrlOption } from 'utils';
+import { TiktokList } from 'types/home';
+import { useNavigate } from 'react-router-dom';
 import {
+  Typography,
+  Card,
   Form,
   Input,
   Select,
@@ -14,129 +17,222 @@ import {
   InputNumber,
   message,
   Radio,
+  Switch,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
+import Avatar from 'assets/avatar.png';
+import ChatBg from 'assets/chat-bg.png';
+import ChatInput from 'assets/chat-input.png';
 
+import TextAreaShowCount from './components/TextAreaShowCount';
+
+const { Title, Text, Paragraph } = Typography;
 const { Option } = Select;
 
 interface Props { }
 
 const ConversationRules = (props: Props) => {
-  const [tableData, setTableData] = useState<TableDataType>();
-  const pageChange = (pagination: TablePaginationConfig) => {
-    const page = {
-      pageIndex: pagination.current,
-      pageSize: pagination.pageSize,
-    };
+  const navigate = useNavigate();
+  const openId = localStorage.getItem('openId') || '';
+  const urlParams = getUrlOption(window.location.href);
+  const id = urlParams?.id || '';
+  const [form] = Form.useForm();
+  const [accountList, setAccountList] = useState<TiktokList[]>([]);
+  const [msg, setMsg] = useState('亲，您好！');
+  const onChange = (checked: boolean) => {
+    console.log(checked);
   };
-  const columns: ColumnsType<TableItem> = [
-    {
-      title: '规则名称',
-      width: 180,
-      key: 'tiktokNumber',
-      dataIndex: 'tiktokNumber',
-      align: 'left',
+  const onFinish = () => {
+    const value = form.getFieldsValue();
+    console.log(value);
+    saveRegulation();
+  };
+  // 获取适用账号
+  const getTiktokAccount = () => {
+    if (openId) {
+      http.get('/social/auto-reply-rule/list-tiktok-user', {}).then((res) => {
+        const { success, data } = res;
+        if (success) {
+          setAccountList(data);
+        }
+      });
+    }
+  };
+  // 保存
+  const saveRegulation = () => {
+    const value = form.getFieldsValue();
+    const { data } = value;
+    const { checked, msgText, tiktokUserId } = data;
+    const content: object[] = [{
+      msgType: 'text',
+      text: { content: msgText },
+      businessId: new Date().getTime(),
+    }];
+    setMsg(msgText);
+    const status = checked === false ? 2 : 1;
+    http.post('/social/auto-reply-rule/save-rule', {
+      name: '会话自动触达规则',
+      replyTimesLimit: 1,
+      businessType: 2,
+      tiktokUserId,
+      status,
+      messageList: content,
+    }).then((res) => {
+      const { success } = res;
+      if (success) {
+        message.success('保存成功！');
+      } else {
+        message.error(res?.errMessage);
+      }
+    });
+  };
+  useEffect(() => {
+    getTiktokAccount();
+  }, []);
+  /* eslint-disable no-template-curly-in-string */
+  const validateMessages = {
+    required: '${label} 不能为空!',
+    types: {
+      number: '${label} is not a valid number!',
     },
-    {
-      title: '适用账号',
-      width: 180,
-      key: 'tiktokNumber',
-      dataIndex: 'tiktokNumber',
-      align: 'left',
+    number: {
+      range: '${label} must be between ${min} and ${max}',
     },
-    {
-      title: '关键词',
-      width: 180,
-      key: 'tiktokNumber',
-      dataIndex: 'tiktokNumber',
-      align: 'left',
-    },
-    {
-      title: '回复内容',
-      // width: 180,
-      key: 'tiktokNumber',
-      dataIndex: 'tiktokNumber',
-      align: 'left',
-    },
-    {
-      title: '启用规则',
-      width: 100,
-      key: 'tiktokNumber',
-      dataIndex: 'tiktokNumber',
-      align: 'left',
-    },
-    {
-      title: '操作',
-      // width: 180,
-      key: 'tiktokNumber',
-      dataIndex: 'tiktokNumber',
-      align: 'left',
-    },
-  ];
+  };
+  /* eslint-enable no-template-curly-in-string */
+  const layout = {
+    labelCol: { span: 3 },
+    wrapperCol: { span: 9 },
+  };
   return (
-    <SearchBox>
-      <Form layout="inline">
-        <Form.Item label="适用账号：">
-          <Select
-            style={{ width: 200 }}
-            placeholder="请选择"
-            optionFilterProp="children"
-          >
-            <Option value="jack">Jack</Option>
-            <Option value="lucy">Lucy</Option>
-            <Option value="tom">Tom</Option>
-          </Select>
-        </Form.Item>
-        <Form.Item label="关键词/回复内容：">
-          <Input placeholder="请输入" />
-        </Form.Item>
-        <Form.Item>
-          <Button style={{ marginRight: '10px' }} type="primary" htmlType="submit">
-            <span style={{ fontSize: '14px' }} className="font_family icon-sousuo2">
-              &nbsp;查询
-            </span>
-          </Button>
-          <Button htmlType="reset">
-            <span style={{ fontSize: '14px' }} className="font_family icon-zhongzhi1">
-              &nbsp;重置
-            </span>
-          </Button>
-        </Form.Item>
-      </Form>
-      <ButtonBox>
-        <Link to="/save-channel">
-          <Button type="primary">
-            <span style={{ fontSize: '14px' }} className="font_family icon-xinjiansvg1">
-              &nbsp;添加规则
-            </span>
-          </Button>
-        </Link>
-      </ButtonBox>
-      <Table
-        // style={{ margin: '0 2rem' }}
-        columns={columns}
-        dataSource={tableData?.data}
-        pagination={false}
-        scroll={{ x: 1300 }}
-      />
-      <div className="footer-sticky">
-        <Pagination
-          current={tableData?.pageIndex || 0}
-          pageSize={tableData?.pageSize || 10}
-          total={tableData?.totalCount || 0}
-          showSizeChanger
-          showTotal={(total) => `共 ${total} 条`}
-          onChange={(current, pageSize) => pageChange({ current, pageSize })}
-        />
-      </div>
-    </SearchBox>
+    <ContentBox>
+      <Card
+        className="cardBox"
+        title={id ? '编辑规则' : '添加规则'}
+        style={{ margin: '2rem 2rem 0' }}
+        bodyStyle={{ padding: 0 }}
+        extra={<a className="font_family icon-fanhui blue" onClick={() => navigate(-1)}>返回</a>}
+      >
+        <Form
+          className="formBox"
+          {...layout}
+          form={form}
+          onFinish={onFinish}
+          validateMessages={validateMessages}
+        >
+          <Form.Item label=" " colon={false} style={{ margin: 0 }}>
+            <Title className="title">进入回话自动触达</Title>
+          </Form.Item>
+          <Form.Item label="适用账号：" name={['data', 'tiktokUserId']} rules={[{ required: true }]}>
+            <Select
+              style={{ width: 200 }}
+              placeholder="请选择"
+            >
+              {
+                accountList && accountList?.map((item: any) => (
+                  <Select.Option
+                    value={item.id}
+                    key={item.apiAuthorId}
+                  >
+                    { item.nickname }
+                  </Select.Option>
+                ))
+              }
+            </Select>
+          </Form.Item>
+          <Form.Item label="功能启用" name={['data', 'checked']}>
+            <Switch defaultChecked={Boolean(1)} onChange={(checked) => onChange(checked)} />
+          </Form.Item>
+          <Form.Item label="自动回复内容" name={['data', 'msgText']} rules={[{ required: true }]}>
+            <TextareaBox>
+              <TextAreaShowCount
+                style={{ position: 'relative', width: 500 }}
+                autoSize={{ minRows: 4, maxRows: 6 }}
+                maxLength={300}
+              />
+            </TextareaBox>
+          </Form.Item>
+          <Form.Item label=" " colon={false}>
+            <Button style={{ marginRight: '10px' }} type="primary" htmlType="submit">保存</Button>
+          </Form.Item>
+        </Form>
+        <ChatModel>
+          <div className="chat-content">
+            <img src={Avatar} alt="" />
+            <Paragraph className="text">{ msg }</Paragraph>
+          </div>
+          <img className="chat-input" src={ChatInput} alt="" />
+        </ChatModel>
+      </Card>
+    </ContentBox>
   );
 };
-const SearchBox = styled.div`
+const ContentBox = styled.div`
   margin:0 0 16px 0;
   padding: 0 2rem;
+  .cardBox{
+    position: relative;
+  }
+  .formBox{
+    padding: 30px 0 0 0;
+    height: calc(100vh - 90px - 2rem);
+  }
+  .title{
+    position: relative;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    text-indent: -80px;
+    color: #333333;
+    &:before{
+      content: '';
+      position: absolute;
+      left: -90px;
+      width: 4px;
+      height: 14px;
+      background: #458DFF;
+    }
+  }
 `;
-const ButtonBox = styled.div`
-  margin: 20px 0;
+const TextareaBox = styled.div`
+  position: relative;
+  margin-bottom: 16px;
+  .ant-input-textarea-show-count::after{
+    position: absolute;
+    right: 12px;
+    bottom: 30px;
+    color: rgba(0, 0, 0, 0.25);
+  }
+`;
+const ChatModel = styled.div`
+  position: absolute;
+  right: 150px;
+  top: 100px;
+  width: 254px;
+  height: 510px;
+  background: url(${ChatBg}) no-repeat center 100%/100%;
+  .chat-content{
+    display: flex;
+    margin: 85px 24px 0;
+    img{
+      width: 22px;
+      height: 22px;
+    }
+    .text{
+      margin-left: 6px;
+      padding: 5px 10px;
+      box-sizing: border-box;
+      border-radius: 8px;
+      background: #F3F3F3;
+    }
+  }
+  .chat-input{
+    position: absolute;
+    bottom: 20px;
+    padding: 0 15px;
+    box-sizing: border-box;
+    width: 100%;
+    /* height: 40px; */
+  }
 `;
 export default ConversationRules;

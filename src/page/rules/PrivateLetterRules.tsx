@@ -1,142 +1,280 @@
 import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import http from 'utils/http';
-import { EnterpriseMsgType, TableItem, TableDataType } from 'types/home';
-import { Link } from 'react-router-dom';
+import { getUrlOption } from 'utils';
+import { TiktokList } from 'types/home';
+import { KeyWordListType } from 'types/rules';
+import { Link, useNavigate } from 'react-router-dom';
 import {
+  Space,
+  Typography,
+  Card,
   Form,
   Input,
   Select,
+  Switch,
   Button,
-  Table,
-  Pagination,
-  TablePaginationConfig,
-  InputNumber,
   message,
-  Radio,
+  Menu,
+  Dropdown,
 } from 'antd';
-import { ColumnsType } from 'antd/lib/table';
+
+import InputShowCount from './components/InputShowCount';
+import TextAreaShowCount from './components/TextAreaShowCount';
 
 const { Option } = Select;
+const { Text } = Typography;
 
-interface Props { }
-
-const PrivateLetterRules = (props: Props) => {
-  const [tableData, setTableData] = useState<TableDataType>();
-  const pageChange = (pagination: TablePaginationConfig) => {
-    const page = {
-      pageIndex: pagination.current,
-      pageSize: pagination.pageSize,
-    };
+const PrivateLetterRules = () => {
+  const navigate = useNavigate();
+  const openId = localStorage.getItem('openId') || '';
+  const urlParams = getUrlOption(window.location.href);
+  const id = urlParams?.id || '';
+  const [form] = Form.useForm();
+  const messageList: object[] = [{ content: '' }];
+  const [accountList, setAccountList] = useState<TiktokList[]>([]);
+  const [keyWordList, setKeyWordList] = useState<KeyWordListType[]>([{
+    type: '请选择',
+    keyWord: '',
+  }]);
+  const layout = {
+    labelCol: { span: 3 },
+    wrapperCol: { span: 13 },
   };
-  const columns: ColumnsType<TableItem> = [
-    {
-      title: '规则名称',
-      width: 180,
-      key: 'tiktokNumber',
-      dataIndex: 'tiktokNumber',
-      align: 'left',
+  const onFinish = (values: any) => {
+    console.log('onFinish:::', values);
+    saveRegulation();
+  };
+  /* eslint-disable no-template-curly-in-string */
+  const validateMessages = {
+    required: '${label} 不能为空!',
+    types: {
+      number: '${label} is not a valid number!',
     },
-    {
-      title: '适用账号',
-      width: 180,
-      key: 'tiktokNumber',
-      dataIndex: 'tiktokNumber',
-      align: 'left',
+    number: {
+      range: '${label} must be between ${min} and ${max}',
     },
-    {
-      title: '关键词',
-      width: 180,
-      key: 'tiktokNumber',
-      dataIndex: 'tiktokNumber',
-      align: 'left',
-    },
-    {
-      title: '回复内容',
-      // width: 180,
-      key: 'tiktokNumber',
-      dataIndex: 'tiktokNumber',
-      align: 'left',
-    },
-    {
-      title: '启用规则',
-      width: 100,
-      key: 'tiktokNumber',
-      dataIndex: 'tiktokNumber',
-      align: 'left',
-    },
-    {
-      title: '操作',
-      // width: 180,
-      key: 'tiktokNumber',
-      dataIndex: 'tiktokNumber',
-      align: 'left',
-    },
+  };
+  /* eslint-enable no-template-curly-in-string */
+  const rulesOption = [
+    { label: '半匹配', value: 1 },
+    { label: '全匹配', value: 2 },
   ];
+  const menu = (
+    <Menu>
+      <Menu.Item>图片</Menu.Item>
+      <Menu.Item>文字</Menu.Item>
+    </Menu>
+  );
+  // 获取适用账号
+  const getTiktokAccount = () => {
+    if (openId) {
+      http.get('/social/auto-reply-rule/list-tiktok-user', {}).then((res) => {
+        const { success, data } = res;
+        if (success) {
+          setAccountList(data);
+        }
+      });
+    }
+  };
+  // 保存
+  const saveRegulation = () => {
+    const value = form.getFieldsValue();
+    const { data, keywords, messages } = value;
+    const content: object[] = [];
+    messages?.forEach((item:any) => {
+      content.push({ msgType: 'text', text: item, businessId: new Date().getTime() });
+    });
+    value.businessType = 3;
+    http.post('/social/auto-reply-rule/save-rule', {
+      businessType: 3,
+      ...data,
+      status: data.status === false ? 2 : 1,
+      keyWordList: keywords,
+      messageList: content,
+    }).then((res) => {
+      const { success } = res;
+      if (success) {
+        message.success('保存成功！');
+      } else {
+        message.error(res?.errMessage);
+      }
+    });
+  };
+  useEffect(() => {
+    getTiktokAccount();
+  }, []);
   return (
-    <SearchBox>
-      <Form layout="inline">
-        <Form.Item label="适用账号：">
-          <Select
-            style={{ width: 200 }}
-            placeholder="请选择"
-            optionFilterProp="children"
+    <ContentBox>
+      <Card
+        title={id ? '编辑规则' : '添加规则'}
+        style={{ margin: '2rem 2rem 0' }}
+        bodyStyle={{ padding: 0 }}
+        extra={<a className="font_family icon-fanhui blue" onClick={() => navigate(-1)}>返回</a>}
+      >
+        <Form
+          {...layout}
+          form={form}
+          style={{ padding: '30px 0 0 0' }}
+          onFinish={onFinish}
+          validateMessages={validateMessages}
+        >
+          <Form.Item name={['data', 'tiktokUserId']} label="适用账号" rules={[{ required: true }]}>
+            <Select
+              style={{ width: 200 }}
+              placeholder="请选择"
+            >
+              {
+                accountList?.map((item: any) => (
+                  <Select.Option
+                    value={item.id}
+                    key={item.apiAuthorId}
+                  >
+                    { item.nickname }
+                  </Select.Option>
+                ))
+              }
+            </Select>
+          </Form.Item>
+          <Form.Item name={['data', 'name']} label="规则名称" rules={[{ required: true }]}>
+            <InputShowCount style={{ width: 400 }} placeholder="请输入规则名称" maxLength={30} />
+          </Form.Item>
+          <Form.Item name={['data', 'status']} label="功能启用" valuePropName="checked" rules={[{ required: true }]}>
+            <Switch checked />
+          </Form.Item>
+          <Form.Item label="关键词" rules={[{ required: true }]}>
+            <Form.List name="keywords" initialValue={keyWordList}>
+              {(fields, { add, remove }) => (
+                <>
+                  {fields.map(({ key, name, ...restField }) => (
+                    <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
+                      <Form.Item
+                        {...restField}
+                        name={[name, 'type']}
+                        rules={[{ required: true, message: 'Missing first name' }]}
+                      >
+                        <Select
+                          style={{ width: 100, display: 'inline-block', margin: '0 10px 0 0' }}
+                          placeholder="请选择"
+                          // defaultValue={{ value: 1 }}
+                          options={rulesOption}
+                        />
+                      </Form.Item>
+                      <Form.Item
+                        {...restField}
+                        name={[name, 'keyWord']}
+                        rules={[{ required: true, message: 'Missing last name' }]}
+                      >
+                        <InputShowCount style={{ width: 290 }} placeholder="请输入关键词" maxLength={30} />
+                      </Form.Item>
+                      {
+                        key === 0 ? null : <span style={{ fontSize: '14px', color: '#999999' }} className="font_family icon-shanchu" onClick={() => remove(name)} />
+                      }
+                    </Space>
+                  ))}
+                  <Form.Item>
+                    {
+                      fields.length < 10 && (
+                        <Button type="primary" onClick={() => add()} ghost>
+                          <span style={{ fontSize: '14px' }} className="font_family icon-tianjia1 font_14">
+                            &nbsp;添加关键词
+                          </span>
+                        </Button>
+                      )
+                    }
+                  </Form.Item>
+                </>
+              )}
+            </Form.List>
+            <Space direction="vertical" style={{ display: 'block' }}>
+              <Text type="secondary">半匹配是指评论中命中一个关键词就执行自动回复。</Text>
+              <Text type="secondary">全匹配是指评论中所有关键词全部命中执行自动回复。</Text>
+            </Space>
+          </Form.Item>
+          <Form.Item
+            label="回复内容"
+            rules={[{ required: true }]}
+            extra="当回复内容有多条时，随机回复一条"
           >
-            <Option value="jack">Jack</Option>
-            <Option value="lucy">Lucy</Option>
-            <Option value="tom">Tom</Option>
-          </Select>
-        </Form.Item>
-        <Form.Item label="关键词/回复内容：">
-          <Input placeholder="请输入" />
-        </Form.Item>
-        <Form.Item>
-          <Button style={{ marginRight: '10px' }} type="primary" htmlType="submit">
-            <span style={{ fontSize: '14px' }} className="font_family icon-sousuo2">
-              &nbsp;查询
-            </span>
-          </Button>
-          <Button htmlType="reset">
-            <span style={{ fontSize: '14px' }} className="font_family icon-zhongzhi1">
-              &nbsp;重置
-            </span>
-          </Button>
-        </Form.Item>
-      </Form>
-      <ButtonBox>
-        <Link to="/save-channel">
-          <Button type="primary">
-            <span style={{ fontSize: '14px' }} className="font_family icon-xinjiansvg1">
-              &nbsp;添加规则
-            </span>
-          </Button>
-        </Link>
-      </ButtonBox>
-      <Table
-        // style={{ margin: '0 2rem' }}
-        columns={columns}
-        dataSource={tableData?.data}
-        pagination={false}
-        scroll={{ x: 1300 }}
-      />
-      <div className="footer-sticky">
-        <Pagination
-          current={tableData?.pageIndex || 0}
-          pageSize={tableData?.pageSize || 10}
-          total={tableData?.totalCount || 0}
-          showSizeChanger
-          showTotal={(total) => `共 ${total} 条`}
-          onChange={(current, pageSize) => pageChange({ current, pageSize })}
-        />
-      </div>
-    </SearchBox>
+            <Form.List name="messages" initialValue={messageList}>
+              {(fields, { add, remove }) => (
+                <>
+                  {fields.map(({ key, name, ...restField }) => (
+                    <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
+                      <Form.Item
+                        {...restField}
+                        name={[name, 'content']}
+                        rules={[{ required: true, message: 'Missing first name' }]}
+                      >
+                        <TextareaBox>
+                          <TextAreaShowCount
+                            style={{ position: 'relative', width: 400 }}
+                            autoSize={{ minRows: 4, maxRows: 6 }}
+                            maxLength={300}
+                          />
+                        </TextareaBox>
+                      </Form.Item>
+                      {
+                        key === 0 ? null : <span style={{ fontSize: '14px', color: '#999999' }} className="font_family icon-shanchu" onClick={() => remove(name)} />
+                      }
+                    </Space>
+                  ))}
+                  <Form.Item>
+                    {
+                      fields.length < 10 && (
+                        <Dropdown overlay={menu} placement="topLeft">
+                          {/* <Button type="primary" onClick={() => add()} ghost> */}
+                          <Button type="primary" ghost>
+                            <span style={{ fontSize: '14px' }} className="font_family icon-tianjia1 font_14">
+                              &nbsp;添加回复内容
+                            </span>
+                          </Button>
+                        </Dropdown>
+                      )
+                    }
+                  </Form.Item>
+                </>
+              )}
+            </Form.List>
+          </Form.Item>
+          <ButtonBox>
+            <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
+              <Button type="primary" size="large" htmlType="submit">保存</Button>
+            </Form.Item>
+          </ButtonBox>
+        </Form>
+      </Card>
+    </ContentBox>
   );
 };
-const SearchBox = styled.div`
+const ContentBox = styled.div`
   margin:0 0 16px 0;
   padding: 0 2rem;
-`;
+  `;
 const ButtonBox = styled.div`
   margin: 20px 0;
+  padding: 20px 0;
+  border-top: 1px solid #DDDDDD;
+`;
+const KeyboardItem = styled.div`
+  margin:0 0 16px 0;
+  
+  .icon-shanchu{
+    margin-left: 10px;
+    padding: 5px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+`;
+const TextareaBox = styled.div`
+  position: relative;
+  margin-bottom: 16px;
+  .ant-input-textarea-show-count::after{
+    position: absolute;
+    right: 12px;
+    bottom: 30px;
+    color: rgba(0, 0, 0, 0.25);
+  }
 `;
 export default PrivateLetterRules;
