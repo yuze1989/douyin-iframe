@@ -3,7 +3,7 @@ import styled from '@emotion/styled';
 import http from 'utils/http';
 import { getUrlOption } from 'utils';
 import { TiktokList } from 'types/home';
-import { KeyWordListType } from 'types/rules';
+import { KeyWordListType, ContentListType } from 'types/rules';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Space,
@@ -15,8 +15,7 @@ import {
   Switch,
   Button,
   message,
-  Menu,
-  Dropdown,
+  Upload,
 } from 'antd';
 
 import InputShowCount from './components/InputShowCount';
@@ -31,12 +30,13 @@ const PrivateLetterRules = () => {
   const urlParams = getUrlOption(window.location.href);
   const id = urlParams?.id || '';
   const [form] = Form.useForm();
+  const headers = { 'tiktok-token': openId };
+  const uploadData = { businessType: 3 };
   const messageList: object[] = [{ content: '' }];
+  const action = 'https://test-scrm.juzhunshuyu.com/social/oss-upload/get-upload-policy';
   const [accountList, setAccountList] = useState<TiktokList[]>([]);
-  const [keyWordList, setKeyWordList] = useState<KeyWordListType[]>([{
-    type: '请选择',
-    keyWord: '',
-  }]);
+  const [keyWordList, setKeyWordList] = useState<KeyWordListType[]>([{ type: '请选择', keyWord: '' }]);
+  const [msgContentList, setMsgContentList] = useState<ContentListType[]>([{ msgType: 'text' }, { msgType: 'img' }]);
   const layout = {
     labelCol: { span: 3 },
     wrapperCol: { span: 13 },
@@ -60,12 +60,6 @@ const PrivateLetterRules = () => {
     { label: '半匹配', value: 1 },
     { label: '全匹配', value: 2 },
   ];
-  const menu = (
-    <Menu>
-      <Menu.Item>图片</Menu.Item>
-      <Menu.Item>文字</Menu.Item>
-    </Menu>
-  );
   // 获取适用账号
   const getTiktokAccount = () => {
     if (openId) {
@@ -101,8 +95,36 @@ const PrivateLetterRules = () => {
       }
     });
   };
+  const beforeUpload = () => {
+    console.log('beforeUpload');
+  };
+  const handleChange = () => {
+    console.log('handleChange');
+  };
+  const delSelectRule = (index: number) => {
+    const arr = [...msgContentList];
+    arr.splice(index, 1);
+    setMsgContentList(arr);
+  };
+  // 获取上传文件的权限
+  const getUploadPolicy = () => {
+    http.post('/scrm/upload/get-upload-policy', { businessType: 'messagecenter' }).then((res) => {
+      console.log('090909', res);
+    });
+  };
+  // 新增回复内容
+  const addRuleType = (
+    add: (defaultValue?: any, insertIndex?: number | undefined) => void,
+    type: string,
+  ) => {
+    add();
+    const arr = [...msgContentList];
+    arr.push({ msgType: type });
+    setMsgContentList([...arr]);
+  };
   useEffect(() => {
     getTiktokAccount();
+    getUploadPolicy();
   }, []);
   return (
     <ContentBox>
@@ -196,40 +218,76 @@ const PrivateLetterRules = () => {
             rules={[{ required: true }]}
             extra="当回复内容有多条时，随机回复一条"
           >
-            <Form.List name="messages" initialValue={messageList}>
-              {(fields, { add, remove }) => (
+            {/* <Form.List name="messages" initialValue={messageList}> */}
+            <Form.List name="messages" initialValue={msgContentList}>
+              {(fields, { add }) => (
                 <>
-                  {fields.map(({ key, name, ...restField }) => (
-                    <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
-                      <Form.Item
-                        {...restField}
-                        name={[name, 'content']}
-                        rules={[{ required: true, message: 'Missing first name' }]}
-                      >
-                        <TextareaBox>
-                          <TextAreaShowCount
-                            style={{ position: 'relative', width: 400 }}
-                            autoSize={{ minRows: 4, maxRows: 6 }}
-                            maxLength={300}
-                          />
-                        </TextareaBox>
-                      </Form.Item>
+                  {fields.map(({ key, name, ...restField }, index) => (
+                    <div key={key} style={{ display: 'flex', alignItems: 'center' }}>
                       {
-                        key === 0 ? null : <span style={{ fontSize: '14px', color: '#999999' }} className="font_family icon-shanchu" onClick={() => remove(name)} />
+                        msgContentList[key]?.msgType === 'text' && (
+                          <Form.Item
+                            {...restField}
+                            style={{ marginBottom: 0 }}
+                            name={[name, 'content']}
+                            rules={[{ required: true, message: 'Missing first name' }]}
+                          >
+                            <TextareaBox>
+                              <TextAreaShowCount
+                                style={{ position: 'relative', width: 400 }}
+                                autoSize={{ minRows: 4, maxRows: 6 }}
+                                maxLength={300}
+                              />
+                            </TextareaBox>
+                          </Form.Item>
+                        )
                       }
-                    </Space>
+                      {
+                        msgContentList[key]?.msgType === 'img' && (
+                          <Form.Item
+                            {...restField}
+                            style={{ marginBottom: 0, display: 'block' }}
+                            name={[name, 'imageUrl']}
+                            rules={[{ required: true, message: 'Missing first name' }]}
+                          >
+                            <Upload
+                              name="file"
+                              listType="picture-card"
+                              className="avatar-uploader"
+                              withCredentials
+                              data={uploadData}
+                              showUploadList={false}
+                              headers={headers}
+                              action={action}
+                              beforeUpload={beforeUpload}
+                              onChange={handleChange}
+                            >
+                              上传
+                            </Upload>
+                          </Form.Item>
+                        )
+                      }
+                      <span
+                        style={{ fontSize: '14px', color: '#999999', marginLeft: 10 }}
+                        className="font_family icon-shanchu"
+                        onClick={() => delSelectRule(index)}
+                      />
+                    </div>
                   ))}
                   <Form.Item>
                     {
                       fields.length < 10 && (
-                        <Dropdown overlay={menu} placement="topLeft">
-                          {/* <Button type="primary" onClick={() => add()} ghost> */}
+                        <DropdownBox>
+                          <nav className="dropBox">
+                            <div className="dropItem" onClick={() => addRuleType(add, 'text')}>文字</div>
+                            <div className="dropItem" onClick={() => addRuleType(add, 'img')}>图片</div>
+                          </nav>
                           <Button type="primary" ghost>
                             <span style={{ fontSize: '14px' }} className="font_family icon-tianjia1 font_14">
                               &nbsp;添加回复内容
                             </span>
                           </Button>
-                        </Dropdown>
+                        </DropdownBox>
                       )
                     }
                   </Form.Item>
@@ -275,6 +333,47 @@ const TextareaBox = styled.div`
     right: 12px;
     bottom: 30px;
     color: rgba(0, 0, 0, 0.25);
+  }
+`;
+const DropdownBox = styled.div`
+  position: relative;
+  width: 130px;
+  &:hover .dropBox{
+    display: block;
+  }
+  .dropBox{
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    width: 100%;
+    background: #FFFFFF;
+    box-shadow: 0 2px 6px 0 rgba(0,0,0,0.10);
+    .dropItem{
+      width: 100%;
+      height: 40px;
+      line-height: 40px;
+      text-align: center;
+      font-size: 14px;
+      color: rgba(0, 0, 0, .65);
+      cursor: pointer;
+      &:first-of-type{
+        /* border-bottom: 1px dashed #DDDDDD; */
+        position: relative;
+        &:before{
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 5px;
+          display: inline-block;
+          width: 120px;
+          border: 1px dashed #DDDDDD;
+        }
+      }
+      &:hover{
+        color: #1890FF;
+        background: rgba(69,141,255,0.04);
+      }
+    }
   }
 `;
 export default PrivateLetterRules;

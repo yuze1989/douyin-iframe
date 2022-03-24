@@ -13,3 +13,9 @@ export interface KeyWordListType {
   keyWord?: string;
   type?: string | number;
 }
+
+export interface ContentListType {
+  msgType?: string;
+  content?: string;
+  imgUrl?: string;
+}
