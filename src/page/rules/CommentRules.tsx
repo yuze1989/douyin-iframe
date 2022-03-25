@@ -17,6 +17,7 @@ import {
   Button,
   InputNumber,
   message,
+  Input,
 } from 'antd';
 
 import InputShowCount from './components/InputShowCount';
@@ -59,7 +60,12 @@ const CommentRules = () => {
     { label: '半匹配', value: 1 },
     { label: '全匹配', value: 2 },
   ];
-
+  const addRuleType = (
+    add: (defaultValue?: any, insertIndex?: number | undefined) => void,
+    type: string,
+  ) => {
+    add({ msgType: type });
+  };
   // 获取适用账号
   const getTiktokAccount = () => {
     if (openId) {
@@ -71,20 +77,17 @@ const CommentRules = () => {
       });
     }
   };
+  const handleChange = (value: string) => {
+    console.log(value);
+  };
   // 保存
   const saveRegulation = () => {
     const value = form.getFieldsValue();
-    const { data, keywords, messages } = value;
-    const content: object[] = [];
-    messages?.forEach((item:any) => {
-      content.push({ msgType: 'text', text: item, businessId: new Date().getTime() });
-    });
+    console.log('object', value);
+    value.businessType = 3;
     http.post('/social/auto-reply-rule/save-rule', {
-      businessType: 1,
-      ...data,
-      status: data.status === false ? 2 : 1,
-      keyWordList: keywords,
-      messageList: content,
+      ...value,
+      status: value.status === true || value.status === 1 ? 1 : 2,
     }).then((res) => {
       const { success } = res;
       if (success) {
@@ -102,6 +105,7 @@ const CommentRules = () => {
       http.get('/social/auto-reply-rule/get_rule_detail', { id }).then((res) => {
         const { success, data } = res;
         console.log('getDetail::::', res);
+        form.setFieldsValue(data);
       });
     }
   };
@@ -123,8 +127,11 @@ const CommentRules = () => {
           style={{ padding: '30px 0 0 0' }}
           onFinish={onFinish}
           validateMessages={validateMessages}
+          initialValues={
+            { messageList: [{ msgType: 'text' }] }
+          }
         >
-          <Form.Item name={['data', 'tiktokUserId']} label="适用账号" rules={[{ required: true }]}>
+          <Form.Item name={['tiktokUserId']} label="适用账号" rules={[{ required: true }]}>
             <Select
               style={{ width: 200 }}
               placeholder="请选择"
@@ -141,14 +148,14 @@ const CommentRules = () => {
               }
             </Select>
           </Form.Item>
-          <Form.Item name={['data', 'name']} label="规则名称" rules={[{ required: true }]}>
+          <Form.Item name={['name']} label="规则名称" rules={[{ required: true }]}>
             <InputShowCount style={{ width: 400 }} placeholder="请输入规则名称" maxLength={30} />
           </Form.Item>
-          <Form.Item name={['data', 'status']} label="功能启用" valuePropName="checked" rules={[{ required: true }]}>
+          <Form.Item name={['status']} label="功能启用" valuePropName="checked" rules={[{ required: true }]}>
             <Switch checked />
           </Form.Item>
           <Form.Item label="关键词" rules={[{ required: true }]}>
-            <Form.List name="keywords" initialValue={keyWordList}>
+            <Form.List name="keyWordList" initialValue={keyWordList}>
               {(fields, { add, remove }) => (
                 <>
                   {fields.map(({ key, name, ...restField }) => (
@@ -161,7 +168,6 @@ const CommentRules = () => {
                         <Select
                           style={{ width: 100, display: 'inline-block', margin: '0 10px 0 0' }}
                           placeholder="请选择"
-                          // defaultValue={{ value: 1 }}
                           options={rulesOption}
                         />
                       </Form.Item>
@@ -201,33 +207,33 @@ const CommentRules = () => {
             rules={[{ required: true }]}
             extra="当回复内容有多条时，随机回复一条"
           >
-            <Form.List name="messages" initialValue={messageList}>
+            <Form.List name="messageList">
               {(fields, { add, remove }) => (
                 <>
                   {fields.map(({ key, name, ...restField }) => (
-                    <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
+                    <ItemBox key={key}>
                       <Form.Item
                         {...restField}
-                        name={[name, 'content']}
+                        className="textareaBox"
+                        name={[name, 'text', 'content']}
                         rules={[{ required: true, message: 'Missing first name' }]}
                       >
-                        <TextareaBox>
-                          <TextAreaShowCount
-                            style={{ position: 'relative', width: 400 }}
-                            autoSize={{ minRows: 4, maxRows: 6 }}
-                            maxLength={300}
-                          />
-                        </TextareaBox>
+                        <Input.TextArea
+                          showCount
+                          maxLength={300}
+                          style={{ height: 115 }}
+                          onChange={(e) => handleChange(e.target.value)}
+                        />
                       </Form.Item>
                       {
                         key === 0 ? null : <span style={{ fontSize: '14px', color: '#999999' }} className="font_family icon-shanchu" onClick={() => remove(name)} />
                       }
-                    </Space>
+                    </ItemBox>
                   ))}
                   <Form.Item>
                     {
                       fields.length < 10 && (
-                        <Button type="primary" onClick={() => add()} ghost>
+                        <Button type="primary" onClick={() => addRuleType(add, 'text')} ghost>
                           <span style={{ fontSize: '14px' }} className="font_family icon-tianjia1 font_14">
                             &nbsp;添加回复内容
                           </span>
@@ -240,14 +246,14 @@ const CommentRules = () => {
             </Form.List>
           </Form.Item>
           <Form.Item
-            name={['data', 'replyTimesLimit']}
+            name={['replyTimesLimit']}
             label="单个视频回复条数"
             extra="为了避免回复评论雷同过多，请设置每个视频每天的自动回复条数在50条左右。"
             rules={[{
               required: true,
               type: 'number',
               min: 0,
-              max: 50,
+              max: 200,
             }]}
           >
             <InputNumber style={{ marginBottom: '16px' }} placeholder="请输入" />
@@ -273,9 +279,24 @@ const ButtonBox = styled.div`
   padding: 20px 0;
   border-top: 1px solid #DDDDDD;
 `;
-const KeyboardItem = styled.div`
-  margin:0 0 16px 0;
-  
+const ItemBox = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  .textareaBox{
+    padding-bottom: 22px;
+    width: 500px;
+    border: 1px solid #dddddd;
+    .ant-upload.ant-upload-select-picture-card{
+      margin: 0;
+    }
+    textarea.ant-input{
+      /* width: 500px; */
+      height: 115px;
+      border: none;
+    }
+
+  }
   .icon-shanchu{
     margin-left: 10px;
     padding: 5px;

@@ -18,6 +18,7 @@ import {
   message,
   Switch,
   Popconfirm,
+  Spin,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 
@@ -30,6 +31,7 @@ const Comments = (props: Props) => {
   // const businessType
   const navigate = useNavigate();
   const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
   const [accountList, setAccountList] = useState<TiktokList[]>([]);
   const [tableData, setTableData] = useState<TableDataType>();
   // 获取适用账号
@@ -75,6 +77,7 @@ const Comments = (props: Props) => {
   };
   const confirm = (record: RegulationDataType, index: number) => {
     // console.log(record, index);
+    setLoading(true);
     deleteHandler({ id: record?.id });
   };
   // 启用/关闭
@@ -91,6 +94,7 @@ const Comments = (props: Props) => {
   // 删除规则
   const deleteHandler = (params: {}) => {
     http.get('/social/auto-reply-rule/del-rule', { ...params }).then((res) => {
+      setLoading(false);
       const { success, errMessage } = res;
       if (success) {
         getRegulationList();
@@ -98,7 +102,7 @@ const Comments = (props: Props) => {
       } else {
         message.error(errMessage);
       }
-    });
+    }).catch(() => setLoading(false));
   };
   // 规则详情
   const getDetail = (params: {}) => {
@@ -152,7 +156,7 @@ const Comments = (props: Props) => {
       align: 'left',
       render: (messageList: object[]) => (
         messageList?.map((item: any) => (
-          item.msgType === 'text' ? <span key={item.id}>{item?.text.content}</span> : <span style={{ color: '#65B083' }} key={item.id}>[图片]</span>
+          item.msgType === 'text' ? <span key={item.id}>{item?.text.content}，</span> : <span style={{ color: '#65B083' }} key={item.id}>[图片]</span>
         ))
       ),
     },
@@ -245,14 +249,16 @@ const Comments = (props: Props) => {
           </Button>
         </Link>
       </ButtonBox>
-      <Table
-        // style={{ margin: '0 2rem' }}
-        bordered
-        columns={columns}
-        dataSource={tableData?.data}
-        pagination={false}
-        scroll={{ x: 1300 }}
-      />
+      <Spin spinning={loading}>
+        <Table
+          // style={{ margin: '0 2rem' }}
+          bordered
+          columns={columns}
+          dataSource={tableData?.data}
+          pagination={false}
+          scroll={{ x: 1300 }}
+        />
+      </Spin>
       <div className="footer-sticky">
         <Pagination
           current={tableData?.pageIndex || 0}

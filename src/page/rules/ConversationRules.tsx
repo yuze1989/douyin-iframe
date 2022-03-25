@@ -12,6 +12,7 @@ import {
   Button,
   message,
   Switch,
+  Input,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import Avatar from 'assets/avatar.png';
@@ -53,6 +54,10 @@ const ConversationRules = (props: Props) => {
       });
     }
   };
+  const handleChange = (value: string) => {
+    console.log(value);
+    setMsg(value);
+  };
   // 保存
   const saveRegulation = () => {
     const value = form.getFieldsValue();
@@ -61,7 +66,6 @@ const ConversationRules = (props: Props) => {
     const content: object[] = [{
       msgType: 'text',
       text: { content: msgText },
-      businessId: new Date().getTime(),
     }];
     setMsg(msgText);
     const status = checked === false ? 2 : 1;
@@ -88,7 +92,7 @@ const ConversationRules = (props: Props) => {
     if (id) {
       http.get('/social/auto-reply-rule/get_rule_detail', { id }).then((res) => {
         const { success, data } = res;
-        console.log('getDetail::::', res);
+        form.setFieldsValue(data);
       });
     }
   };
@@ -126,11 +130,14 @@ const ConversationRules = (props: Props) => {
           form={form}
           onFinish={onFinish}
           validateMessages={validateMessages}
+          // initialValues={
+          //   { status: false }
+          // }
         >
           <Form.Item label=" " colon={false} style={{ margin: 0 }}>
             <Title className="title">进入回话自动触达</Title>
           </Form.Item>
-          <Form.Item label="适用账号：" name={['data', 'tiktokUserId']} rules={[{ required: true }]}>
+          <Form.Item label="适用账号：" name={['tiktokUserId']} rules={[{ required: true }]}>
             <Select
               style={{ width: 200 }}
               placeholder="请选择"
@@ -147,17 +154,20 @@ const ConversationRules = (props: Props) => {
               }
             </Select>
           </Form.Item>
-          <Form.Item label="功能启用" name={['data', 'checked']}>
-            <Switch defaultChecked={Boolean(1)} onChange={(checked) => onChange(checked)} />
+          <Form.Item label="功能启用" name={['status']} valuePropName="checked">
+            <Switch onChange={(checked) => onChange(checked)} />
           </Form.Item>
-          <Form.Item label="自动回复内容" name={['data', 'msgText']} rules={[{ required: true }]}>
-            <TextareaBox>
-              <TextAreaShowCount
-                style={{ position: 'relative', width: 500 }}
-                autoSize={{ minRows: 4, maxRows: 6 }}
-                maxLength={300}
-              />
-            </TextareaBox>
+          <Form.Item label="自动回复内容" name={['messageList']} rules={[{ required: true }]}>
+            <Form.Item name={['text', 'content']}>
+              <TextareaBox>
+                <Input.TextArea
+                  showCount
+                  placeholder="请输入回复语"
+                  maxLength={300}
+                  onChange={(e) => handleChange(e.target.value)}
+                />
+              </TextareaBox>
+            </Form.Item>
           </Form.Item>
           <Form.Item label=" " colon={false}>
             <Button style={{ marginRight: '10px' }} type="primary" htmlType="submit">保存</Button>
@@ -203,12 +213,15 @@ const ContentBox = styled.div`
 `;
 const TextareaBox = styled.div`
   position: relative;
-  margin-bottom: 16px;
-  .ant-input-textarea-show-count::after{
-    position: absolute;
-    right: 12px;
-    bottom: 30px;
-    color: rgba(0, 0, 0, 0.25);
+  padding-bottom: 22px;
+  width: 500px;
+  border: 1px solid #dddddd;
+  textarea.ant-input{
+    padding: 5px;
+    box-sizing: border-box;
+    height: 115px;
+    border: none;
+    outline: none;
   }
 `;
 const ChatModel = styled.div`
