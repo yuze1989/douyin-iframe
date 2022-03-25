@@ -130,9 +130,9 @@ const ConversationRules = (props: Props) => {
           form={form}
           onFinish={onFinish}
           validateMessages={validateMessages}
-          // initialValues={
-          //   { status: false }
-          // }
+          initialValues={
+            { messageList: [{ msgType: 'text' }] }
+          }
         >
           <Form.Item label=" " colon={false} style={{ margin: 0 }}>
             <Title className="title">进入回话自动触达</Title>
@@ -157,17 +157,34 @@ const ConversationRules = (props: Props) => {
           <Form.Item label="功能启用" name={['status']} valuePropName="checked">
             <Switch onChange={(checked) => onChange(checked)} />
           </Form.Item>
-          <Form.Item label="自动回复内容" name={['messageList']} rules={[{ required: true }]}>
-            <Form.Item name={['text', 'content']}>
-              <TextareaBox>
-                <Input.TextArea
-                  showCount
-                  placeholder="请输入回复语"
-                  maxLength={300}
-                  onChange={(e) => handleChange(e.target.value)}
-                />
-              </TextareaBox>
-            </Form.Item>
+          <Form.Item
+            label="自动回复内容"
+            rules={[{ required: true }]}
+            extra="当回复内容有多条时，随机回复一条"
+          >
+            <Form.List name="messageList">
+              {(fields, { add, remove }) => (
+                <>
+                  {fields.map(({ key, name, ...restField }) => (
+                    <TextareaBox key={key}>
+                      <Form.Item
+                        {...restField}
+                        className="textareaBox"
+                        name={[name, 'text', 'content']}
+                        rules={[{ required: true, message: 'Missing first name' }]}
+                      >
+                        <Input.TextArea
+                          showCount
+                          placeholder="请输入回复语"
+                          maxLength={300}
+                          onChange={(e) => handleChange(e.target.value)}
+                        />
+                      </Form.Item>
+                    </TextareaBox>
+                  ))}
+                </>
+              )}
+            </Form.List>
           </Form.Item>
           <Form.Item label=" " colon={false}>
             <Button style={{ marginRight: '10px' }} type="primary" htmlType="submit">保存</Button>
@@ -212,16 +229,18 @@ const ContentBox = styled.div`
   }
 `;
 const TextareaBox = styled.div`
-  position: relative;
-  padding-bottom: 22px;
-  width: 500px;
-  border: 1px solid #dddddd;
-  textarea.ant-input{
-    padding: 5px;
-    box-sizing: border-box;
-    height: 115px;
-    border: none;
-    outline: none;
+  .textareaBox{
+    padding-bottom: 22px;
+    width: 500px;
+    border: 1px solid #dddddd;
+    .ant-upload.ant-upload-select-picture-card{
+      margin: 0;
+    }
+    textarea.ant-input{
+      /* width: 500px; */
+      height: 115px;
+      border: none;
+    }
   }
 `;
 const ChatModel = styled.div`

@@ -155,9 +155,14 @@ const Conversation = (props: Props) => {
     {
       title: '回复内容',
       // width: 180,
-      key: 'tiktokNumber',
-      dataIndex: 'tiktokNumber',
+      key: 'messageList',
+      dataIndex: 'messageList',
       align: 'left',
+      render: (messageList: object[]) => (
+        messageList?.map((item: any) => (
+          <span key={item.id}>{item?.text.content}</span>
+        ))
+      ),
     },
     {
       title: '启用规则',

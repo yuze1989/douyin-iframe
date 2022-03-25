@@ -295,7 +295,6 @@ const ItemBox = styled.div`
       height: 115px;
       border: none;
     }
-
   }
   .icon-shanchu{
     margin-left: 10px;
