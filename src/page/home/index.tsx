@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, Tabs } from 'antd';
-import { Link, useNavigate } from 'react-router-dom';
 import { getUrlOption } from 'utils';
 import UserManage from './components/userManage';
 import UserActiveSetting from './components/UserActiveSetting';
-import UserInformation from './components/UserInformation';
+// import UserInformation from './components/UserInformation';
 
 const { TabPane } = Tabs;
 const Home = () => {
-  const navigate = useNavigate();
   const tabsIndex = localStorage.getItem('tabsIndex') || '1';
   const [tabKey, setTabKey] = useState<string>(tabsIndex);
   const urlParams = getUrlOption(window.location.href);

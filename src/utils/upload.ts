@@ -70,6 +70,8 @@ export const useCloudUpload = (
     fileType?: string,
     filePath?: string,
     fileSize?: number,
+    businessId?: string, // uuid
+    thirdId?: string | number, // thirdId
     status?: number,
   ) => {
     const { data, success } = await http.post('/social/attachment/add-attachment', {
@@ -78,6 +80,8 @@ export const useCloudUpload = (
       filePath,
       fileSize,
       status,
+      businessId,
+      thirdId,
     });
     if (!success) {
       message.warning('上传失败，请重新上传');

@@ -8,7 +8,7 @@ import {
   RegulationDataType,
 } from 'types/home';
 import { DetailContextType } from 'types/rules';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Form,
   Input,
@@ -34,6 +34,7 @@ interface Props {
 
 const Conversation = (props: Props) => {
   const { openId } = props;
+  const navigate = useNavigate();
   const [form] = Form.useForm();
   const [accountList, setAccountList] = useState<TiktokList[]>([]);
   const [tableData, setTableData] = useState<TableDataType>();
@@ -75,6 +76,7 @@ const Conversation = (props: Props) => {
   };
   const toEdit = (record: RegulationDataType, index: number) => {
     console.log(record, index);
+    navigate(`/save-rules-conversation?id=${record?.id}`);
   };
   const confirm = (record: RegulationDataType, index: number) => {
     deleteHandler({ id: record?.id });

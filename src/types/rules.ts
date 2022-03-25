@@ -15,10 +15,13 @@ export interface KeyWordListType {
 }
 
 export interface ContentListType {
+  id?: number;
   msgType?: string;
   content?: string;
   imgUrl?: string;
   uid?: string;
+  title?: string;
+  attachmentId?: number | string;
 }
 
 export interface DetailContextType {

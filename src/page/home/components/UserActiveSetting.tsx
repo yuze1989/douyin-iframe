@@ -1,25 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
-import http from 'utils/http';
-import {
-  EnterpriseMsgType,
-  TableItem,
-  TableDataType,
-  TiktokList,
-} from 'types/home';
-import { Link } from 'react-router-dom';
+// import http from 'utils/http';
+// import {
+//   EnterpriseMsgType,
+//   TableItem,
+//   TableDataType,
+//   TiktokList,
+// } from 'types/home';
 
-import {
-  Select,
-  TablePaginationConfig,
-  Radio,
-} from 'antd';
+import { Radio } from 'antd';
 
 import Comments from './interaction/Comments';
 import Conversation from './interaction/Conversation';
 import PrivateLetter from './interaction/PrivateLetter';
-
-const { Option } = Select;
 
 interface Props {
   // openId: string;

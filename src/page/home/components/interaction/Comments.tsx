@@ -2,12 +2,11 @@ import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import http from 'utils/http';
 import {
-  TableItem,
   TableDataType,
   TiktokList,
   RegulationDataType,
 } from 'types/home';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Form,
   Input,
@@ -22,8 +21,6 @@ import {
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 
-const { Option } = Select;
-
 interface Props {
   openId: String
 }
@@ -31,6 +28,7 @@ interface Props {
 const Comments = (props: Props) => {
   const { openId } = props;
   // const businessType
+  const navigate = useNavigate();
   const [form] = Form.useForm();
   const [accountList, setAccountList] = useState<TiktokList[]>([]);
   const [tableData, setTableData] = useState<TableDataType>();
@@ -51,7 +49,7 @@ const Comments = (props: Props) => {
     // businessType 业务类型，1-评论规则，2-会话规则，3-私信规则
     value.businessType = 1;
     http.post('/social/auto-reply-rule/page-rule', { ...value }).then((res) => {
-      const { success, data } = res;
+      const { success } = res;
       if (success) {
         setTableData(res);
       }
@@ -73,7 +71,7 @@ const Comments = (props: Props) => {
     getDetail({ id: record?.id });
   };
   const toEdit = (record: RegulationDataType, index: number) => {
-    console.log(record, index);
+    navigate(`/comment-rules?id=${record?.id}`);
   };
   const confirm = (record: RegulationDataType, index: number) => {
     // console.log(record, index);
@@ -82,7 +80,7 @@ const Comments = (props: Props) => {
   // 启用/关闭
   const changeStatusHandler = (params: {}, index: number) => {
     http.post('/social/auto-reply-rule/rule-status', { ...params }).then((res) => {
-      const { success, data, errMessage } = res;
+      const { success, errMessage } = res;
       if (success) {
         message.success('操作成功！');
       } else {
@@ -93,7 +91,7 @@ const Comments = (props: Props) => {
   // 删除规则
   const deleteHandler = (params: {}) => {
     http.get('/social/auto-reply-rule/del-rule', { ...params }).then((res) => {
-      const { success, data, errMessage } = res;
+      const { success, errMessage } = res;
       if (success) {
         getRegulationList();
         message.success('删除成功！');
@@ -106,7 +104,7 @@ const Comments = (props: Props) => {
   const getDetail = (params: {}) => {
     http.get('/social/auto-reply-rule/get_rule_detail', { ...params }).then((res) => {
       const { success, data } = res;
-      console.log('getDetail::::', res);
+      console.log('getDetail::::', res, success, data);
     });
   };
   const onFinish = () => {

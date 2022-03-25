@@ -7,7 +7,7 @@ import {
   ParmasType,
   TiktokList,
 } from 'types/home';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Form,
   Input,
@@ -30,6 +30,7 @@ interface Props {
 
 const PrivateLetter = (props: Props) => {
   const { openId } = props;
+  const navigate = useNavigate();
   const [form] = Form.useForm();
   const [accountList, setAccountList] = useState<TiktokList[]>([]);
   const [tableData, setTableData] = useState<TableDataType>();
@@ -53,7 +54,7 @@ const PrivateLetter = (props: Props) => {
     getDetail({ id: record?.id });
   };
   const toEdit = (record: RegulationDataType, index: number) => {
-    console.log(record, index);
+    navigate(`/save-rules-private-letter?id=${record?.id}`);
   };
   const confirm = (record: RegulationDataType, index: number) => {
     // console.log(record, index);

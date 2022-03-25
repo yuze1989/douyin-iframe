@@ -82,8 +82,19 @@ const ConversationRules = (props: Props) => {
       }
     });
   };
+  // 编辑功能
+  // 获取详情
+  const getRulesDetail = () => {
+    if (id) {
+      http.get('/social/auto-reply-rule/get_rule_detail', { id }).then((res) => {
+        const { success, data } = res;
+        console.log('getDetail::::', res);
+      });
+    }
+  };
   useEffect(() => {
     getTiktokAccount();
+    getRulesDetail();
   }, []);
   /* eslint-disable no-template-curly-in-string */
   const validateMessages = {

@@ -5,7 +5,7 @@ import { getUrlOption } from 'utils';
 import { TiktokList } from 'types/home';
 import { UploadChangeParam } from 'antd/lib/upload';
 import { UploadFile } from 'antd/lib/upload/interface';
-import { KeyWordListType, ContentListType } from 'types/rules';
+import { KeyWordListType } from 'types/rules';
 import { useNavigate } from 'react-router-dom';
 import { useCloudUpload } from 'utils/upload';
 import {
@@ -13,38 +13,143 @@ import {
   Typography,
   Card,
   Form,
-  Input,
   Select,
   Switch,
   Button,
   message,
   Upload,
   Spin,
+  Input,
 } from 'antd';
 
 import InputShowCount from './components/InputShowCount';
-import TextAreaShowCount from './components/TextAreaShowCount';
 
 const { Option } = Select;
 const { Text } = Typography;
 
-const PrivateLetterRules = () => {
+interface Props {
+  value?: any;
+  onChange?: (val: any) => void;
+}
+const TextImg = (props: Props) => {
+  const { value, onChange } = props;
+  const openId = localStorage.getItem('openId') || '';
+  const headers = { 'tiktok-token': openId };
+  const [tiktokId] = useState(1);
   const { ossData, getExtraData, uploadAttachment } = useCloudUpload('messagecenter');
+  const uploadButton = (
+    <div>
+      <span style={{ fontSize: '14px' }} className="font_family icon-tianjiafujian">添加</span>
+    </div>
+  );
+  const handleChange = async (fileInfo: UploadChangeParam<UploadFile<any>>) => {
+    const {
+      status,
+      uid,
+      name,
+      size,
+    } = fileInfo.file;
+    if (status === 'uploading') {
+      return;
+    }
+    if (status === 'done' && fileInfo.file.response.success) {
+      const { response } = fileInfo.file;
+      const fileTitle = name.length > 50 ? `${name.slice(0, 46)}${name.slice(name.lastIndexOf('.'))}` : name;
+      if (Number(response.data?.width) > 1500) {
+        message.error('图片像素超过最大限制，请重新上传');
+        return;
+      }
+      const data = await uploadAttachment(fileTitle, 'image', response?.data?.filename, size, uid, tiktokId, 1);
+      if (data) {
+        onChange?.({
+          msgType: value?.msgType,
+          image: {
+            uid,
+            attachmentPath: response?.data?.filename,
+            title: name,
+            attachmentId: data,
+          },
+        });
+      }
+    }
+    if (fileInfo.file.status === 'error') {
+      message.error('接口超时，请刷新后重试');
+    }
+  };
+
+  const beforeUpload = (file: UploadFile) => {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    const isLt5M = !!file.size && file.size / 1024 / 1024 < 5;
+    if (!isJpgOrPng) {
+      message.error('请选择jpg, png格式的图片!');
+      return false;
+    }
+    if (!isLt5M) {
+      message.error('图片不能超过 5MB!');
+      return false;
+    }
+    return true;
+  };
+  const handleText = (text: string) => {
+    onChange?.({
+      msgType: value?.msgType,
+      text: {
+        content: text,
+      },
+    });
+  };
+  console.log('value', value);
+  return (
+    <>
+      {
+        value?.msgType === 'text' && (
+          <TextAreaBox>
+            <Input.TextArea
+              placeholder="请输入回复内容"
+              showCount
+              maxLength={300}
+              value={value?.text?.content}
+              onChange={(e) => handleText(e.target.value)}
+            />
+          </TextAreaBox>
+        )
+      }
+      {value?.msgType === 'image' && (
+        <Upload
+          name="file"
+          listType="picture-card"
+          className="avatar-uploader"
+          headers={headers}
+          showUploadList={false}
+          beforeUpload={(file) => beforeUpload(file)}
+          action={ossData?.host}
+          data={getExtraData}
+          maxCount={1}
+          onChange={(fileInfo) => handleChange(fileInfo)}
+        >
+          {value?.image?.attachmentPath ? <img src={value?.image?.attachmentPath} alt="avatar" style={{ width: '100%', maxHeight: '100%' }} /> : uploadButton}
+        </Upload>
+      )}
+    </>
+  );
+};
+
+const PrivateLetterRules = () => {
   const navigate = useNavigate();
   const openId = localStorage.getItem('openId') || '';
   const urlParams = getUrlOption(window.location.href);
   const id = urlParams?.id || '';
   const [form] = Form.useForm();
-  const headers = { 'tiktok-token': openId };
   const [loading, setLoading] = useState(false);
-  const messageList: object[] = [{ content: '' }];
-  const [action, setAction] = useState('');
-  const [accountList, setAccountList] = useState<TiktokList[]>([]);
-  const [keyWordList, setKeyWordList] = useState<KeyWordListType[]>([{ type: '请选择', keyWord: '' }]);
-  const [msgContentList, setMsgContentList] = useState<ContentListType[]>([{ msgType: 'text' }, { msgType: 'image' }]);
+  const [tiktokId, setTiktokId] = useState(0);
+  const [accountList, setAccountList] = useState<TiktokList[]>([]); // 抖音账号列表
+  const [keyWordList, setKeyWordList] = useState<KeyWordListType[]>([{ type: '请选择', keyWord: '' }]); // 关键词
   const layout = {
     labelCol: { span: 3 },
     wrapperCol: { span: 13 },
+  };
+  const changeAccount = (value: number) => {
+    setTiktokId(value);
   };
   const onFinish = (values: any) => {
     console.log('onFinish:::', values);
@@ -78,88 +183,44 @@ const PrivateLetterRules = () => {
   };
   // 保存
   const saveRegulation = () => {
-    const value = form.getFieldsValue();
-    const { data, keywords, messages } = value;
-    const content: object[] = [];
-    messages?.forEach((item:any) => {
-      content.push({ msgType: 'text', text: item, businessId: new Date().getTime() });
-    });
-    value.businessType = 3;
+    const values = form.getFieldsValue();
+    console.log(values);
+    values.businessType = 3;
+    values.replyTimesLimit = 1;
     http.post('/social/auto-reply-rule/save-rule', {
-      businessType: 3,
-      ...data,
-      status: data.status === false ? 2 : 1,
-      keyWordList: keywords,
-      messageList: content,
-      replyTimesLimit: 1,
+      ...values,
+      status: values.status === false ? 2 : 1,
     }).then((res) => {
       const { success } = res;
       if (success) {
         message.success('保存成功！');
+        navigate('/home');
       } else {
         message.error(res?.errMessage);
       }
     });
-  };
-  const beforeUpload = (file: any) => {
-    console.log('beforeUpload', file);
-  };
-  const handleChange = async (fileInfo: UploadChangeParam<UploadFile<any>>, index: number) => {
-    console.log(fileInfo, index);
-    const {
-      status,
-      uid,
-      name,
-      size,
-    } = fileInfo.file;
-    if (status === 'uploading') {
-      setLoading(true);
-      return;
-    }
-    if (status === 'done' && fileInfo.file.response.success) {
-      setLoading(false);
-      const { response } = fileInfo.file;
-      const contentArr = [...msgContentList];
-      const obj = contentArr[index];
-      Object.assign(obj, { uid, imgUrl: response?.data?.filename });
-      contentArr.splice(index, 1, obj);
-      setMsgContentList(contentArr);
-      const data = await uploadAttachment(name, 'image', response?.data?.filename, size, 1);
-      const tempObj = {
-        title: data?.title,
-        attachmentId: data?.id,
-        attachmentPath: data?.path,
-      };
-      console.log('data', data, tempObj);
-    }
-    if (fileInfo.file.status === 'error') {
-      message.error('接口超时，请刷新后重试');
-      setLoading(true);
-    }
-  };
-  const delSelectRule = (index: number) => {
-    const arr = [...msgContentList];
-    arr.splice(index, 1);
-    setMsgContentList(arr);
   };
   // 新增回复内容
   const addRuleType = (
     add: (defaultValue?: any, insertIndex?: number | undefined) => void,
     type: string,
   ) => {
-    add();
-    const arr = [...msgContentList];
-    arr.push({ msgType: type });
-    setMsgContentList([...arr]);
+    add({ msgType: type });
   };
-  // 上传按钮
-  const uploadButton = (
-    <div>
-      <span style={{ fontSize: '14px' }} className="font_family icon-tianjiafujian">添加</span>
-    </div>
-  );
+  // 编辑功能
+  // 获取详情
+  const getRulesDetail = () => {
+    if (id) {
+      http.get('/social/auto-reply-rule/get_rule_detail', { id }).then((res) => {
+        const { success, data } = res;
+        console.log('getDetail::::', res, success, data);
+        form.setFieldsValue(data);
+      });
+    }
+  };
   useEffect(() => {
     getTiktokAccount();
+    getRulesDetail();
   }, []);
   return (
     <ContentBox>
@@ -175,11 +236,15 @@ const PrivateLetterRules = () => {
           style={{ padding: '30px 0 0 0' }}
           onFinish={onFinish}
           validateMessages={validateMessages}
+          initialValues={
+            { messageList: [{ msgType: 'text' }, { msgType: 'image' }] }
+          }
         >
-          <Form.Item name={['data', 'tiktokUserId']} label="适用账号" rules={[{ required: true }]}>
+          <Form.Item name={['tiktokUserId']} label="适用账号" rules={[{ required: true }]}>
             <Select
               style={{ width: 200 }}
               placeholder="请选择"
+              onChange={changeAccount}
             >
               {
                 accountList?.map((item: any) => (
@@ -193,14 +258,14 @@ const PrivateLetterRules = () => {
               }
             </Select>
           </Form.Item>
-          <Form.Item name={['data', 'name']} label="规则名称" rules={[{ required: true }]}>
+          <Form.Item name={['name']} label="规则名称" rules={[{ required: true }]}>
             <InputShowCount style={{ width: 400 }} placeholder="请输入规则名称" maxLength={30} />
           </Form.Item>
-          <Form.Item name={['data', 'status']} label="功能启用" valuePropName="checked" rules={[{ required: true }]}>
+          <Form.Item name={['status']} label="功能启用" valuePropName="checked" rules={[{ required: true }]}>
             <Switch checked />
           </Form.Item>
           <Form.Item label="关键词" rules={[{ required: true }]}>
-            <Form.List name="keywords" initialValue={keyWordList}>
+            <Form.List name={['keyWordList']} initialValue={keyWordList}>
               {(fields, { add, remove }) => (
                 <>
                   {fields.map(({ key, name, ...restField }) => (
@@ -213,7 +278,6 @@ const PrivateLetterRules = () => {
                         <Select
                           style={{ width: 100, display: 'inline-block', margin: '0 10px 0 0' }}
                           placeholder="请选择"
-                          // defaultValue={{ value: 1 }}
                           options={rulesOption}
                         />
                       </Form.Item>
@@ -254,83 +318,30 @@ const PrivateLetterRules = () => {
             extra="当回复内容有多条时，随机回复一条"
           >
             <Spin spinning={loading}>
-              <Form.List name="messages" initialValue={msgContentList}>
-                {(fields, { add }) => (
+              <Form.List name="messageList">
+                {(fields, { add, remove }) => (
                   <>
                     {fields.map(({ key, name, ...restField }, index) => (
-                      <div key={key} style={{ display: 'flex', alignItems: 'center' }}>
-                        {
-                          msgContentList[key]?.msgType === 'text' && (
-                            <ItemBox>
-                              <Form.Item
-                                {...restField}
-                                style={{ marginBottom: 0 }}
-                                name={[name, 'content']}
-                                rules={[{ required: true, message: 'Missing first name' }]}
-                              >
-                                <TextareaBox>
-                                  <TextAreaShowCount
-                                    style={{ position: 'relative', width: 400 }}
-                                    autoSize={{ minRows: 4, maxRows: 6 }}
-                                    maxLength={300}
-                                  />
-                                </TextareaBox>
-                              </Form.Item>
-                              <span
-                                style={{ fontSize: '14px', color: '#999999', marginLeft: 10 }}
-                                className="font_family icon-shanchu"
-                                onClick={() => delSelectRule(index)}
-                              />
-                            </ItemBox>
-                          )
-                        }
-                        {
-                          msgContentList[key]?.msgType === 'image' && (
-                            <ItemBox>
-                              <Form.Item
-                                {...restField}
-                                style={{ marginBottom: 0, display: 'block' }}
-                                name={[name, 'imageUrl']}
-                                rules={[{ required: true, message: 'Missing first name' }]}
-                              >
-                                <Upload
-                                  name="file"
-                                  listType="picture-card"
-                                  className="avatar-uploader"
-                                  headers={headers}
-                                  showUploadList={false}
-                                  beforeUpload={(file) => beforeUpload(file)}
-                                  action={ossData?.host}
-                                  data={getExtraData}
-                                  maxCount={1}
-                                  onChange={(fileInfo) => handleChange(fileInfo, index)}
-                                >
-                                  {msgContentList[key].imgUrl ? <img src={msgContentList[key].imgUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
-                                </Upload>
-                              </Form.Item>
-                              <span
-                                style={{ fontSize: '14px', color: '#999999', marginLeft: 10 }}
-                                className="font_family icon-shanchu"
-                                onClick={() => delSelectRule(index)}
-                              />
-                            </ItemBox>
-                          )
-                        }
-                      </div>
+                      <ItemBox key={key}>
+                        <Form.Item name={[name]}>
+                          <TextImg />
+                        </Form.Item>
+                        <span style={{ fontSize: '14px', color: '#999999', marginLeft: 10 }} className="font_family icon-shanchu" onClick={() => remove(name)} />
+                      </ItemBox>
                     ))}
                     <Form.Item>
                       {
                         fields.length < 10 && (
                           <DropdownBox>
-                            <nav className="dropBox">
-                              <div className="dropItem" onClick={() => addRuleType(add, 'text')}>文字</div>
-                              <div className="dropItem" onClick={() => addRuleType(add, 'image')}>图片</div>
-                            </nav>
                             <Button type="primary" ghost>
                               <span style={{ fontSize: '14px' }} className="font_family icon-tianjia1 font_14">
                                 &nbsp;添加回复内容
                               </span>
                             </Button>
+                            <nav className="dropBox">
+                              <div className="dropItem" onClick={() => addRuleType(add, 'text')}>文字</div>
+                              <div className="dropItem" onClick={() => addRuleType(add, 'image')}>图片</div>
+                            </nav>
                           </DropdownBox>
                         )
                       }
@@ -389,7 +400,7 @@ const DropdownBox = styled.div`
   .dropBox{
     display: none;
     position: absolute;
-    bottom: 100%;
+    /* bottom: 100%; */
     width: 100%;
     background: #FFFFFF;
     box-shadow: 0 2px 6px 0 rgba(0,0,0,0.10);
@@ -422,7 +433,31 @@ const DropdownBox = styled.div`
   }
 `;
 const ItemBox = styled.div`
+  position: relative;
   display: flex;
   align-items: center;
+  .ant-upload.ant-upload-select-picture-card{
+    margin: 0;
+  }
+  .tips{
+    display: block;
+    position: absolute;
+    bottom: 0;
+    width: 250px;
+    left: calc(100% - 14px);
+    bottom: 10px;
+    font-size: 12px;
+    color: rgba(0, 0, 0, .42);
+  }
+`;
+const TextAreaBox = styled.div`
+  padding-bottom: 22px;
+  width: 500px;
+  border: 1px solid #dddddd;
+  textarea.ant-input{
+    /* width: 500px; */
+    height: 115px;
+    border: none;
+  }
 `;
 export default PrivateLetterRules;
