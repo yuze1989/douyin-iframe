@@ -209,7 +209,7 @@ const PrivateLetter = (props: Props) => {
             }
           </Select>
         </Form.Item>
-        <Form.Item label="关键词/回复内容：" name="content">
+        <Form.Item label="关键词" name="content">
           <Input placeholder="请输入" />
         </Form.Item>
         <Form.Item>

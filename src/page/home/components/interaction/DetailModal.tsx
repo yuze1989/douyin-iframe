@@ -33,7 +33,7 @@ const DetailModal = (props: IProps) => {
       <Title className="tit" level={5}>回复内容</Title>
       {
         content?.messageList?.map((item: any) => (
-          item.msgType === 'text' ? <div className="txt">{item?.text?.content}</div> : <div className="image"><img src={item?.image?.attachmentPath} alt="" /></div>
+          item.msgType === 'text' ? <div className="txt" key={item.id}>{item?.text?.content}</div> : <div className="image" key={item.id}><img src={item?.image?.attachmentPath} alt="" /></div>
         ))
       }
     </Typography>

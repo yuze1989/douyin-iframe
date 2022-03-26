@@ -12,7 +12,7 @@ const UserActiveSetting = (props: Props) => {
   // const { openId } = props;
   const openId = localStorage.getItem('openId') || '';
   const childIndex = localStorage.getItem('childIndex') || '1';
-  const [optionKey, setOptionKey] = useState<string>(childIndex);
+  const [optionKey, setOptionKey] = useState(childIndex);
   const changeOptionKey = (key: string) => {
     localStorage.setItem('childIndex', key);
     setOptionKey(key);

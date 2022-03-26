@@ -203,9 +203,9 @@ const Conversation = (props: Props) => {
             }
           </Select>
         </Form.Item>
-        <Form.Item label="回复内容：" name="content">
+        {/* <Form.Item label="回复内容：" name="content">
           <Input placeholder="请输入" />
-        </Form.Item>
+        </Form.Item> */}
         <Form.Item>
           <Button style={{ marginRight: '10px' }} type="primary" htmlType="submit">
             <span style={{ fontSize: '14px' }} className="font_family icon-sousuo2">

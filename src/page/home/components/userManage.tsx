@@ -114,7 +114,7 @@ const UserManage = (props: Props) => {
       ),
     },
     {
-      title: '抖音号',
+      title: '蓝V号',
       width: 180,
       key: 'tiktokNumber',
       dataIndex: 'tiktokNumber',

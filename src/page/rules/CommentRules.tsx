@@ -35,10 +35,10 @@ const CommentRules = () => {
   const validateMessages = {
     required: '${label} 不能为空!',
     types: {
-      number: '${label} is not a valid number!',
+      number: '${label} 只能是数字',
     },
     number: {
-      range: '${label} must be between ${min} and ${max}',
+      range: '${label} 必须在 ${min} 和 ${max}之间',
     },
   };
   /* eslint-enable no-template-curly-in-string */
@@ -201,7 +201,7 @@ const CommentRules = () => {
                         {...restField}
                         className="textareaBox"
                         name={[name, 'text', 'content']}
-                        rules={[{ required: true, message: 'Missing first name' }]}
+                        rules={[{ required: true, message: '关键词不能为空' }]}
                       >
                         <Input.TextArea
                           showCount
