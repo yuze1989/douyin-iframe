@@ -29,8 +29,8 @@ export interface DetailContextType {
   gmtCreate?: string | null;
   gmtModified?: string | null;
   id?: number;
-  keyWordList: object[];
-  messageList: object[];
+  keyWordList: object[] | undefined;
+  messageList: object[] | undefined;
   name?: string;
   replyTimesLimit?: number;
   status?: number;

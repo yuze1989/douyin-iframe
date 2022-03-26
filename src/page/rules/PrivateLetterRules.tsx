@@ -9,22 +9,10 @@ import { KeyWordListType } from 'types/rules';
 import { useNavigate } from 'react-router-dom';
 import { useCloudUpload } from 'utils/upload';
 import {
-  Space,
-  Typography,
-  Card,
-  Form,
-  Select,
-  Switch,
-  Button,
-  message,
-  Upload,
-  Spin,
-  Input,
+  Space, Typography, Card, Form, Select, Switch, Button, message, Upload, Spin, Input,
 } from 'antd';
-
 import InputShowCount from './components/InputShowCount';
 
-const { Option } = Select;
 const { Text } = Typography;
 
 interface Props {
@@ -38,20 +26,13 @@ const TextImg = (props: Props) => {
   const [tiktokId] = useState(1);
   const { ossData, getExtraData, uploadAttachment } = useCloudUpload('messagecenter');
   const uploadButton = (
-    <div>
-      <span style={{ fontSize: '14px' }} className="font_family icon-tianjiafujian">添加</span>
-    </div>
+    <div><span style={{ fontSize: '14px' }} className="font_family icon-tianjiafujian">添加</span></div>
   );
   const handleChange = async (fileInfo: UploadChangeParam<UploadFile<any>>) => {
     const {
-      status,
-      uid,
-      name,
-      size,
+      status, uid, name, size,
     } = fileInfo.file;
-    if (status === 'uploading') {
-      return;
-    }
+    if (status === 'uploading') return;
     if (status === 'done' && fileInfo.file.response.success) {
       const { response } = fileInfo.file;
       const fileTitle = name.length > 50 ? `${name.slice(0, 46)}${name.slice(name.lastIndexOf('.'))}` : name;
@@ -98,7 +79,7 @@ const TextImg = (props: Props) => {
       },
     });
   };
-  console.log('value', value);
+  // console.log('value', value);
   return (
     <>
       {
@@ -184,7 +165,6 @@ const PrivateLetterRules = () => {
   // 保存
   const saveRegulation = () => {
     const values = form.getFieldsValue();
-    console.log(values);
     values.businessType = 3;
     values.replyTimesLimit = 1;
     http.post('/social/auto-reply-rule/save-rule', {
@@ -213,8 +193,9 @@ const PrivateLetterRules = () => {
     if (id) {
       http.get('/social/auto-reply-rule/get_rule_detail', { id }).then((res) => {
         const { success, data } = res;
-        console.log('getDetail::::', res, success, data);
-        form.setFieldsValue(data);
+        if (success) {
+          form.setFieldsValue(data);
+        }
       });
     }
   };
@@ -248,10 +229,7 @@ const PrivateLetterRules = () => {
             >
               {
                 accountList?.map((item: any) => (
-                  <Select.Option
-                    value={item.id}
-                    key={item.apiAuthorId}
-                  >
+                  <Select.Option value={item.id} key={item.apiAuthorId}>
                     { item.nickname }
                   </Select.Option>
                 ))
@@ -370,27 +348,6 @@ const ButtonBox = styled.div`
   padding: 20px 0;
   border-top: 1px solid #DDDDDD;
 `;
-const KeyboardItem = styled.div`
-  margin:0 0 16px 0;
-  
-  .icon-shanchu{
-    margin-left: 10px;
-    padding: 5px;
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
-  }
-`;
-const TextareaBox = styled.div`
-  position: relative;
-  margin-bottom: 16px;
-  .ant-input-textarea-show-count::after{
-    position: absolute;
-    right: 12px;
-    bottom: 30px;
-    color: rgba(0, 0, 0, 0.25);
-  }
-`;
 const DropdownBox = styled.div`
   position: relative;
   width: 130px;
@@ -413,7 +370,6 @@ const DropdownBox = styled.div`
       color: rgba(0, 0, 0, .65);
       cursor: pointer;
       &:first-of-type{
-        /* border-bottom: 1px dashed #DDDDDD; */
         position: relative;
         &:before{
           content: '';
@@ -455,7 +411,6 @@ const TextAreaBox = styled.div`
   width: 500px;
   border: 1px solid #dddddd;
   textarea.ant-input{
-    /* width: 500px; */
     height: 115px;
     border: none;
   }

@@ -2,15 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import moment from 'moment';
 import {
-  Form,
-  Input,
-  DatePicker,
-  Select,
-  Button,
-  Table,
-  Pagination,
-  TablePaginationConfig,
-  InputNumber,
+  Form, Input, DatePicker, Select, Button, Table, Pagination, TablePaginationConfig, InputNumber,
   Radio,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
@@ -41,13 +33,11 @@ const UserManage = (props: Props) => {
   };
   const getTiktokList = (parmas?: ParmasType) => {
     const value = form.getFieldsValue();
-    console.log('params:::::', parmas, value);
     if (value.lastReachedTime) {
       const [startTime, endTime] = value.lastReachedTime;
       value.lastReachedTimeGE = moment(startTime).format('YYYY/MM/DD');
       value.lastReachedTimeLE = moment(endTime).format('YYYY/MM/DD');
     }
-    // value.openId = openId;
     value.tiktokUserId = tiktokUserId;
     delete value.lastReachedTime;
     if (openId) {
@@ -84,7 +74,6 @@ const UserManage = (props: Props) => {
   const getTiktokAccount = () => {
     if (openId) {
       http.get('/social/auto-reply-rule/list-tiktok-user', {}).then((res) => {
-        console.log('object', res);
         const { success, data } = res;
         if (success) {
           setTiktokList(data);

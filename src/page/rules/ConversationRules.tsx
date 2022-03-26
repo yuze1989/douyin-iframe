@@ -5,24 +5,13 @@ import { getUrlOption } from 'utils';
 import { TiktokList } from 'types/home';
 import { useNavigate } from 'react-router-dom';
 import {
-  Typography,
-  Card,
-  Form,
-  Select,
-  Button,
-  message,
-  Switch,
-  Input,
+  Typography, Card, Form, Select, Button, message, Switch, Input,
 } from 'antd';
-import { ColumnsType } from 'antd/lib/table';
 import Avatar from 'assets/avatar.png';
 import ChatBg from 'assets/chat-bg.png';
 import ChatInput from 'assets/chat-input.png';
 
-import TextAreaShowCount from './components/TextAreaShowCount';
-
 const { Title, Paragraph } = Typography;
-// const { Option } = Select;
 
 interface Props { }
 
@@ -34,13 +23,10 @@ const ConversationRules = (props: Props) => {
   const [form] = Form.useForm();
   const [accountList, setAccountList] = useState<TiktokList[]>([]);
   const [msg, setMsg] = useState('亲，您好！');
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const onChange = (checked: boolean) => {
     console.log(checked);
   };
   const onFinish = () => {
-    const value = form.getFieldsValue();
-    console.log(value);
     saveRegulation();
   };
   // 获取适用账号
@@ -55,7 +41,6 @@ const ConversationRules = (props: Props) => {
     }
   };
   const handleChange = (value: string) => {
-    console.log(value);
     setMsg(value);
   };
   // 保存
@@ -92,7 +77,9 @@ const ConversationRules = (props: Props) => {
     if (id) {
       http.get('/social/auto-reply-rule/get_rule_detail', { id }).then((res) => {
         const { success, data } = res;
-        form.setFieldsValue(data);
+        if (success) {
+          form.setFieldsValue(data);
+        }
       });
     }
   };
@@ -144,10 +131,7 @@ const ConversationRules = (props: Props) => {
             >
               {
                 accountList && accountList?.map((item: any) => (
-                  <Select.Option
-                    value={item.id}
-                    key={item.apiAuthorId}
-                  >
+                  <Select.Option value={item.id} key={item.apiAuthorId}>
                     { item.nickname }
                   </Select.Option>
                 ))
@@ -157,11 +141,7 @@ const ConversationRules = (props: Props) => {
           <Form.Item label="功能启用" name={['status']} valuePropName="checked">
             <Switch onChange={(checked) => onChange(checked)} />
           </Form.Item>
-          <Form.Item
-            label="自动回复内容"
-            rules={[{ required: true }]}
-            extra="当回复内容有多条时，随机回复一条"
-          >
+          <Form.Item label="自动回复内容" extra="当回复内容有多条时，随机回复一条" rules={[{ required: true }]}>
             <Form.List name="messageList">
               {(fields, { add, remove }) => (
                 <>
@@ -171,7 +151,7 @@ const ConversationRules = (props: Props) => {
                         {...restField}
                         className="textareaBox"
                         name={[name, 'text', 'content']}
-                        rules={[{ required: true, message: 'Missing first name' }]}
+                        rules={[{ required: true, message: '回复语不能为空' }]}
                       >
                         <Input.TextArea
                           showCount
@@ -271,7 +251,6 @@ const ChatModel = styled.div`
     padding: 0 15px;
     box-sizing: border-box;
     width: 100%;
-    /* height: 40px; */
   }
 `;
 export default ConversationRules;

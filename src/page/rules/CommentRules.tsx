@@ -2,22 +2,11 @@ import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import http from 'utils/http';
 import { getUrlOption } from 'utils';
-import {
-  TiktokList,
-} from 'types/home';
+import { TiktokList } from 'types/home';
 import { KeyWordListType } from 'types/rules';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
-  Space,
-  Typography,
-  Card,
-  Form,
-  Select,
-  Switch,
-  Button,
-  InputNumber,
-  message,
-  Input,
+  Space, Typography, Card, Form, Select, Switch, Button, InputNumber, message, Input,
 } from 'antd';
 
 import InputShowCount from './components/InputShowCount';
@@ -34,10 +23,7 @@ const CommentRules = () => {
   const [form] = Form.useForm();
   const messageList: object[] = [{ content: '' }];
   const [accountList, setAccountList] = useState<TiktokList[]>([]);
-  const [keyWordList, setKeyWordList] = useState<KeyWordListType[]>([{
-    type: '请选择',
-    keyWord: '',
-  }]);
+  const [keyWordList, setKeyWordList] = useState<KeyWordListType[]>([{ type: '请选择', keyWord: '' }]);
   const layout = {
     labelCol: { span: 3 },
     wrapperCol: { span: 13 },
@@ -83,7 +69,6 @@ const CommentRules = () => {
   // 保存
   const saveRegulation = () => {
     const value = form.getFieldsValue();
-    console.log('object', value);
     value.businessType = 3;
     http.post('/social/auto-reply-rule/save-rule', {
       ...value,

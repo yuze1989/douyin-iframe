@@ -2,27 +2,16 @@ import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import http from 'utils/http';
 import {
-  RegulationDataType,
-  TableDataType,
-  ParmasType,
-  TiktokList,
+  RegulationDataType, TableDataType, ParmasType, TiktokList,
 } from 'types/home';
+import { DetailContextType } from 'types/rules';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  Form,
-  Input,
-  Select,
-  Button,
-  Table,
-  Pagination,
-  TablePaginationConfig,
-  message,
-  Switch,
-  Popconfirm,
+  Form, Input, Select, Button, Table, Pagination, TablePaginationConfig, message,
+  Switch, Popconfirm,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-
-const { Option } = Select;
+import DetailModal from './DetailModal';
 
 interface Props {
   openId: String
@@ -34,6 +23,8 @@ const PrivateLetter = (props: Props) => {
   const [form] = Form.useForm();
   const [accountList, setAccountList] = useState<TiktokList[]>([]);
   const [tableData, setTableData] = useState<TableDataType>();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [detailContent, setDetailContent] = useState<DetailContextType>();
   // 获取适用账号
   const getTiktokAccount = () => {
     if (openId) {
@@ -46,24 +37,21 @@ const PrivateLetter = (props: Props) => {
     }
   };
   const changeStatus = (status: number | string, record: RegulationDataType, index: number) => {
-    // console.log(status, record, index);
     changeStatusHandler({ ruleStatus: status === 1 ? 2 : 1, id: record?.id }, index);
   };
-  const toDetail = (record: RegulationDataType, index: number) => {
-    // console.log(record, index);
+  const toDetail = (record: RegulationDataType) => {
     getDetail({ id: record?.id });
   };
-  const toEdit = (record: RegulationDataType, index: number) => {
+  const toEdit = (record: RegulationDataType) => {
     navigate(`/save-rules-private-letter?id=${record?.id}`);
   };
-  const confirm = (record: RegulationDataType, index: number) => {
-    // console.log(record, index);
+  const confirm = (record: RegulationDataType) => {
     deleteHandler({ id: record?.id });
   };
   // 启用/关闭
   const changeStatusHandler = (params: {}, index: number) => {
     http.post('/social/auto-reply-rule/rule-status', { ...params }).then((res) => {
-      const { success, data, errMessage } = res;
+      const { success, errMessage } = res;
       if (success) {
         message.success('操作成功！');
       } else {
@@ -74,7 +62,7 @@ const PrivateLetter = (props: Props) => {
   // 删除规则
   const deleteHandler = (params: {}) => {
     http.get('/social/auto-reply-rule/del-rule', { ...params }).then((res) => {
-      const { success, data, errMessage } = res;
+      const { success, errMessage } = res;
       if (success) {
         getRegulationList();
         message.success('删除成功！');
@@ -83,24 +71,37 @@ const PrivateLetter = (props: Props) => {
       }
     });
   };
-  // 规则详情
-  const getDetail = (params: {}) => {
-    http.get('/social/auto-reply-rule/get_rule_detail', { ...params }).then((res) => {
-      const { success, data } = res;
-      console.log('getDetail::::', res);
-    });
-  };
   // 查询
   const getRegulationList = (parmas?: ParmasType) => {
     const value = form.getFieldsValue();
     // businessType 业务类型，1-评论规则，2-会话规则，3-私信规则
     value.businessType = 3;
     http.post('/social/auto-reply-rule/page-rule', { ...value, ...parmas }).then((res) => {
-      const { success, data } = res;
+      const { success } = res;
       if (success) {
         setTableData(res);
       }
     });
+  };
+  // 规则详情
+  const getDetail = (params: {}) => {
+    http.get('/social/auto-reply-rule/get_rule_detail', { ...params }).then((res) => {
+      const { success, data, errMessage } = res;
+      if (success) {
+        setDetailContent(data);
+        showModal();
+      } else {
+        message.error(errMessage);
+      }
+    });
+  };
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setDetailContent(undefined);
   };
   const onFinish = () => {
     getRegulationList();
@@ -179,12 +180,12 @@ const PrivateLetter = (props: Props) => {
       align: 'left',
       render: (text, record, index) => (
         <>
-          <Button type="link" onClick={() => toDetail(record, index)}>详情</Button>
-          <Button type="link" onClick={() => toEdit(record, index)}>编辑</Button>
+          <Button type="link" onClick={() => toDetail(record)}>详情</Button>
+          <Button type="link" onClick={() => toEdit(record)}>编辑</Button>
           <Popconfirm
             placement="topLeft"
             title="确认删除这条规则？"
-            onConfirm={() => confirm(record, index)}
+            onConfirm={() => confirm(record)}
             okText="确认"
             cancelText="取消"
           >
@@ -196,26 +197,12 @@ const PrivateLetter = (props: Props) => {
   ];
   return (
     <SearchBox>
-      <Form
-        layout="inline"
-        form={form}
-        onFinish={onFinish}
-        initialValues={{
-          tiktokUserId: '',
-          content: '',
-        }}
-      >
+      <Form layout="inline" form={form} onFinish={onFinish}>
         <Form.Item label="适用账号：" name="tiktokUserId">
-          <Select
-            style={{ width: 200 }}
-            placeholder="请选择"
-          >
+          <Select style={{ width: 200 }} placeholder="请选择">
             {
               accountList && accountList.map((item: any) => (
-                <Select.Option
-                  value={item.id}
-                  key={item.apiAuthorId}
-                >
+                <Select.Option value={item.id} key={item.apiAuthorId}>
                   {item.nickname}
                 </Select.Option>
               ))
@@ -248,7 +235,6 @@ const PrivateLetter = (props: Props) => {
         </Link>
       </ButtonBox>
       <Table
-        // style={{ margin: '0 2rem' }}
         bordered
         columns={columns}
         dataSource={tableData?.data}
@@ -265,6 +251,11 @@ const PrivateLetter = (props: Props) => {
           onChange={(current, pageSize) => pageChange({ current, pageSize })}
         />
       </div>
+      <DetailModal
+        isShow={isModalVisible}
+        onCancel={handleCancel}
+        content={detailContent}
+      />
     </SearchBox>
   );
 };

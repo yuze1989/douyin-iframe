@@ -2,25 +2,16 @@ import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import http from 'utils/http';
 import {
-  TableDataType,
-  TiktokList,
-  RegulationDataType,
+  TableDataType, TiktokList, RegulationDataType,
 } from 'types/home';
+import { DetailContextType } from 'types/rules';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  Form,
-  Input,
-  Select,
-  Button,
-  Table,
-  Pagination,
-  TablePaginationConfig,
-  message,
-  Switch,
-  Popconfirm,
-  Spin,
+  Form, Input, Select, Button, Table, Pagination, TablePaginationConfig, message, Switch,
+  Popconfirm, Spin,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
+import DetailModal from './DetailModal';
 
 interface Props {
   openId: String
@@ -34,6 +25,8 @@ const Comments = (props: Props) => {
   const [loading, setLoading] = useState(false);
   const [accountList, setAccountList] = useState<TiktokList[]>([]);
   const [tableData, setTableData] = useState<TableDataType>();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [detailContent, setDetailContent] = useState<DetailContextType>();
   // 获取适用账号
   const getTiktokAccount = () => {
     if (openId) {
@@ -65,18 +58,15 @@ const Comments = (props: Props) => {
     };
   };
   const changeStatus = (status: number | string, record: RegulationDataType, index: number) => {
-    // console.log(status, record, index);
     changeStatusHandler({ ruleStatus: status === 1 ? 2 : 1, id: record?.id }, index);
   };
-  const toDetail = (record: RegulationDataType, index: number) => {
-    // console.log(record, index);
+  const toDetail = (record: RegulationDataType) => {
     getDetail({ id: record?.id });
   };
-  const toEdit = (record: RegulationDataType, index: number) => {
+  const toEdit = (record: RegulationDataType) => {
     navigate(`/comment-rules?id=${record?.id}`);
   };
-  const confirm = (record: RegulationDataType, index: number) => {
-    // console.log(record, index);
+  const confirm = (record: RegulationDataType) => {
     setLoading(true);
     deleteHandler({ id: record?.id });
   };
@@ -107,9 +97,21 @@ const Comments = (props: Props) => {
   // 规则详情
   const getDetail = (params: {}) => {
     http.get('/social/auto-reply-rule/get_rule_detail', { ...params }).then((res) => {
-      const { success, data } = res;
-      console.log('getDetail::::', res, success, data);
+      const { success, data, errMessage } = res;
+      if (success) {
+        setDetailContent(data);
+        showModal();
+      } else {
+        message.error(errMessage);
+      }
     });
+  };
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setDetailContent(undefined);
   };
   const onFinish = () => {
     getRegulationList();
@@ -181,12 +183,12 @@ const Comments = (props: Props) => {
       align: 'left',
       render: (text, record, index) => (
         <>
-          <Button type="link" onClick={() => toDetail(record, index)}>详情</Button>
-          <Button type="link" onClick={() => toEdit(record, index)}>编辑</Button>
+          <Button type="link" onClick={() => toDetail(record)}>详情</Button>
+          <Button type="link" onClick={() => toEdit(record)}>编辑</Button>
           <Popconfirm
             placement="topLeft"
             title="确认删除这条规则？"
-            onConfirm={() => confirm(record, index)}
+            onConfirm={() => confirm(record)}
             okText="确认"
             cancelText="取消"
           >
@@ -202,10 +204,6 @@ const Comments = (props: Props) => {
         layout="inline"
         form={form}
         onFinish={onFinish}
-        initialValues={{
-          tiktokUserId: '',
-          content: '',
-        }}
       >
         <Form.Item label="适用账号：" name="tiktokUserId">
           <Select
@@ -269,6 +267,11 @@ const Comments = (props: Props) => {
           onChange={(current, pageSize) => pageChange({ current, pageSize })}
         />
       </div>
+      <DetailModal
+        isShow={isModalVisible}
+        onCancel={handleCancel}
+        content={detailContent}
+      />
     </SearchBox>
   );
 };

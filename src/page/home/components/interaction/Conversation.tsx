@@ -10,24 +10,12 @@ import {
 import { DetailContextType } from 'types/rules';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  Form,
-  Input,
-  Select,
-  Button,
-  Table,
-  Pagination,
-  TablePaginationConfig,
-  Switch,
-  Popconfirm,
-  message,
-  Modal,
-  Space,
-  Typography,
+  Form, Input, Select, Button, Table, Pagination, TablePaginationConfig,
+  Switch, Popconfirm, message,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
+import DetailModal from './DetailModal';
 
-const { Option } = Select;
-const { Title, Text } = Typography;
 interface Props {
   openId: String
 }
@@ -66,16 +54,12 @@ const Conversation = (props: Props) => {
     });
   };
   const changeStatus = (status: number | string, record: RegulationDataType, index: number) => {
-    console.log(status, record, index);
     changeStatusHandler({ ruleStatus: status === 1 ? 2 : 1, id: record?.id }, index);
   };
   const toDetail = (record: RegulationDataType, index: number) => {
-    // console.log(record, index);
-    setIsModalVisible(true);
     getDetail({ id: record?.id });
   };
   const toEdit = (record: RegulationDataType, index: number) => {
-    console.log(record, index);
     navigate(`/save-rules-conversation?id=${record?.id}`);
   };
   const confirm = (record: RegulationDataType, index: number) => {
@@ -84,8 +68,7 @@ const Conversation = (props: Props) => {
   // 启用/关闭
   const changeStatusHandler = (params: {}, index: number) => {
     http.post('/social/auto-reply-rule/rule-status', { ...params }).then((res) => {
-      const { success, data } = res;
-      console.log('changeStatusHandler', res);
+      const { success } = res;
       if (success) {
         message.success('操作成功！');
       }
@@ -94,7 +77,7 @@ const Conversation = (props: Props) => {
   // 删除规则
   const deleteHandler = (params: {}) => {
     http.get('/social/auto-reply-rule/del-rule', { ...params }).then((res) => {
-      const { success, data, errMessage } = res;
+      const { success, errMessage } = res;
       if (success) {
         getRegulationList();
         message.success('删除成功！');
@@ -107,28 +90,24 @@ const Conversation = (props: Props) => {
   const getDetail = (params: {}) => {
     http.get('/social/auto-reply-rule/get_rule_detail', { ...params }).then((res) => {
       const { success, data, errMessage } = res;
-      console.log('getDetail::::', res);
       if (success) {
         setDetailContent(data);
+        showModal();
       } else {
         message.error(errMessage);
       }
     });
   };
   const onFinish = () => {
-    console.log('onFinish');
     getRegulationList();
   };
   const showModal = () => {
     setIsModalVisible(true);
   };
 
-  const handleOk = () => {
-    setIsModalVisible(false);
-  };
-
   const handleCancel = () => {
     setIsModalVisible(false);
+    setDetailContent(undefined);
   };
   useEffect(() => {
     getTiktokAccount();
@@ -206,10 +185,6 @@ const Conversation = (props: Props) => {
         layout="inline"
         form={form}
         onFinish={onFinish}
-        initialValues={{
-          tiktokUserId: '',
-          content: '',
-        }}
       >
         <Form.Item label="适用账号：" name="tiktokUserId">
           <Select
@@ -228,7 +203,7 @@ const Conversation = (props: Props) => {
             }
           </Select>
         </Form.Item>
-        <Form.Item label="回复内容：">
+        <Form.Item label="回复内容：" name="content">
           <Input placeholder="请输入" />
         </Form.Item>
         <Form.Item>
@@ -271,33 +246,11 @@ const Conversation = (props: Props) => {
           onChange={(current, pageSize) => pageChange({ current, pageSize })}
         />
       </div>
-      <Modal
-        title="规则详情"
-        visible={isModalVisible}
-        onOk={handleOk}
+      <DetailModal
+        isShow={isModalVisible}
         onCancel={handleCancel}
-        footer={null}
-        bodyStyle={{ minHeight: 350, maxHeight: 400, overflow: 'scroll' }}
-        destroyOnClose
-      >
-        <Space className="keyBox" direction="vertical">
-          <Title level={3}>关键词</Title>
-          <div>
-            <Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text>
-            <Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text>
-          </div>
-        </Space>
-        <Space className="keyBox" style={{ marginTop: 10 }} direction="vertical">
-          <Title level={3}>回复内容</Title>
-          <Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text>
-          <Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text>
-          <Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text>
-        </Space>
-        <Typography className="keyBox" style={{ marginTop: 10 }}>
-          <Title level={3}>单个视频回复条数</Title>
-          <Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text><Text>咨询（半匹配）</Text>
-        </Typography>
-      </Modal>
+        content={detailContent}
+      />
     </SearchBox>
   );
 };
