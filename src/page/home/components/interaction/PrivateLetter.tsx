@@ -156,17 +156,15 @@ const PrivateLetter = (props: Props) => {
       key: 'messageList',
       dataIndex: 'messageList',
       align: 'left',
-      ellipsis: {
-        showTitle: false,
-      },
+      ellipsis: true,
       render: (messageList: object[]) => (
-        <Tooltip title={{ messageList }}>
+        <Paragraph ellipsis>
           {
             messageList?.map((item: any) => (
               item.msgType === 'text' ? <Text key={item.id}>{item?.text.content}</Text> : <span style={{ color: '#65B083' }} key={item.id}>[图片]</span>
             ))
           }
-        </Tooltip>
+        </Paragraph>
       ),
     },
     {
