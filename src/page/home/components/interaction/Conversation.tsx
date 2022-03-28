@@ -26,8 +26,6 @@ const Conversation = (props: Props) => {
   const [form] = Form.useForm();
   const [accountList, setAccountList] = useState<TiktokList[]>([]);
   const [tableData, setTableData] = useState<TableDataType>();
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [detailContent, setDetailContent] = useState<DetailContextType>();
   // 获取适用账号
   const getTiktokAccount = () => {
     if (openId) {
@@ -87,11 +85,6 @@ const Conversation = (props: Props) => {
   const onReset = () => {
     form.resetFields();
     getRegulationList();
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
-    setDetailContent(undefined);
   };
   useEffect(() => {
     getTiktokAccount();

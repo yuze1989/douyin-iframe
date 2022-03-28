@@ -135,7 +135,7 @@ const PrivateLetterRules = () => {
   };
   const onFinish = (values: any) => {
     console.log('onFinish:::', values);
-    saveRegulation();
+    // saveRegulation();
   };
   /* eslint-disable no-template-curly-in-string */
   const validateMessages = {
@@ -302,12 +302,10 @@ const PrivateLetterRules = () => {
                       <ItemBox key={key}>
                         <Form.Item
                           {...fields}
-                          name={[name]}
-                          validateTrigger={['onChange', 'onBlur']}
+                          name={name}
                           rules={[
                             {
                               required: true,
-                              whitespace: false,
                               message: '回复内容不能为空',
                             },
                           ]}
@@ -404,16 +402,6 @@ const ItemBox = styled.div`
   align-items: center;
   .ant-upload.ant-upload-select-picture-card{
     margin: 0;
-  }
-  .tips{
-    display: block;
-    position: absolute;
-    bottom: 0;
-    width: 250px;
-    left: calc(100% - 14px);
-    bottom: 10px;
-    font-size: 12px;
-    color: rgba(0, 0, 0, .42);
   }
 `;
 const TextAreaBox = styled.div`

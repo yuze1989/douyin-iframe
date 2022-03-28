@@ -213,7 +213,7 @@ const CommentRules = () => {
                         <Input.TextArea
                           showCount
                           maxLength={300}
-                          style={{ height: 115 }}
+                          className="inputTextArea"
                           onChange={(e) => handleChange(e.target.value)}
                         />
                       </Form.Item>
@@ -275,25 +275,25 @@ const ItemBox = styled.div`
   position: relative;
   display: flex;
   align-items: center;
-  .textareaBox{
-    padding-bottom: 22px;
-    width: 500px;
-    border: 1px solid #dddddd;
-    .ant-upload.ant-upload-select-picture-card{
-      margin: 0;
-    }
-    textarea.ant-input{
-      /* width: 500px; */
-      height: 115px;
-      border: none;
-    }
-  }
+  margin-bottom: 1.6rem;
+  width: 50rem;
+  border: 1px solid #dddddd;
+  /* .ant-upload.ant-upload-select-picture-card{
+    margin: 0;
+  } */
   .icon-shanchu{
     margin-left: 10px;
     padding: 5px;
     width: 16px;
     height: 16px;
     cursor: pointer;
+  }
+  .inputTextArea{
+    textarea.ant-input{
+      width: 49.8rem;    
+      height: 115px;
+      border: none;
+    }
   }
 `;
 const TextareaBox = styled.div`
