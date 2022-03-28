@@ -15,7 +15,6 @@ import {
   Switch, Popconfirm, message,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import DetailModal from './DetailModal';
 
 interface Props {
   openId: String
@@ -55,9 +54,6 @@ const Conversation = (props: Props) => {
   const changeStatus = (status: number | string, record: RegulationDataType, index: number) => {
     changeStatusHandler({ ruleStatus: status === 1 ? 2 : 1, id: record?.id }, index);
   };
-  const toDetail = (record: RegulationDataType, index: number) => {
-    getDetail({ id: record?.id });
-  };
   const toEdit = (record: RegulationDataType, index: number) => {
     navigate(`/save-rules-conversation?id=${record?.id}`);
   };
@@ -85,27 +81,12 @@ const Conversation = (props: Props) => {
       }
     });
   };
-  // 规则详情
-  const getDetail = (params: {}) => {
-    http.get('/social/auto-reply-rule/get_rule_detail', { ...params }).then((res) => {
-      const { success, data, errMessage } = res;
-      if (success) {
-        setDetailContent(data);
-        showModal();
-      } else {
-        message.error(errMessage);
-      }
-    });
-  };
   const onFinish = () => {
     getRegulationList();
   };
   const onReset = () => {
     form.resetFields();
     getRegulationList();
-  };
-  const showModal = () => {
-    setIsModalVisible(true);
   };
 
   const handleCancel = () => {
@@ -168,7 +149,6 @@ const Conversation = (props: Props) => {
       align: 'left',
       render: (text, record, index) => (
         <>
-          <Button type="link" onClick={() => toDetail(record, index)}>详情</Button>
           <Button type="link" onClick={() => toEdit(record, index)}>编辑</Button>
           <Popconfirm
             placement="topLeft"
@@ -250,11 +230,6 @@ const Conversation = (props: Props) => {
           onChange={(current, pageSize) => pageChange({ current, pageSize })}
         />
       </div>
-      <DetailModal
-        isShow={isModalVisible}
-        onCancel={handleCancel}
-        content={detailContent}
-      />
     </SearchBox>
   );
 };
