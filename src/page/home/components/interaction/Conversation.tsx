@@ -6,6 +6,7 @@ import {
   TableDataType,
   TiktokList,
   RegulationDataType,
+  ParmasType,
 } from 'types/home';
 import { DetailContextType } from 'types/rules';
 import { Link, useNavigate } from 'react-router-dom';
@@ -40,14 +41,12 @@ const Conversation = (props: Props) => {
     }
   };
   // 查询
-  const getRegulationList = () => {
+  const getRegulationList = (params?: ParmasType) => {
     const value = form.getFieldsValue();
-    console.log('getRegulationList', value);
     // businessType 业务类型，1-评论规则，2-会话规则，3-私信规则
     value.businessType = 2;
-    http.post('/social/auto-reply-rule/page-rule', { ...value }).then((res) => {
-      const { success, data } = res;
-      console.log(' success;', success, data);
+    http.post('/social/auto-reply-rule/page-rule', { ...value, ...params }).then((res) => {
+      const { success } = res;
       if (success) {
         setTableData(res);
       }
@@ -117,9 +116,9 @@ const Conversation = (props: Props) => {
     const page = {
       pageIndex: pagination.current,
       pageSize: pagination.pageSize,
-      openId,
+      // openId,
     };
-    getRegulationList();
+    getRegulationList(page);
   };
   const columns: ColumnsType<TableItem> = [
     {

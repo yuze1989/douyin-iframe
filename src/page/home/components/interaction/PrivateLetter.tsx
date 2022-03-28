@@ -8,10 +8,12 @@ import { DetailContextType } from 'types/rules';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Form, Input, Select, Button, Table, Pagination, TablePaginationConfig, message,
-  Switch, Popconfirm,
+  Switch, Popconfirm, Typography, Tooltip,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import DetailModal from './DetailModal';
+
+const { Text, Paragraph } = Typography;
 
 interface Props {
   openId: String
@@ -141,6 +143,7 @@ const PrivateLetter = (props: Props) => {
       key: 'keyWordList',
       dataIndex: 'keyWordList',
       align: 'left',
+      ellipsis: true,
       render: (keyWordList?: object[]) => (
         keyWordList?.map((item: any) => (
           <span key={item.id}>{item.keyWord},</span>
@@ -149,14 +152,21 @@ const PrivateLetter = (props: Props) => {
     },
     {
       title: '回复内容',
-      // width: 180,
+      // width: 500,
       key: 'messageList',
       dataIndex: 'messageList',
       align: 'left',
+      ellipsis: {
+        showTitle: false,
+      },
       render: (messageList: object[]) => (
-        messageList?.map((item: any) => (
-          item.msgType === 'text' ? <span key={item.id}>{item?.text.content}</span> : <span style={{ color: '#65B083' }} key={item.id}>[图片]</span>
-        ))
+        <Tooltip title={{ messageList }}>
+          {
+            messageList?.map((item: any) => (
+              item.msgType === 'text' ? <Text key={item.id}>{item?.text.content}</Text> : <span style={{ color: '#65B083' }} key={item.id}>[图片]</span>
+            ))
+          }
+        </Tooltip>
       ),
     },
     {

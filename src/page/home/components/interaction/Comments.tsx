@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import http from 'utils/http';
 import {
-  TableDataType, TiktokList, RegulationDataType,
+  TableDataType, TiktokList, RegulationDataType, ParmasType,
 } from 'types/home';
 import { DetailContextType } from 'types/rules';
 import { Link, useNavigate } from 'react-router-dom';
@@ -39,11 +39,11 @@ const Comments = (props: Props) => {
     }
   };
   // 查询
-  const getRegulationList = () => {
+  const getRegulationList = (parmas?: ParmasType) => {
     const value = form.getFieldsValue();
     // businessType 业务类型，1-评论规则，2-会话规则，3-私信规则
     value.businessType = 1;
-    http.post('/social/auto-reply-rule/page-rule', { ...value }).then((res) => {
+    http.post('/social/auto-reply-rule/page-rule', { ...value, ...parmas }).then((res) => {
       const { success } = res;
       if (success) {
         setTableData(res);
@@ -54,9 +54,9 @@ const Comments = (props: Props) => {
     const page = {
       pageIndex: pagination.current,
       pageSize: pagination.pageSize,
-      openId,
+      // openId,
     };
-    getRegulationList();
+    getRegulationList(page);
   };
   const changeStatus = (status: number | string, record: RegulationDataType, index: number) => {
     changeStatusHandler({ ruleStatus: status === 1 ? 2 : 1, id: record?.id }, index);
