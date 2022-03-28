@@ -10,6 +10,7 @@ import {
 } from 'antd';
 
 import InputShowCount from './components/InputShowCount';
+import './create.css';
 
 const { Option } = Select;
 const { Text } = Typography;
@@ -18,7 +19,7 @@ const CommentRules = () => {
   const navigate = useNavigate();
   const openId = localStorage.getItem('openId') || '';
   const urlParams = getUrlOption(window.location.href);
-  const id = urlParams?.id || '';
+  const id = Number(urlParams?.id) || '';
   const [form] = Form.useForm();
   const [accountList, setAccountList] = useState<TiktokList[]>([]);
   // const [keyWordList, setKeyWordList] = useState<KeyWordListType[]>([{ keyWord: '' }]);
@@ -69,6 +70,7 @@ const CommentRules = () => {
     value.businessType = 1;
     http.post('/social/auto-reply-rule/save-rule', {
       ...value,
+      id,
       status: value.status === true || value.status === 1 ? 1 : 2,
     }).then((res) => {
       const { success } = res;
@@ -143,7 +145,7 @@ const CommentRules = () => {
           <Form.Item name={['status']} label="功能启用" valuePropName="checked" rules={[{ required: true }]}>
             <Switch checked />
           </Form.Item>
-          <Form.Item label="关键词" rules={[{ required: true }]}>
+          <Form.Item label="关键词" className="requireTitle" rules={[{ required: true }]}>
             <Form.List name="keyWordList">
               {(fields, { add, remove }) => (
                 <>
@@ -193,6 +195,7 @@ const CommentRules = () => {
           </Form.Item>
           <Form.Item
             label="回复内容"
+            className="requireTitle"
             rules={[{ required: true }]}
             extra="当回复内容有多条时，随机回复一条"
           >
@@ -241,7 +244,7 @@ const CommentRules = () => {
             rules={[{
               required: true,
               type: 'number',
-              min: 0,
+              min: 1,
               max: 200,
             }]}
           >

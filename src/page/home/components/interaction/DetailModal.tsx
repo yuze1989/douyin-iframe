@@ -63,7 +63,7 @@ const DetailModal = (props: IProps) => {
           content?.messageList?.length && <MessageList />
         }
         {
-          content?.replyTimesLimit && <ReplyTimesLimit />
+          content?.businessType === 1 && content?.replyTimesLimit && <ReplyTimesLimit />
         }
       </DetailContent>
     </Modal>

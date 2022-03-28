@@ -117,6 +117,10 @@ const Comments = (props: Props) => {
   const onFinish = () => {
     getRegulationList();
   };
+  const onReset = () => {
+    form.resetFields();
+    getRegulationList();
+  };
   useEffect(() => {
     getTiktokAccount();
     getRegulationList();
@@ -232,7 +236,7 @@ const Comments = (props: Props) => {
               &nbsp;查询
             </span>
           </Button>
-          <Button htmlType="reset">
+          <Button htmlType="reset" onClick={onReset}>
             <span style={{ fontSize: '14px' }} className="font_family icon-zhongzhi1">
               &nbsp;重置
             </span>
@@ -249,14 +253,16 @@ const Comments = (props: Props) => {
         </Link>
       </ButtonBox>
       <Spin spinning={loading}>
-        <Table
-          // style={{ margin: '0 2rem' }}
-          bordered
-          columns={columns}
-          dataSource={tableData?.data}
-          pagination={false}
-          scroll={{ x: 1300 }}
-        />
+        <TableBox>
+          <Table
+            // style={{ margin: '0 2rem' }}
+            bordered
+            columns={columns}
+            dataSource={tableData?.data}
+            pagination={false}
+            scroll={{ x: 1300 }}
+          />
+        </TableBox>
       </Spin>
       <div className="footer-sticky">
         <Pagination
@@ -282,5 +288,8 @@ const SearchBox = styled.div`
 `;
 const ButtonBox = styled.div`
   margin: 20px 0;
+`;
+const TableBox = styled.div`
+
 `;
 export default Comments;

@@ -100,6 +100,10 @@ const Conversation = (props: Props) => {
   const onFinish = () => {
     getRegulationList();
   };
+  const onReset = () => {
+    form.resetFields();
+    getRegulationList();
+  };
   const showModal = () => {
     setIsModalVisible(true);
   };
@@ -212,7 +216,7 @@ const Conversation = (props: Props) => {
               &nbsp;查询
             </span>
           </Button>
-          <Button htmlType="reset">
+          <Button htmlType="reset" onClick={onReset}>
             <span style={{ fontSize: '14px' }} className="font_family icon-zhongzhi1">
               &nbsp;重置
             </span>

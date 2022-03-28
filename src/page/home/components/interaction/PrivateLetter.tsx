@@ -108,6 +108,10 @@ const PrivateLetter = (props: Props) => {
   const onFinish = () => {
     getRegulationList();
   };
+  const onReset = () => {
+    form.resetFields();
+    getRegulationList();
+  };
   useEffect(() => {
     getTiktokAccount();
     getRegulationList();
@@ -158,13 +162,25 @@ const PrivateLetter = (props: Props) => {
       align: 'left',
       ellipsis: true,
       render: (messageList: object[]) => (
-        <Paragraph ellipsis>
+        <Tooltip
+          placement="bottomLeft"
+          color="#FFFFFF"
+          overlayClassName="tooltipsBox"
+          autoAdjustOverflow
+          title={
+          (
+            messageList?.map((item: any) => (
+              item.msgType === 'text' ? <div className="tooltipContent" key={item.id}>{item?.text.content}</div> : <span style={{ color: '#65B083' }} key={item.id}>[图片]</span>
+            ))
+          )
+        }
+        >
           {
             messageList?.map((item: any) => (
               item.msgType === 'text' ? <Text key={item.id}>{item?.text.content}</Text> : <span style={{ color: '#65B083' }} key={item.id}>[图片]</span>
             ))
           }
-        </Paragraph>
+        </Tooltip>
       ),
     },
     {
@@ -226,7 +242,7 @@ const PrivateLetter = (props: Props) => {
               &nbsp;查询
             </span>
           </Button>
-          <Button htmlType="reset">
+          <Button htmlType="reset" onClick={onReset}>
             <span style={{ fontSize: '14px' }} className="font_family icon-zhongzhi1">
               &nbsp;重置
             </span>
@@ -242,13 +258,15 @@ const PrivateLetter = (props: Props) => {
           </Button>
         </Link>
       </ButtonBox>
-      <Table
-        bordered
-        columns={columns}
-        dataSource={tableData?.data}
-        pagination={false}
-        scroll={{ x: 1300 }}
-      />
+      <TableBox>
+        <Table
+          bordered
+          columns={columns}
+          dataSource={tableData?.data}
+          pagination={false}
+          scroll={{ x: 1300 }}
+        />
+      </TableBox>
       <div className="footer-sticky">
         <Pagination
           current={tableData?.pageIndex || 0}
@@ -273,5 +291,8 @@ const SearchBox = styled.div`
 `;
 const ButtonBox = styled.div`
   margin: 20px 0;
+`;
+const TableBox = styled.div`
+
 `;
 export default PrivateLetter;

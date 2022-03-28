@@ -14,7 +14,7 @@ const ConversationRules = () => {
   const navigate = useNavigate();
   const openId = localStorage.getItem('openId') || '';
   const urlParams = getUrlOption(window.location.href);
-  const id = urlParams?.id || '';
+  const id = Number(urlParams?.id) || '';
   const [form] = Form.useForm();
   const [accountList, setAccountList] = useState<TiktokList[]>([]);
   const [msg, setMsg] = useState('亲，您好！');
@@ -48,7 +48,8 @@ const ConversationRules = () => {
       replyTimesLimit: 1,
       businessType: 2,
       ...value,
-      status: status || status === 1 || status === 'undefined' ? 1 : 2,
+      id,
+      status: status || status === 1 ? 1 : 2,
     }).then((res) => {
       const { success } = res;
       if (success) {
@@ -65,6 +66,7 @@ const ConversationRules = () => {
     if (id) {
       http.get('/social/auto-reply-rule/get_rule_detail', { id }).then((res) => {
         const { success, data } = res;
+        Object.assign(data, { status: data.status === 1 ? 1 : 0 });
         if (success) {
           form.setFieldsValue(data);
         }
@@ -120,10 +122,10 @@ const ConversationRules = () => {
               }
             </Select>
           </Form.Item>
-          <Form.Item label="功能启用" name={['status']} valuePropName="checked">
+          <Form.Item label="功能启用" name={['status']} valuePropName="checked" rules={[{ required: true }]}>
             <Switch />
           </Form.Item>
-          <Form.Item label="自动回复内容" extra="当回复内容有多条时，随机回复一条" rules={[{ required: true }]}>
+          <Form.Item label="自动回复内容" className="requireTitle" extra="当回复内容有多条时，随机回复一条" rules={[{ required: true }]}>
             <Form.List name="messageList">
               {(fields, { add, remove }) => (
                 <>
@@ -222,8 +224,10 @@ const ChatModel = styled.div`
     .text{
       margin-left: 6px;
       padding: 5px 10px;
+      max-height: 360px;
       box-sizing: border-box;
       border-radius: 8px;
+      overflow-y: auto;
       word-break: break-all;
       background: #F3F3F3;
     }

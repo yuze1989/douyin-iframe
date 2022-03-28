@@ -12,6 +12,7 @@ import {
   Space, Typography, Card, Form, Select, Switch, Button, message, Upload, Spin, Input,
 } from 'antd';
 import InputShowCount from './components/InputShowCount';
+import './create.css';
 
 const { Text } = Typography;
 
@@ -119,7 +120,7 @@ const PrivateLetterRules = () => {
   const navigate = useNavigate();
   const openId = localStorage.getItem('openId') || '';
   const urlParams = getUrlOption(window.location.href);
-  const id = urlParams?.id || '';
+  const id = Number(urlParams?.id) || '';
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [tiktokId, setTiktokId] = useState(0);
@@ -163,6 +164,7 @@ const PrivateLetterRules = () => {
     values.replyTimesLimit = 1;
     http.post('/social/auto-reply-rule/save-rule', {
       ...values,
+      id,
       status: values.status ? 1 : 2,
     }).then((res) => {
       const { success } = res;
@@ -236,7 +238,7 @@ const PrivateLetterRules = () => {
           <Form.Item name={['status']} label="功能启用" valuePropName="checked" rules={[{ required: true }]}>
             <Switch checked />
           </Form.Item>
-          <Form.Item label="关键词" rules={[{ required: true }]}>
+          <Form.Item label="关键词" className="requireTitle" rules={[{ required: true }]}>
             <Form.List name={['keyWordList']} initialValue={keyWordList}>
               {(fields, { add, remove }) => (
                 <>
@@ -286,6 +288,7 @@ const PrivateLetterRules = () => {
           </Form.Item>
           <Form.Item
             label="回复内容"
+            className="requireTitle"
             rules={[{ required: true }]}
             extra="当回复内容有多条时，随机回复一条"
           >
@@ -304,8 +307,8 @@ const PrivateLetterRules = () => {
                           rules={[
                             {
                               required: true,
-                              whitespace: true,
-                              message: '请输入回复内容.',
+                              whitespace: false,
+                              message: '回复内容不能为空',
                             },
                           ]}
                         >

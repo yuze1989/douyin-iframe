@@ -1,0 +1,22 @@
+.requireTitle {
+}
+.requireTitle .ant-form-item-label {
+  position: relative;
+}
+
+.requireTitle .ant-form-item-label:before {
+  content: '*';
+  display: inline-block;
+  margin-right: 4px;
+  color: #ff4d4f;
+  font-size: 14px;
+  font-family: SimSun, sans-serif;
+  line-height: 1;
+}
+.tooltipsBox {
+  max-width: 500px;
+}
+.tooltipContent {
+  color: #000000;
+  max-width: 50rem;
+}
