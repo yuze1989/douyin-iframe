@@ -119,6 +119,7 @@ const Conversation = (props: Props) => {
       pageSize: pagination.pageSize,
       openId,
     };
+    getRegulationList();
   };
   const columns: ColumnsType<TableItem> = [
     {

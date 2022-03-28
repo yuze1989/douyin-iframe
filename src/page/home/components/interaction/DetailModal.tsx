@@ -23,7 +23,7 @@ const DetailModal = (props: IProps) => {
       <Title className="tit" level={5}>关键词</Title>
       <div>
         {
-          content?.keyWordList?.map((item: any) => (<div className="tips" key={item.id}>咨询<span>（{item.type === '1' ? '半匹配' : '全匹配'}）</span></div>))
+          content?.keyWordList?.map((item: any) => (<div className="tips" key={item.id}>咨询<span>（{item.type === 1 ? '半匹配' : '全匹配'}）</span></div>))
         }
       </div>
     </Typography>
@@ -51,7 +51,7 @@ const DetailModal = (props: IProps) => {
       title="规则详情"
       visible={isShow}
       footer={null}
-      bodyStyle={{ minHeight: 350, maxHeight: 570, overflow: 'scroll' }}
+      bodyStyle={{ minHeight: 350, maxHeight: 570, overflowY: 'auto' }}
       destroyOnClose
       onCancel={onCancel}
     >

@@ -124,7 +124,7 @@ const PrivateLetterRules = () => {
   const [loading, setLoading] = useState(false);
   const [tiktokId, setTiktokId] = useState(0);
   const [accountList, setAccountList] = useState<TiktokList[]>([]); // 抖音账号列表
-  const [keyWordList, setKeyWordList] = useState<KeyWordListType[]>([{ type: '请选择', keyWord: '' }]); // 关键词
+  const [keyWordList, setKeyWordList] = useState<KeyWordListType[]>([{ keyWord: '' }]); // 关键词
   const layout = {
     labelCol: { span: 3 },
     wrapperCol: { span: 13 },
@@ -139,12 +139,6 @@ const PrivateLetterRules = () => {
   /* eslint-disable no-template-curly-in-string */
   const validateMessages = {
     required: '${label} 不能为空!',
-    types: {
-      number: '${label} is not a valid number!',
-    },
-    number: {
-      range: '${label} must be between ${min} and ${max}',
-    },
   };
   /* eslint-enable no-template-curly-in-string */
   const rulesOption = [
@@ -169,7 +163,7 @@ const PrivateLetterRules = () => {
     values.replyTimesLimit = 1;
     http.post('/social/auto-reply-rule/save-rule', {
       ...values,
-      status: values.status === false ? 2 : 1,
+      status: values.status ? 1 : 2,
     }).then((res) => {
       const { success } = res;
       if (success) {
@@ -251,7 +245,7 @@ const PrivateLetterRules = () => {
                       <Form.Item
                         {...restField}
                         name={[name, 'type']}
-                        rules={[{ required: true, message: 'Missing first name' }]}
+                        rules={[{ required: true, message: '请选择匹配模式' }]}
                       >
                         <Select
                           style={{ width: 100, display: 'inline-block', margin: '0 10px 0 0' }}
@@ -262,7 +256,7 @@ const PrivateLetterRules = () => {
                       <Form.Item
                         {...restField}
                         name={[name, 'keyWord']}
-                        rules={[{ required: true, message: 'Missing last name' }]}
+                        rules={[{ required: true, message: '关键词不能为空' }]}
                       >
                         <InputShowCount style={{ width: 290 }} placeholder="请输入关键词" maxLength={30} />
                       </Form.Item>
@@ -296,12 +290,25 @@ const PrivateLetterRules = () => {
             extra="当回复内容有多条时，随机回复一条"
           >
             <Spin spinning={loading}>
-              <Form.List name="messageList">
+              <Form.List
+                name="messageList"
+              >
                 {(fields, { add, remove }) => (
                   <>
                     {fields.map(({ key, name, ...restField }, index) => (
                       <ItemBox key={key}>
-                        <Form.Item name={[name]}>
+                        <Form.Item
+                          {...fields}
+                          name={[name]}
+                          validateTrigger={['onChange', 'onBlur']}
+                          rules={[
+                            {
+                              required: true,
+                              whitespace: true,
+                              message: '请输入回复内容.',
+                            },
+                          ]}
+                        >
                           <TextImg />
                         </Form.Item>
                         <span style={{ fontSize: '14px', color: '#999999', marginLeft: 10 }} className="font_family icon-shanchu" onClick={() => remove(name)} />

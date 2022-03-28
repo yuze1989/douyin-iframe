@@ -10,7 +10,6 @@ import {
 } from 'antd';
 
 import InputShowCount from './components/InputShowCount';
-import TextAreaShowCount from './components/TextAreaShowCount';
 
 const { Option } = Select;
 const { Text } = Typography;
@@ -21,9 +20,8 @@ const CommentRules = () => {
   const urlParams = getUrlOption(window.location.href);
   const id = urlParams?.id || '';
   const [form] = Form.useForm();
-  const messageList: object[] = [{ content: '' }];
   const [accountList, setAccountList] = useState<TiktokList[]>([]);
-  const [keyWordList, setKeyWordList] = useState<KeyWordListType[]>([{ type: '请选择', keyWord: '' }]);
+  // const [keyWordList, setKeyWordList] = useState<KeyWordListType[]>([{ keyWord: '' }]);
   const layout = {
     labelCol: { span: 3 },
     wrapperCol: { span: 13 },
@@ -41,7 +39,6 @@ const CommentRules = () => {
       range: '${label} 必须在 ${min} 和 ${max}之间',
     },
   };
-  /* eslint-enable no-template-curly-in-string */
   const rulesOption = [
     { label: '半匹配', value: 1 },
     { label: '全匹配', value: 2 },
@@ -69,7 +66,7 @@ const CommentRules = () => {
   // 保存
   const saveRegulation = () => {
     const value = form.getFieldsValue();
-    value.businessType = 3;
+    value.businessType = 1;
     http.post('/social/auto-reply-rule/save-rule', {
       ...value,
       status: value.status === true || value.status === 1 ? 1 : 2,
@@ -89,8 +86,12 @@ const CommentRules = () => {
     if (id) {
       http.get('/social/auto-reply-rule/get_rule_detail', { id }).then((res) => {
         const { success, data } = res;
-        console.log('getDetail::::', res);
-        form.setFieldsValue(data);
+        if (success) {
+          form.setFieldsValue(data);
+          return true;
+        }
+        message.error('获取详情失败');
+        return false;
       });
     }
   };
@@ -113,7 +114,10 @@ const CommentRules = () => {
           onFinish={onFinish}
           validateMessages={validateMessages}
           initialValues={
-            { messageList: [{ msgType: 'text' }] }
+            {
+              messageList: [{ msgType: 'text' }],
+              keyWordList: [{ keyWord: '' }],
+            }
           }
         >
           <Form.Item name={['tiktokUserId']} label="适用账号" rules={[{ required: true }]}>
@@ -140,7 +144,7 @@ const CommentRules = () => {
             <Switch checked />
           </Form.Item>
           <Form.Item label="关键词" rules={[{ required: true }]}>
-            <Form.List name="keyWordList" initialValue={keyWordList}>
+            <Form.List name="keyWordList">
               {(fields, { add, remove }) => (
                 <>
                   {fields.map(({ key, name, ...restField }) => (
@@ -148,7 +152,7 @@ const CommentRules = () => {
                       <Form.Item
                         {...restField}
                         name={[name, 'type']}
-                        rules={[{ required: true, message: 'Missing first name' }]}
+                        rules={[{ required: true, message: '请选择匹配模式' }]}
                       >
                         <Select
                           style={{ width: 100, display: 'inline-block', margin: '0 10px 0 0' }}
@@ -159,7 +163,7 @@ const CommentRules = () => {
                       <Form.Item
                         {...restField}
                         name={[name, 'keyWord']}
-                        rules={[{ required: true, message: 'Missing last name' }]}
+                        rules={[{ required: true, message: '关键词不能为空' }]}
                       >
                         <InputShowCount style={{ width: 290 }} placeholder="请输入关键词" maxLength={30} />
                       </Form.Item>
@@ -201,7 +205,7 @@ const CommentRules = () => {
                         {...restField}
                         className="textareaBox"
                         name={[name, 'text', 'content']}
-                        rules={[{ required: true, message: '关键词不能为空' }]}
+                        rules={[{ required: true, message: '回复内容不能为空' }]}
                       >
                         <Input.TextArea
                           showCount

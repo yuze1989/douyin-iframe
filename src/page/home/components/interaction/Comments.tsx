@@ -56,6 +56,7 @@ const Comments = (props: Props) => {
       pageSize: pagination.pageSize,
       openId,
     };
+    getRegulationList();
   };
   const changeStatus = (status: number | string, record: RegulationDataType, index: number) => {
     changeStatusHandler({ ruleStatus: status === 1 ? 2 : 1, id: record?.id }, index);

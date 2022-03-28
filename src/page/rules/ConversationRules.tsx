@@ -7,15 +7,10 @@ import { useNavigate } from 'react-router-dom';
 import {
   Typography, Card, Form, Select, Button, message, Switch, Input,
 } from 'antd';
-import Avatar from 'assets/avatar.png';
-import ChatBg from 'assets/chat-bg.png';
-import ChatInput from 'assets/chat-input.png';
 
 const { Title, Paragraph } = Typography;
 
-interface Props { }
-
-const ConversationRules = (props: Props) => {
+const ConversationRules = () => {
   const navigate = useNavigate();
   const openId = localStorage.getItem('openId') || '';
   const urlParams = getUrlOption(window.location.href);
@@ -23,9 +18,9 @@ const ConversationRules = (props: Props) => {
   const [form] = Form.useForm();
   const [accountList, setAccountList] = useState<TiktokList[]>([]);
   const [msg, setMsg] = useState('亲，您好！');
-  const onChange = (checked: boolean) => {
-    console.log(checked);
-  };
+  // const onChange = (checked: boolean) => {
+  //   console.log(checked);
+  // };
   const onFinish = () => {
     saveRegulation();
   };
@@ -46,21 +41,14 @@ const ConversationRules = (props: Props) => {
   // 保存
   const saveRegulation = () => {
     const value = form.getFieldsValue();
-    const { data } = value;
-    const { checked, msgText, tiktokUserId } = data;
-    const content: object[] = [{
-      msgType: 'text',
-      text: { content: msgText },
-    }];
-    setMsg(msgText);
-    const status = checked === false ? 2 : 1;
+    const { status, messageList } = value;
+    setMsg(messageList[0]?.text?.content);
     http.post('/social/auto-reply-rule/save-rule', {
       name: '会话自动触达规则',
       replyTimesLimit: 1,
       businessType: 2,
-      tiktokUserId,
-      status,
-      messageList: content,
+      ...value,
+      status: status || status === 1 || status === 'undefined' ? 1 : 2,
     }).then((res) => {
       const { success } = res;
       if (success) {
@@ -90,12 +78,6 @@ const ConversationRules = (props: Props) => {
   /* eslint-disable no-template-curly-in-string */
   const validateMessages = {
     required: '${label} 不能为空!',
-    types: {
-      number: '${label} is not a valid number!',
-    },
-    number: {
-      range: '${label} must be between ${min} and ${max}',
-    },
   };
   /* eslint-enable no-template-curly-in-string */
   const layout = {
@@ -122,7 +104,7 @@ const ConversationRules = (props: Props) => {
           }
         >
           <Form.Item label=" " colon={false} style={{ margin: 0 }}>
-            <Title className="title">进入回话自动触达</Title>
+            <Title className="title">进入会话自动触达</Title>
           </Form.Item>
           <Form.Item label="适用账号：" name={['tiktokUserId']} rules={[{ required: true }]}>
             <Select
@@ -139,7 +121,7 @@ const ConversationRules = (props: Props) => {
             </Select>
           </Form.Item>
           <Form.Item label="功能启用" name={['status']} valuePropName="checked">
-            <Switch onChange={(checked) => onChange(checked)} />
+            <Switch />
           </Form.Item>
           <Form.Item label="自动回复内容" extra="当回复内容有多条时，随机回复一条" rules={[{ required: true }]}>
             <Form.List name="messageList">
@@ -172,10 +154,10 @@ const ConversationRules = (props: Props) => {
         </Form>
         <ChatModel>
           <div className="chat-content">
-            <img src={Avatar} alt="" />
+            <img src="https://jz-scrm.oss-cn-hangzhou.aliyuncs.com/web/douyin/avatar.png" alt="" />
             <Paragraph className="text">{ msg }</Paragraph>
           </div>
-          <img className="chat-input" src={ChatInput} alt="" />
+          <img className="chat-input" src="https://jz-scrm.oss-cn-hangzhou.aliyuncs.com/web/douyin/chat-input.png" alt="" />
         </ChatModel>
       </Card>
     </ContentBox>
@@ -229,7 +211,7 @@ const ChatModel = styled.div`
   top: 100px;
   width: 254px;
   height: 510px;
-  background: url(${ChatBg}) no-repeat center 100%/100%;
+  background: url("https://jz-scrm.oss-cn-hangzhou.aliyuncs.com/web/douyin/chat-bg.png") no-repeat center 100%/100%;
   .chat-content{
     display: flex;
     margin: 85px 24px 0;
@@ -242,6 +224,7 @@ const ChatModel = styled.div`
       padding: 5px 10px;
       box-sizing: border-box;
       border-radius: 8px;
+      word-break: break-all;
       background: #F3F3F3;
     }
   }
