@@ -3,7 +3,7 @@ import styled from '@emotion/styled';
 import http from 'utils/http';
 import {
   TableDataType, TiktokList, RegulationDataType, ParmasType, InteractTableDataType,
-  paginationDataType,
+  paginationDataType, KeyWordListType,
 } from 'types/home';
 import { DetailContextType } from 'types/rules';
 import { Link, useNavigate } from 'react-router-dom';
@@ -155,9 +155,9 @@ const Comments = (props: Props) => {
       key: 'keyWordList',
       dataIndex: 'keyWordList',
       align: 'left',
-      render: (keyWordList?: object[]) => (
-        keyWordList?.map((item: any) => (
-          <span key={item.id}>{item.keyWord},</span>
+      render: (keyWordList?: KeyWordListType[]) => (
+        keyWordList?.map((item: KeyWordListType, index: number, array: KeyWordListType[]) => (
+          <span key={item.id}>{item.keyWord}{index !== array.length - 1 && '，'}</span>
         ))
       ),
     },
@@ -168,8 +168,8 @@ const Comments = (props: Props) => {
       dataIndex: 'messageList',
       align: 'left',
       render: (messageList: object[]) => (
-        messageList?.map((item: any) => (
-          item.msgType === 'text' ? <span key={item.id}>{item?.text.content}，</span> : <span style={{ color: '#65B083' }} key={item.id}>[图片]</span>
+        messageList?.map((item: any, index: number, array: object[]) => (
+          item.msgType === 'text' ? <span key={item.id}>{item?.text.content}{index !== array.length - 1 && '，'}</span> : <span style={{ color: '#65B083' }} key={item.id}>[图片]{index !== array.length - 1 && '，'}</span>
         ))
       ),
     },
