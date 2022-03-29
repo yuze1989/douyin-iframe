@@ -45,7 +45,8 @@ const App = () => {
   useEffect(() => {
     console.log('====');
     return () => {
-      console.log('hello world');
+      console.log('000000');
+      localStorage.clear();
     };
   });
   return (

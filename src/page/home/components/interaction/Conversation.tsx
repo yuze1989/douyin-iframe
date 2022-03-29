@@ -5,7 +5,7 @@ import {
   TableItem, TableDataType, TiktokList, RegulationDataType, ParmasType, paginationDataType,
 } from 'types/home';
 import { DetailContextType } from 'types/rules';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Form, Input, Select, Button, Table, Pagination, TablePaginationConfig,
   Switch, Popconfirm, message, Spin, Tooltip, Typography,
@@ -20,11 +20,15 @@ interface Props {
 const Conversation = (props: Props) => {
   const { openId } = props;
   const navigate = useNavigate();
+  const { state } = useLocation();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [accountList, setAccountList] = useState<TiktokList[]>([]);
   const [tableData, setTableData] = useState<TableDataType>();
-  const [pageObject, setPageObject] = useState<paginationDataType>();
+  const [pageObject, setPageObject] = useState<paginationDataType>(state?.pageObject || {
+    pageIndex: 1,
+    pageSize: 10,
+  });
   // 获取适用账号
   const getTiktokAccount = () => {
     if (openId) {
@@ -89,7 +93,7 @@ const Conversation = (props: Props) => {
   };
   const onReset = () => {
     form.resetFields();
-    getRegulationList();
+    getRegulationList({ pageIndex: 1, pageSize: 10 });
   };
   useEffect(() => {
     getTiktokAccount();
@@ -164,7 +168,9 @@ const Conversation = (props: Props) => {
       align: 'left',
       render: (text, record, index) => (
         <>
-          <Button type="link" onClick={() => toEdit(record, index)}>编辑</Button>
+          <Link to={`/save-rules-conversation?id=${record?.id}`} state={{ tabKey: '2', optionKey: '2', pageObject }}>
+            <Button type="link">编辑</Button>
+          </Link>
           <Popconfirm
             placement="topLeft"
             title="确认删除这条规则？"
@@ -219,7 +225,7 @@ const Conversation = (props: Props) => {
         </Form.Item>
       </Form>
       <ButtonBox>
-        <Link to="/save-rules-conversation">
+        <Link to="/save-rules-conversation" state={{ tabKey: '2', optionKey: '2' }}>
           <Button type="primary">
             <span style={{ fontSize: '14px' }} className="font_family icon-xinjiansvg1">
               &nbsp;添加规则

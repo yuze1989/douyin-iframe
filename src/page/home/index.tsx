@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
 import { Card, Tabs } from 'antd';
 import { getUrlOption } from 'utils';
+import { useLocation } from 'react-router-dom';
+import { IObjectKeys } from 'types/public';
 import UserManage from './components/userManage';
 import UserActiveSetting from './components/UserActiveSetting';
 // import UserInformation from './components/UserInformation';
 
 const { TabPane } = Tabs;
 const Home = () => {
-  const tabsIndex = localStorage.getItem('tabsIndex') || '1';
-  const [tabKey, setTabKey] = useState<string>(tabsIndex);
+  const { state } = useLocation();
+  const [tabKey, setTabKey] = useState(state?.tabKey || '1');
+  console.log('tabKey', tabKey);
   const urlParams = getUrlOption(window.location.href);
   const channel = urlParams?.channel || localStorage.getItem('channel');
   const openId = localStorage.getItem('openId') || urlParams?.openId;
   localStorage.setItem('openId', openId);
   const goTabs = (key: string) => {
-    localStorage.setItem('tabsIndex', key);
     setTabKey(key);
   };
   return (

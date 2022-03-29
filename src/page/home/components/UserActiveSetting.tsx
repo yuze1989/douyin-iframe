@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { Radio } from 'antd';
+import { useLocation } from 'react-router-dom';
 import Comments from './interaction/Comments';
 import Conversation from './interaction/Conversation';
 import PrivateLetter from './interaction/PrivateLetter';
@@ -10,11 +11,11 @@ interface Props {
 }
 const UserActiveSetting = (props: Props) => {
   // const { openId } = props;
+  const { state } = useLocation();
+  const [optionKey, setOptionKey] = useState(state?.optionKey || '1');
+  console.log('optionKey', optionKey);
   const openId = localStorage.getItem('openId') || '';
-  const childIndex = localStorage.getItem('childIndex') || '1';
-  const [optionKey, setOptionKey] = useState(childIndex);
   const changeOptionKey = (key: string) => {
-    localStorage.setItem('childIndex', key);
     setOptionKey(key);
   };
   useEffect(() => {

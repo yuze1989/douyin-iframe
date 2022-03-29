@@ -6,7 +6,7 @@ import { TiktokList } from 'types/home';
 import { UploadChangeParam } from 'antd/lib/upload';
 import { UploadFile } from 'antd/lib/upload/interface';
 import { KeyWordListType, RulesPropsType } from 'types/rules';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useCloudUpload } from 'utils/upload';
 import {
   Space, Typography, Card, Form, Select, Switch, Button, message, Upload, Spin, Input,
@@ -98,20 +98,23 @@ const TextImg = (props: Props) => {
         )
       }
       {value?.msgType === 'image' && (
-        <Upload
-          name="file"
-          listType="picture-card"
-          className="avatar-uploader"
-          headers={headers}
-          showUploadList={false}
-          beforeUpload={(file) => beforeUpload(file)}
-          action={ossData?.host}
-          data={getExtraData}
-          maxCount={1}
-          onChange={(fileInfo) => handleChange(fileInfo)}
-        >
-          {value?.image?.attachmentPath ? <img src={value?.image?.attachmentPath} alt="avatar" style={{ width: '100%', maxHeight: '100%' }} /> : uploadButton}
-        </Upload>
+        <>
+          <Upload
+            name="file"
+            listType="picture-card"
+            className="avatar-uploader"
+            headers={headers}
+            showUploadList={false}
+            beforeUpload={(file) => beforeUpload(file)}
+            action={ossData?.host}
+            data={getExtraData}
+            maxCount={1}
+            onChange={(fileInfo) => handleChange(fileInfo)}
+          >
+            {value?.image?.attachmentPath ? <img src={value?.image?.attachmentPath} alt="avatar" style={{ width: '100%', maxHeight: '100%' }} /> : uploadButton}
+          </Upload>
+          <Text className="tips">上传图片须小于1500像素，小于5M。</Text>
+        </>
       )}
     </>
   );
@@ -120,6 +123,7 @@ const TextImg = (props: Props) => {
 const PrivateLetterRules = () => {
   const navigate = useNavigate();
   const openId = localStorage.getItem('openId') || '';
+  const state = useLocation();
   const urlParams = getUrlOption(window.location.href);
   const id = Number(urlParams?.id) || '';
   const [form] = Form.useForm();
@@ -170,8 +174,8 @@ const PrivateLetterRules = () => {
     }).then((res) => {
       const { success } = res;
       if (success) {
+        navigate('/home', { ...state });
         message.success('保存成功！');
-        navigate('/home');
       } else {
         message.error(res?.errMessage);
       }
@@ -208,7 +212,7 @@ const PrivateLetterRules = () => {
         title={id ? '编辑规则' : '添加规则'}
         style={{ margin: '2rem 2rem 0' }}
         bodyStyle={{ padding: 0 }}
-        extra={<a className="font_family icon-fanhui blue" onClick={() => navigate(-1)}>返回</a>}
+        extra={<a className="font_family icon-fanhui blue" onClick={() => navigate('/home', { ...state })}>返回</a>}
       >
         <Form
           {...layout}
@@ -412,6 +416,14 @@ const ItemBox = styled.div`
   align-items: center;
   .ant-upload.ant-upload-select-picture-card{
     margin: 0;
+  }
+  .tips{
+    position: absolute;
+    width: 300px;
+    bottom: 0;
+    left: calc(100% + 10px);
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.45);
   }
 `;
 const TextAreaBox = styled.div`

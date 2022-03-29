@@ -6,7 +6,7 @@ import {
   paginationDataType, KeyWordListType,
 } from 'types/home';
 import { DetailContextType } from 'types/rules';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Form, Input, Select, Button, Table, Pagination, TablePaginationConfig, message, Switch,
   Popconfirm, Spin, Tooltip, Typography,
@@ -23,11 +23,13 @@ const Comments = (props: Props) => {
   const { openId } = props;
   // const businessType
   const navigate = useNavigate();
+  const { state } = useLocation();
+  console.log('state', state);
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [accountList, setAccountList] = useState<TiktokList[]>([]);
   const [tableData, setTableData] = useState<InteractTableDataType>();
-  const [pageObject, setPageObject] = useState<paginationDataType>();
+  const [pageObject, setPageObject] = useState<paginationDataType>(state?.pageObject);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [detailContent, setDetailContent] = useState<DetailContextType>();
   // 获取适用账号
@@ -70,9 +72,9 @@ const Comments = (props: Props) => {
   const toDetail = (record: RegulationDataType) => {
     getDetail({ id: record?.id });
   };
-  const toEdit = (record: RegulationDataType) => {
-    navigate(`/comment-rules?id=${record?.id}`);
-  };
+  // const toEdit = (record: RegulationDataType) => {
+  //   navigate(`/comment-rules?id=${record?.id}`, { tabKey: '2', optionKey: '1' });
+  // };
   const confirm = (record: RegulationDataType) => {
     setLoading(true);
     deleteHandler({ id: record?.id });
@@ -126,7 +128,7 @@ const Comments = (props: Props) => {
   };
   const onReset = () => {
     form.resetFields();
-    getRegulationList();
+    getRegulationList({ pageIndex: 1, pageSize: 10 });
   };
   useEffect(() => {
     getTiktokAccount();
@@ -232,7 +234,9 @@ const Comments = (props: Props) => {
       render: (text, record, index) => (
         <>
           <Button type="link" onClick={() => toDetail(record)}>详情</Button>
-          <Button type="link" onClick={() => toEdit(record)}>编辑</Button>
+          <Link to={`/comment-rules?id=${record?.id}`} state={{ tabKey: '2', optionKey: '1', pageObject }}>
+            <Button type="link">编辑</Button>
+          </Link>
           <Popconfirm
             placement="topLeft"
             title="确认删除这条规则？"
@@ -287,7 +291,7 @@ const Comments = (props: Props) => {
         </Form.Item>
       </Form>
       <ButtonBox>
-        <Link to="/comment-rules">
+        <Link to="/comment-rules" state={{ tabKey: '2', optionKey: '1' }}>
           <Button type="primary">
             <span style={{ fontSize: '14px' }} className="font_family icon-xinjiansvg1">
               &nbsp;添加规则

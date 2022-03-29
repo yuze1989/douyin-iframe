@@ -5,7 +5,7 @@ import {
   RegulationDataType, TableDataType, ParmasType, TiktokList, paginationDataType, KeyWordListType,
 } from 'types/home';
 import { DetailContextType } from 'types/rules';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Form, Input, Select, Button, Table, Pagination, TablePaginationConfig, message,
   Switch, Popconfirm, Typography, Tooltip, Spin,
@@ -24,9 +24,13 @@ interface Props {
 const PrivateLetter = (props: Props) => {
   const { openId } = props;
   const navigate = useNavigate();
+  const { state } = useLocation();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [pageObject, setPageObject] = useState<paginationDataType>();
+  const [pageObject, setPageObject] = useState<paginationDataType>(state?.pageObject || {
+    pageIndex: 1,
+    pageSize: 10,
+  });
   const [accountList, setAccountList] = useState<TiktokList[]>([]);
   const [tableData, setTableData] = useState<TableDataType>();
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -45,9 +49,9 @@ const PrivateLetter = (props: Props) => {
   const toDetail = (record: RegulationDataType) => {
     getDetail({ id: record?.id });
   };
-  const toEdit = (record: RegulationDataType) => {
-    navigate(`/save-rules-private-letter?id=${record?.id}`);
-  };
+  // const toEdit = (record: RegulationDataType) => {
+  //   navigate(`/save-rules-private-letter?id=${record?.id}`);
+  // };
   const confirm = (record: RegulationDataType) => {
     deleteHandler({ id: record?.id });
   };
@@ -119,7 +123,7 @@ const PrivateLetter = (props: Props) => {
   };
   const onReset = () => {
     form.resetFields();
-    getRegulationList();
+    getRegulationList({ pageIndex: 1, pageSize: 10 });
   };
   useEffect(() => {
     getTiktokAccount();
@@ -232,7 +236,9 @@ const PrivateLetter = (props: Props) => {
       render: (text, record, index) => (
         <>
           <Button type="link" onClick={() => toDetail(record)}>详情</Button>
-          <Button type="link" onClick={() => toEdit(record)}>编辑</Button>
+          <Link to={`/save-rules-private-letter?id=${record?.id}`} state={{ tabKey: '2', optionKey: '3', pageObject }}>
+            <Button type="link">编辑</Button>
+          </Link>
           <Popconfirm
             placement="topLeft"
             title="确认删除这条规则？"
@@ -277,7 +283,7 @@ const PrivateLetter = (props: Props) => {
         </Form.Item>
       </Form>
       <ButtonBox>
-        <Link to="/save-rules-private-letter">
+        <Link to="/save-rules-private-letter" state={{ tabKey: '2', optionKey: '3' }}>
           <Button type="primary">
             <span style={{ fontSize: '14px' }} className="font_family icon-xinjiansvg1">
               &nbsp;添加规则

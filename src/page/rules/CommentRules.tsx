@@ -4,7 +4,7 @@ import http from 'utils/http';
 import { getUrlOption } from 'utils';
 import { TiktokList } from 'types/home';
 // import { KeyWordListType } from 'types/rules';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Space, Typography, Card, Form, Select, Switch, Button, InputNumber, message, Input,
 } from 'antd';
@@ -17,6 +17,8 @@ const { Text } = Typography;
 
 const CommentRules = () => {
   const navigate = useNavigate();
+  const state = useLocation();
+  console.log(state);
   const openId = localStorage.getItem('openId') || '';
   const urlParams = getUrlOption(window.location.href);
   const id = Number(urlParams?.id) || '';
@@ -70,7 +72,7 @@ const CommentRules = () => {
     }).then((res) => {
       const { success } = res;
       if (success) {
-        navigate(-1);
+        navigate('/home', { ...state });
         message.success('保存成功！');
       } else {
         message.error(res?.errMessage);
@@ -100,7 +102,7 @@ const CommentRules = () => {
         title={id ? '编辑规则' : '添加规则'}
         style={{ margin: '2rem 2rem 0' }}
         bodyStyle={{ padding: 0 }}
-        extra={<a className="font_family icon-fanhui blue" onClick={() => navigate(-1)}>返回</a>}
+        extra={<a className="font_family icon-fanhui blue" onClick={() => navigate('/home', { ...state })}>返回</a>}
       >
         <Form
           {...layout}
