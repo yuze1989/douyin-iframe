@@ -8,10 +8,11 @@ import { DetailContextType } from 'types/rules';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Form, Input, Select, Button, Table, Pagination, TablePaginationConfig,
-  Switch, Popconfirm, message, Spin,
+  Switch, Popconfirm, message, Spin, Tooltip, Typography,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 
+const { Text } = Typography;
 interface Props {
   openId: String
 }
@@ -119,10 +120,27 @@ const Conversation = (props: Props) => {
       key: 'messageList',
       dataIndex: 'messageList',
       align: 'left',
+      ellipsis: true,
       render: (messageList: object[]) => (
-        messageList?.map((item: any) => (
-          <span key={item.id}>{item?.text.content}</span>
-        ))
+        <Tooltip
+          placement="bottomLeft"
+          color="#FFFFFF"
+          overlayClassName="tooltipsBox"
+          autoAdjustOverflow
+          title={
+          (
+            messageList?.map((item: any, index: number, array: object[]) => (
+              item.msgType === 'text' ? <div className="tooltipContent" key={item.id}>{item?.text.content}</div> : <span style={{ color: '#65B083' }} key={item.id}>[图片]</span>
+            ))
+          )
+        }
+        >
+          {
+            messageList?.map((item: any, index: number, array: object[]) => (
+              item.msgType === 'text' ? <Text key={item.id}>{item?.text.content}{index !== array.length - 1 && '，'}</Text> : <span style={{ color: '#65B083' }} key={item.id}>[图片]{index !== array.length - 1 && '，'}</span>
+            ))
+          }
+        </Tooltip>
       ),
     },
     {

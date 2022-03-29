@@ -13,6 +13,8 @@ import {
 import { ColumnsType } from 'antd/lib/table';
 import DetailModal from './DetailModal';
 
+import 'page/rules/create.css';
+
 const { Text, Paragraph } = Typography;
 
 interface Props {
@@ -156,9 +158,27 @@ const PrivateLetter = (props: Props) => {
       align: 'left',
       ellipsis: true,
       render: (keyWordList?: KeyWordListType[]) => (
-        keyWordList?.map((item: KeyWordListType, index: number, array: KeyWordListType[]) => (
-          <span key={item.id}>{item.keyWord}{index !== array.length - 1 && '，'}</span>
-        ))
+        // keyWordList?.map((item: KeyWordListType, index: number, array: KeyWordListType[]) => (
+        //   <span key={item.id}>{item.keyWord}{index !== array.length - 1 && '，'}</span>
+        // ))
+        <Tooltip
+          placement="bottomLeft"
+          color="#FFFFFF"
+          overlayClassName="tooltipsBox"
+          destroyTooltipOnHide
+          autoAdjustOverflow
+          title={
+            keyWordList?.map((item: KeyWordListType, index: number, array: KeyWordListType[]) => (
+              <span key={item.id}>{item.keyWord}{index !== array.length - 1 && '，'}</span>
+            ))
+          }
+        >
+          {
+            keyWordList?.map((item: KeyWordListType, index: number, array: KeyWordListType[]) => (
+              <span key={item.id}>{item.keyWord}{index !== array.length - 1 && '，'}</span>
+            ))
+          }
+        </Tooltip>
       ),
     },
     {

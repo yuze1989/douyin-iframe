@@ -42,11 +42,12 @@ const App = () => {
       <p>暂无数据</p>
     </div>
   );
-  // useEffect(() => {
-  //   return function cleanup(){
-  //     console.log('object');
-  //   }
-  // })
+  useEffect(() => {
+    console.log('====');
+    return () => {
+      console.log('hello world');
+    };
+  });
   return (
     <ConfigProvider locale={zhCN} renderEmpty={customizeRenderEmpty}>
       <Router />

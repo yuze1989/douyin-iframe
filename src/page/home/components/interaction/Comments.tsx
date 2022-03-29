@@ -9,11 +9,12 @@ import { DetailContextType } from 'types/rules';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Form, Input, Select, Button, Table, Pagination, TablePaginationConfig, message, Switch,
-  Popconfirm, Spin,
+  Popconfirm, Spin, Tooltip, Typography,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import DetailModal from './DetailModal';
 
+const { Text } = Typography;
 interface Props {
   openId: String
 }
@@ -155,10 +156,29 @@ const Comments = (props: Props) => {
       key: 'keyWordList',
       dataIndex: 'keyWordList',
       align: 'left',
+      ellipsis: true,
       render: (keyWordList?: KeyWordListType[]) => (
-        keyWordList?.map((item: KeyWordListType, index: number, array: KeyWordListType[]) => (
-          <span key={item.id}>{item.keyWord}{index !== array.length - 1 && '，'}</span>
-        ))
+        // keyWordList?.map((item: KeyWordListType, index: number, array: KeyWordListType[]) => (
+        //   <span key={item.id}>{item.keyWord}{index !== array.length - 1 && '，'}</span>
+        // ))
+        <Tooltip
+          placement="bottomLeft"
+          color="#FFFFFF"
+          overlayClassName="tooltipsBox"
+          destroyTooltipOnHide
+          autoAdjustOverflow
+          title={
+            keyWordList?.map((item: KeyWordListType, index: number, array: KeyWordListType[]) => (
+              <span key={item.id}>{item.keyWord}{index !== array.length - 1 && '，'}</span>
+            ))
+          }
+        >
+          {
+            keyWordList?.map((item: KeyWordListType, index: number, array: KeyWordListType[]) => (
+              <span key={item.id}>{item.keyWord}{index !== array.length - 1 && '，'}</span>
+            ))
+          }
+        </Tooltip>
       ),
     },
     {
@@ -167,10 +187,27 @@ const Comments = (props: Props) => {
       key: 'messageList',
       dataIndex: 'messageList',
       align: 'left',
+      ellipsis: true,
       render: (messageList: object[]) => (
-        messageList?.map((item: any, index: number, array: object[]) => (
-          item.msgType === 'text' ? <span key={item.id}>{item?.text.content}{index !== array.length - 1 && '，'}</span> : <span style={{ color: '#65B083' }} key={item.id}>[图片]{index !== array.length - 1 && '，'}</span>
-        ))
+        <Tooltip
+          placement="bottomLeft"
+          color="#FFFFFF"
+          overlayClassName="tooltipsBox"
+          autoAdjustOverflow
+          title={
+          (
+            messageList?.map((item: any, index: number, array: object[]) => (
+              item.msgType === 'text' ? <div className="tooltipContent" key={item.id}>{item?.text.content}</div> : <span style={{ color: '#65B083' }} key={item.id}>[图片]</span>
+            ))
+          )
+        }
+        >
+          {
+            messageList?.map((item: any, index: number, array: object[]) => (
+              item.msgType === 'text' ? <Text key={item.id}>{item?.text.content}{index !== array.length - 1 && '，'}</Text> : <span style={{ color: '#65B083' }} key={item.id}>[图片]{index !== array.length - 1 && '，'}</span>
+            ))
+          }
+        </Tooltip>
       ),
     },
     {

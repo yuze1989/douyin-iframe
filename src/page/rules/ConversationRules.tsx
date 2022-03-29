@@ -125,7 +125,7 @@ const ConversationRules = () => {
           <Form.Item label="功能启用" name={['status']} valuePropName="checked" rules={[{ required: true }]}>
             <Switch />
           </Form.Item>
-          <Form.Item label="自动回复内容" className="requireTitle" extra="当回复内容有多条时，随机回复一条" rules={[{ required: true }]}>
+          <Form.Item label="自动回复内容" className="requireTitle" rules={[{ required: true }]}>
             <Form.List name="messageList">
               {(fields, { add, remove }) => (
                 <>
