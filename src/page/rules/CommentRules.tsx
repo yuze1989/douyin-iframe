@@ -27,18 +27,12 @@ const CommentRules = () => {
     labelCol: { span: 3 },
     wrapperCol: { span: 13 },
   };
-  const onFinish = (values: any) => {
+  const onFinish = () => {
     saveRegulation();
   };
   /* eslint-disable no-template-curly-in-string */
   const validateMessages = {
-    required: '${label} 不能为空!',
-    types: {
-      number: '${label} 只能是数字',
-    },
-    number: {
-      range: '${label} 必须在 ${min} 和 ${max}之间',
-    },
+    required: '${label}不能为空!',
   };
   const rulesOption = [
     { label: '半匹配', value: 1 },
@@ -72,7 +66,7 @@ const CommentRules = () => {
     http.post('/social/auto-reply-rule/save-rule', {
       ...value,
       id,
-      status: status || status === 1 ? 1 : 2,
+      status: status ? 1 : 2,
     }).then((res) => {
       const { success } = res;
       if (success) {
@@ -89,7 +83,7 @@ const CommentRules = () => {
     if (id) {
       http.get('/social/auto-reply-rule/get_rule_detail', { id }).then((res) => {
         const { success, data } = res;
-        Object.assign(data, { status: data.status === 1 ? 1 : 0 });
+        Object.assign(data, { status: data.status === 1 });
         if (success) {
           form.setFieldsValue(data);
         }
@@ -141,7 +135,7 @@ const CommentRules = () => {
           <Form.Item name={['name']} label="规则名称" rules={[{ required: true }]}>
             <InputShowCount style={{ width: 400 }} placeholder="请输入规则名称" maxLength={30} />
           </Form.Item>
-          <Form.Item name={['status']} label="功能启用" valuePropName="checked" rules={[{ required: true }]}>
+          <Form.Item name={['status']} label="功能启用" valuePropName="checked">
             <Switch />
           </Form.Item>
           <Form.Item label="关键词" className="requireTitle" rules={[{ required: true }]}>
@@ -164,7 +158,7 @@ const CommentRules = () => {
                       <Form.Item
                         {...restField}
                         name={[name, 'keyWord']}
-                        rules={[{ required: true, message: '关键词不能为空' }]}
+                        rules={[{ required: true, message: '关键词不能为空！' }]}
                       >
                         <InputShowCount style={{ width: 290 }} placeholder="请输入关键词" maxLength={30} />
                       </Form.Item>
@@ -242,12 +236,9 @@ const CommentRules = () => {
             extra="为了避免回复评论雷同过多，请设置每个视频每天的自动回复条数在50条左右。"
             rules={[{
               required: true,
-              type: 'number',
-              min: 1,
-              max: 200,
             }]}
           >
-            <InputNumber style={{ marginBottom: '16px' }} placeholder="请输入" />
+            <InputNumber style={{ marginBottom: '16px' }} min={1} max={200} placeholder="请输入" />
           </Form.Item>
           <ButtonBox>
             <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>

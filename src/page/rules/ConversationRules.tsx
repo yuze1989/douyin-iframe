@@ -22,6 +22,7 @@ const ConversationRules = () => {
   //   console.log(checked);
   // };
   const onFinish = () => {
+    // console.log(form.getFieldsValue());
     saveRegulation();
   };
   // 获取适用账号
@@ -49,7 +50,7 @@ const ConversationRules = () => {
       businessType: 2,
       ...value,
       id,
-      status: status || status === 1 ? 1 : 2,
+      status: status ? 1 : 2,
     }).then((res) => {
       const { success } = res;
       if (success) {
@@ -66,8 +67,9 @@ const ConversationRules = () => {
     if (id) {
       http.get('/social/auto-reply-rule/get_rule_detail', { id }).then((res) => {
         const { success, data } = res;
-        Object.assign(data, { status: data.status === 1 ? 1 : 0 });
+        Object.assign(data, { status: data.status === 1 });
         if (success) {
+          setMsg(data?.messageList[0]?.text?.content);
           form.setFieldsValue(data);
         }
       });
@@ -122,7 +124,7 @@ const ConversationRules = () => {
               }
             </Select>
           </Form.Item>
-          <Form.Item label="功能启用" name={['status']} valuePropName="checked" rules={[{ required: true }]}>
+          <Form.Item label="功能启用" name={['status']} valuePropName="checked">
             <Switch />
           </Form.Item>
           <Form.Item label="自动回复内容" className="requireTitle" rules={[{ required: true }]}>

@@ -37,3 +37,20 @@ export interface DetailContextType {
   tenantId?: number;
   tiktokUserId?: number;
 }
+
+export interface RulesPropsType {
+  id?: number;
+  image?: RulesPropsImage;
+  msgType?: string;
+  text?: RulesPropsText;
+}
+
+export interface RulesPropsImage {
+  title?: string;
+  attachmentId?: number;
+  attachmentPath?: string;
+}
+
+export interface RulesPropsText {
+  content?: string;
+}

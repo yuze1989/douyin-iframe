@@ -5,7 +5,7 @@ import { getUrlOption } from 'utils';
 import { TiktokList } from 'types/home';
 import { UploadChangeParam } from 'antd/lib/upload';
 import { UploadFile } from 'antd/lib/upload/interface';
-import { KeyWordListType } from 'types/rules';
+import { KeyWordListType, RulesPropsType } from 'types/rules';
 import { useNavigate } from 'react-router-dom';
 import { useCloudUpload } from 'utils/upload';
 import {
@@ -17,14 +17,14 @@ import './create.css';
 const { Text } = Typography;
 
 interface Props {
-  value?: any;
+  value?: RulesPropsType;
+  tiktokId?: number;
   onChange?: (val: any) => void;
 }
 const TextImg = (props: Props) => {
-  const { value, onChange } = props;
+  const { value, tiktokId, onChange } = props;
   const openId = localStorage.getItem('openId') || '';
   const headers = { 'tiktok-token': openId };
-  const [tiktokId] = useState(1);
   const { ossData, getExtraData, uploadAttachment } = useCloudUpload('messagecenter');
   const uploadButton = (
     <div><span style={{ fontSize: '14px' }} className="font_family icon-tianjiafujian">添加</span></div>
@@ -44,6 +44,7 @@ const TextImg = (props: Props) => {
       const data = await uploadAttachment(fileTitle, 'image', response?.data?.filename, size, uid, tiktokId, 1);
       if (data) {
         onChange?.({
+          id: value?.id,
           msgType: value?.msgType,
           image: {
             uid,
@@ -74,13 +75,13 @@ const TextImg = (props: Props) => {
   };
   const handleText = (text: string) => {
     onChange?.({
+      id: value?.id,
       msgType: value?.msgType,
       text: {
         content: text,
       },
     });
   };
-  // console.log('value', value);
   return (
     <>
       {
@@ -123,7 +124,7 @@ const PrivateLetterRules = () => {
   const id = Number(urlParams?.id) || '';
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [tiktokId, setTiktokId] = useState(0);
+  const [tiktokUserId, setTiktokUserId] = useState(0);
   const [accountList, setAccountList] = useState<TiktokList[]>([]); // 抖音账号列表
   const [keyWordList, setKeyWordList] = useState<KeyWordListType[]>([{ keyWord: '' }]); // 关键词
   const layout = {
@@ -131,11 +132,11 @@ const PrivateLetterRules = () => {
     wrapperCol: { span: 13 },
   };
   const changeAccount = (value: number) => {
-    setTiktokId(value);
+    setTiktokUserId(value);
   };
   const onFinish = (values: any) => {
     console.log('onFinish:::', values);
-    saveRegulation();
+    // saveRegulation();
   };
   /* eslint-disable no-template-curly-in-string */
   const validateMessages = {
@@ -165,7 +166,7 @@ const PrivateLetterRules = () => {
     http.post('/social/auto-reply-rule/save-rule', {
       ...values,
       id,
-      status: values.status || values.status === 1 ? 1 : 2,
+      status: values.status ? 1 : 2,
     }).then((res) => {
       const { success } = res;
       if (success) {
@@ -178,7 +179,7 @@ const PrivateLetterRules = () => {
   };
   // 新增回复内容
   const addRuleType = (
-    add: (defaultValue?: any, insertIndex?: number | undefined) => void,
+    add: (defaultValue?: any, insertIndex?: number) => void,
     type: string,
   ) => {
     add({ msgType: type });
@@ -189,8 +190,9 @@ const PrivateLetterRules = () => {
     if (id) {
       http.get('/social/auto-reply-rule/get_rule_detail', { id }).then((res) => {
         const { success, data } = res;
-        Object.assign(data, { status: data.status === 1 ? 1 : 0 });
+        Object.assign(data, { status: data.status === 1 });
         if (success) {
+          setTiktokUserId(data.tiktokUserId);
           form.setFieldsValue(data);
         }
       });
@@ -236,7 +238,7 @@ const PrivateLetterRules = () => {
           <Form.Item name={['name']} label="规则名称" rules={[{ required: true }]}>
             <InputShowCount style={{ width: 400 }} placeholder="请输入规则名称" maxLength={30} />
           </Form.Item>
-          <Form.Item name={['status']} label="功能启用" valuePropName="checked" rules={[{ required: true }]}>
+          <Form.Item name={['status']} label="功能启用" valuePropName="checked">
             <Switch />
           </Form.Item>
           <Form.Item label="关键词" className="requireTitle" rules={[{ required: true }]}>
@@ -259,7 +261,7 @@ const PrivateLetterRules = () => {
                       <Form.Item
                         {...restField}
                         name={[name, 'keyWord']}
-                        rules={[{ required: true, message: '关键词不能为空' }]}
+                        rules={[{ required: true, message: '关键词不能为空！' }]}
                       >
                         <InputShowCount style={{ width: 290 }} placeholder="请输入关键词" maxLength={30} />
                       </Form.Item>
@@ -307,11 +309,12 @@ const PrivateLetterRules = () => {
                           rules={[
                             {
                               required: true,
+                              whitespace: true,
                               message: '回复内容不能为空',
                             },
                           ]}
                         >
-                          <TextImg />
+                          <TextImg tiktokId={tiktokUserId && tiktokUserId} />
                         </Form.Item>
                         <span style={{ fontSize: '14px', color: '#999999', marginLeft: 10 }} className="font_family icon-shanchu" onClick={() => remove(name)} />
                       </ItemBox>
