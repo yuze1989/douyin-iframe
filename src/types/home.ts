@@ -83,10 +83,24 @@ export interface MessageListType {
 }
 
 export interface RegulationItem {
+  businessType?: number;
   data?: RegulationDataType[];
   pageIndex?: number;
   pageSize?: number;
   success?: boolean;
   totalCount?: number;
   totalPages?: number;
+}
+
+// 互动方案 tableData
+export interface InteractTableDataType{
+  pageIndex?: number;
+  pageSize?: number;
+  totalCount?: number;
+  data?: RegulationDataType[]
+}
+
+export interface paginationDataType {
+  pageIndex?: number;
+  pageSize?: number;
 }

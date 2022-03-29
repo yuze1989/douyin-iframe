@@ -135,7 +135,7 @@ const PrivateLetterRules = () => {
   };
   const onFinish = (values: any) => {
     console.log('onFinish:::', values);
-    // saveRegulation();
+    saveRegulation();
   };
   /* eslint-disable no-template-curly-in-string */
   const validateMessages = {
@@ -165,7 +165,7 @@ const PrivateLetterRules = () => {
     http.post('/social/auto-reply-rule/save-rule', {
       ...values,
       id,
-      status: values.status ? 1 : 2,
+      status: values.status || values.status === 1 ? 1 : 2,
     }).then((res) => {
       const { success } = res;
       if (success) {
@@ -189,6 +189,7 @@ const PrivateLetterRules = () => {
     if (id) {
       http.get('/social/auto-reply-rule/get_rule_detail', { id }).then((res) => {
         const { success, data } = res;
+        Object.assign(data, { status: data.status === 1 ? 1 : 0 });
         if (success) {
           form.setFieldsValue(data);
         }
@@ -236,7 +237,7 @@ const PrivateLetterRules = () => {
             <InputShowCount style={{ width: 400 }} placeholder="请输入规则名称" maxLength={30} />
           </Form.Item>
           <Form.Item name={['status']} label="功能启用" valuePropName="checked" rules={[{ required: true }]}>
-            <Switch checked />
+            <Switch />
           </Form.Item>
           <Form.Item label="关键词" className="requireTitle" rules={[{ required: true }]}>
             <Form.List name={['keyWordList']} initialValue={keyWordList}>

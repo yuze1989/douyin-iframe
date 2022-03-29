@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import http from 'utils/http';
 import {
-  RegulationDataType, TableDataType, ParmasType, TiktokList,
+  RegulationDataType, TableDataType, ParmasType, TiktokList, paginationDataType,
 } from 'types/home';
 import { DetailContextType } from 'types/rules';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Form, Input, Select, Button, Table, Pagination, TablePaginationConfig, message,
-  Switch, Popconfirm, Typography, Tooltip,
+  Switch, Popconfirm, Typography, Tooltip, Spin,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import DetailModal from './DetailModal';
@@ -23,6 +23,8 @@ const PrivateLetter = (props: Props) => {
   const { openId } = props;
   const navigate = useNavigate();
   const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
+  const [pageObject, setPageObject] = useState<paginationDataType>();
   const [accountList, setAccountList] = useState<TiktokList[]>([]);
   const [tableData, setTableData] = useState<TableDataType>();
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -38,9 +40,6 @@ const PrivateLetter = (props: Props) => {
       });
     }
   };
-  const changeStatus = (status: number | string, record: RegulationDataType, index: number) => {
-    changeStatusHandler({ ruleStatus: status === 1 ? 2 : 1, id: record?.id }, index);
-  };
   const toDetail = (record: RegulationDataType) => {
     getDetail({ id: record?.id });
   };
@@ -51,10 +50,11 @@ const PrivateLetter = (props: Props) => {
     deleteHandler({ id: record?.id });
   };
   // 启用/关闭
-  const changeStatusHandler = (params: {}, index: number) => {
-    http.post('/social/auto-reply-rule/rule-status', { ...params }).then((res) => {
+  const changeStatusHandler = (status: number, record: RegulationDataType, index: number) => {
+    http.post('/social/auto-reply-rule/rule-status', { ruleStatus: status === 1 ? 2 : 1, id: record?.id }).then((res) => {
       const { success, errMessage } = res;
       if (success) {
+        getRegulationList();
         message.success('操作成功！');
       } else {
         message.error(errMessage);
@@ -75,15 +75,22 @@ const PrivateLetter = (props: Props) => {
   };
   // 查询
   const getRegulationList = (parmas?: ParmasType) => {
+    setLoading(true);
     const value = form.getFieldsValue();
     // businessType 业务类型，1-评论规则，2-会话规则，3-私信规则
     value.businessType = 3;
-    http.post('/social/auto-reply-rule/page-rule', { ...value, ...parmas }).then((res) => {
+    const obj = parmas || pageObject;
+    http.post('/social/auto-reply-rule/page-rule', { ...value, ...obj }).then((res) => {
+      setLoading(false);
       const { success } = res;
       if (success) {
+        setPageObject({
+          pageIndex: res.pageIndex,
+          pageSize: res.pageSize,
+        });
         setTableData(res);
       }
-    });
+    }).catch(() => setLoading(false));
   };
   // 规则详情
   const getDetail = (params: {}) => {
@@ -191,8 +198,8 @@ const PrivateLetter = (props: Props) => {
       align: 'left',
       render: (status: number, record, index) => (
         <Switch
-          defaultChecked={Boolean(status === 1)}
-          onChange={() => changeStatus(status, record, index)}
+          defaultChecked={status === 1}
+          onChange={() => changeStatusHandler(status, record, index)}
         />
       ),
     },
@@ -258,15 +265,17 @@ const PrivateLetter = (props: Props) => {
           </Button>
         </Link>
       </ButtonBox>
-      <TableBox>
-        <Table
-          bordered
-          columns={columns}
-          dataSource={tableData?.data}
-          pagination={false}
-          scroll={{ x: 1300 }}
-        />
-      </TableBox>
+      <Spin spinning={loading}>
+        <TableBox>
+          <Table
+            bordered
+            columns={columns}
+            dataSource={tableData?.data}
+            pagination={false}
+            scroll={{ x: 1300 }}
+          />
+        </TableBox>
+      </Spin>
       <div className="footer-sticky">
         <Pagination
           current={tableData?.pageIndex || 0}

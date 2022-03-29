@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ConfigProvider } from 'antd';
 import moment from 'moment';
 import DouyinISV from 'douyin-isv';
@@ -42,6 +42,11 @@ const App = () => {
       <p>暂无数据</p>
     </div>
   );
+  // useEffect(() => {
+  //   return function cleanup(){
+  //     console.log('object');
+  //   }
+  // })
   return (
     <ConfigProvider locale={zhCN} renderEmpty={customizeRenderEmpty}>
       <Router />

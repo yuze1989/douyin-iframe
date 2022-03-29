@@ -2,17 +2,13 @@ import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import http from 'utils/http';
 import {
-  TableItem,
-  TableDataType,
-  TiktokList,
-  RegulationDataType,
-  ParmasType,
+  TableItem, TableDataType, TiktokList, RegulationDataType, ParmasType, paginationDataType,
 } from 'types/home';
 import { DetailContextType } from 'types/rules';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Form, Input, Select, Button, Table, Pagination, TablePaginationConfig,
-  Switch, Popconfirm, message,
+  Switch, Popconfirm, message, Spin,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 
@@ -24,8 +20,10 @@ const Conversation = (props: Props) => {
   const { openId } = props;
   const navigate = useNavigate();
   const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
   const [accountList, setAccountList] = useState<TiktokList[]>([]);
   const [tableData, setTableData] = useState<TableDataType>();
+  const [pageObject, setPageObject] = useState<paginationDataType>();
   // 获取适用账号
   const getTiktokAccount = () => {
     if (openId) {
@@ -38,19 +36,22 @@ const Conversation = (props: Props) => {
     }
   };
   // 查询
-  const getRegulationList = (params?: ParmasType) => {
+  const getRegulationList = (parmas?: ParmasType) => {
     const value = form.getFieldsValue();
     // businessType 业务类型，1-评论规则，2-会话规则，3-私信规则
     value.businessType = 2;
-    http.post('/social/auto-reply-rule/page-rule', { ...value, ...params }).then((res) => {
+    const obj = parmas || pageObject;
+    http.post('/social/auto-reply-rule/page-rule', { ...value, ...obj }).then((res) => {
+      setLoading(false);
       const { success } = res;
       if (success) {
+        setPageObject({
+          pageIndex: res.pageIndex,
+          pageSize: res.pageSize,
+        });
         setTableData(res);
       }
-    });
-  };
-  const changeStatus = (status: number | string, record: RegulationDataType, index: number) => {
-    changeStatusHandler({ ruleStatus: status === 1 ? 2 : 1, id: record?.id }, index);
+    }).catch(() => setLoading(false));
   };
   const toEdit = (record: RegulationDataType, index: number) => {
     navigate(`/save-rules-conversation?id=${record?.id}`);
@@ -59,11 +60,14 @@ const Conversation = (props: Props) => {
     deleteHandler({ id: record?.id });
   };
   // 启用/关闭
-  const changeStatusHandler = (params: {}, index: number) => {
-    http.post('/social/auto-reply-rule/rule-status', { ...params }).then((res) => {
-      const { success } = res;
+  const changeStatusHandler = (status: number, record: RegulationDataType, index: number) => {
+    http.post('/social/auto-reply-rule/rule-status', { ruleStatus: status === 1 ? 2 : 1, id: record?.id }).then((res) => {
+      const { success, errMessage } = res;
       if (success) {
+        getRegulationList();
         message.success('操作成功！');
+      } else {
+        message.error(errMessage);
       }
     });
   };
@@ -130,7 +134,7 @@ const Conversation = (props: Props) => {
       render: (status: number, record, index) => (
         <Switch
           defaultChecked={Boolean(status === 1)}
-          onChange={() => changeStatus(status, record, index)}
+          onChange={() => changeStatusHandler(status, record, index)}
         />
       ),
     },
@@ -205,14 +209,16 @@ const Conversation = (props: Props) => {
           </Button>
         </Link>
       </ButtonBox>
-      <Table
-        // style={{ margin: '0 2rem' }}
-        bordered
-        columns={columns}
-        dataSource={tableData?.data}
-        pagination={false}
-        scroll={{ x: 1300 }}
-      />
+      <Spin spinning={loading}>
+        <Table
+          // style={{ margin: '0 2rem' }}
+          bordered
+          columns={columns}
+          dataSource={tableData?.data}
+          pagination={false}
+          scroll={{ x: 1300 }}
+        />
+      </Spin>
       <div className="footer-sticky">
         <Pagination
           current={tableData?.pageIndex || 0}
