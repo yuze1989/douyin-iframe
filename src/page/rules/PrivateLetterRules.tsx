@@ -136,7 +136,7 @@ const PrivateLetterRules = () => {
   };
   const onFinish = (values: any) => {
     console.log('onFinish:::', values);
-    // saveRegulation();
+    saveRegulation();
   };
   /* eslint-disable no-template-curly-in-string */
   const validateMessages = {
@@ -292,7 +292,6 @@ const PrivateLetterRules = () => {
           <Form.Item
             label="回复内容"
             className="requireTitle"
-            rules={[{ required: true }]}
             extra="当回复内容有多条时，随机回复一条"
           >
             <Spin spinning={loading}>
@@ -306,17 +305,24 @@ const PrivateLetterRules = () => {
                         <Form.Item
                           {...fields}
                           name={name}
+                          required
                           rules={[
                             {
-                              required: true,
-                              whitespace: true,
-                              message: '回复内容不能为空',
+                              validator: (names, value, cb) => {
+                                if (value?.text?.content || value?.image?.attachmentId) {
+                                  return Promise.resolve();
+                                }
+                                return Promise.reject(new Error('回复内容不能为空'));
+                              },
                             },
                           ]}
                         >
                           <TextImg tiktokId={tiktokUserId && tiktokUserId} />
                         </Form.Item>
-                        <span style={{ fontSize: '14px', color: '#999999', marginLeft: 10 }} className="font_family icon-shanchu" onClick={() => remove(name)} />
+                        {
+                          fields.length !== 1
+                          && <span style={{ fontSize: '14px', color: '#999999', marginLeft: 10 }} className="font_family icon-shanchu" onClick={() => remove(name)} />
+                        }
                       </ItemBox>
                     ))}
                     <Form.Item>

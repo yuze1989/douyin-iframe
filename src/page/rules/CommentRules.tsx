@@ -3,7 +3,7 @@ import styled from '@emotion/styled';
 import http from 'utils/http';
 import { getUrlOption } from 'utils';
 import { TiktokList } from 'types/home';
-import { KeyWordListType } from 'types/rules';
+// import { KeyWordListType } from 'types/rules';
 import { useNavigate } from 'react-router-dom';
 import {
   Space, Typography, Card, Form, Select, Switch, Button, InputNumber, message, Input,
