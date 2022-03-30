@@ -42,6 +42,7 @@ const Conversation = (props: Props) => {
   };
   // 查询
   const getRegulationList = (parmas?: ParmasType) => {
+    setLoading(true);
     const value = form.getFieldsValue();
     // businessType 业务类型，1-评论规则，2-会话规则，3-私信规则
     value.businessType = 2;
@@ -149,13 +150,13 @@ const Conversation = (props: Props) => {
     },
     {
       title: '启用规则',
-      width: 180,
+      width: 100,
       key: 'status',
       dataIndex: 'status',
-      align: 'left',
+      align: 'center',
       render: (status: number, record, index) => (
         <Switch
-          defaultChecked={Boolean(status === 1)}
+          checked={status === 1}
           onChange={() => changeStatusHandler(status, record, index)}
         />
       ),
@@ -165,7 +166,7 @@ const Conversation = (props: Props) => {
       width: 220,
       key: 'handler',
       dataIndex: 'handler',
-      align: 'left',
+      align: 'center',
       render: (text, record, index) => (
         <>
           <Link to={`/save-rules-conversation?id=${record?.id}`} state={{ tabKey: '2', optionKey: '2', pageObject }}>
@@ -226,7 +227,7 @@ const Conversation = (props: Props) => {
       </Form>
       <ButtonBox>
         <Link to="/save-rules-conversation" state={{ tabKey: '2', optionKey: '2' }}>
-          <Button type="primary">
+          <Button type="primary" disabled={tableData?.data?.length === 2}>
             <span style={{ fontSize: '14px' }} className="font_family icon-xinjiansvg1">
               &nbsp;添加规则
             </span>

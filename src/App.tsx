@@ -43,11 +43,6 @@ const App = () => {
     </div>
   );
   useEffect(() => {
-    console.log('====');
-    return () => {
-      console.log('000000');
-      localStorage.clear();
-    };
   });
   return (
     <ConfigProvider locale={zhCN} renderEmpty={customizeRenderEmpty}>

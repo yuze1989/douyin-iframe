@@ -21,6 +21,7 @@ export interface ContentListType {
   imgUrl?: string;
   uid?: string;
   title?: string;
+  text?: RulesPropsText;
   attachmentId?: number | string;
 }
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import { Radio } from 'antd';
 import { useLocation } from 'react-router-dom';
@@ -13,13 +13,10 @@ const UserActiveSetting = (props: Props) => {
   // const { openId } = props;
   const { state } = useLocation();
   const [optionKey, setOptionKey] = useState(state?.optionKey || '1');
-  console.log('optionKey', optionKey);
   const openId = localStorage.getItem('openId') || '';
   const changeOptionKey = (key: string) => {
     setOptionKey(key);
   };
-  useEffect(() => {
-  }, []);
   return (
     <div>
       <TabsBox>

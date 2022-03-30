@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import http from 'utils/http';
 import {
-  TableDataType, TiktokList, RegulationDataType, ParmasType, InteractTableDataType,
+  TiktokList, RegulationDataType, ParmasType, InteractTableDataType,
   paginationDataType, KeyWordListType,
 } from 'types/home';
-import { DetailContextType } from 'types/rules';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { ContentListType, DetailContextType } from 'types/rules';
+import { Link, useLocation } from 'react-router-dom';
 import {
   Form, Input, Select, Button, Table, Pagination, TablePaginationConfig, message, Switch,
   Popconfirm, Spin, Tooltip, Typography,
@@ -21,10 +21,7 @@ interface Props {
 
 const Comments = (props: Props) => {
   const { openId } = props;
-  // const businessType
-  const navigate = useNavigate();
   const { state } = useLocation();
-  console.log('state', state);
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [accountList, setAccountList] = useState<TiktokList[]>([]);
@@ -72,15 +69,8 @@ const Comments = (props: Props) => {
   const toDetail = (record: RegulationDataType) => {
     getDetail({ id: record?.id });
   };
-  // const toEdit = (record: RegulationDataType) => {
-  //   navigate(`/comment-rules?id=${record?.id}`, { tabKey: '2', optionKey: '1' });
-  // };
-  const confirm = (record: RegulationDataType) => {
-    setLoading(true);
-    deleteHandler({ id: record?.id });
-  };
   // 启用/关闭
-  const changeStatusHandler = (status: number, record: RegulationDataType, index: number) => {
+  const changeStatusHandler = (status: number, record: RegulationDataType) => {
     http.post('/social/auto-reply-rule/rule-status', { ruleStatus: status === 1 ? 2 : 1, id: record?.id }).then((res) => {
       const { success, errMessage } = res;
       if (success) {
@@ -92,8 +82,9 @@ const Comments = (props: Props) => {
     });
   };
   // 删除规则
-  const deleteHandler = (params: {}) => {
-    http.get('/social/auto-reply-rule/del-rule', { ...params }).then((res) => {
+  const deleteHandler = (record: RegulationDataType) => {
+    setLoading(true);
+    http.get('/social/auto-reply-rule/del-rule', { id: record?.id }).then((res) => {
       setLoading(false);
       const { success, errMessage } = res;
       if (success) {
@@ -110,21 +101,21 @@ const Comments = (props: Props) => {
       const { success, data, errMessage } = res;
       if (success) {
         setDetailContent(data);
-        showModal();
-      } else {
-        message.error(errMessage);
+        setIsModalVisible(true);
+        return;
       }
+      message.error(errMessage);
     });
   };
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
+  // const showModal = () => {
+  //   setIsModalVisible(true);
+  // };
   const handleCancel = () => {
     setIsModalVisible(false);
     setDetailContent(undefined);
   };
   const onFinish = () => {
-    getRegulationList();
+    getRegulationList({ pageIndex: 1, pageSize: 10 });
   };
   const onReset = () => {
     form.resetFields();
@@ -148,8 +139,8 @@ const Comments = (props: Props) => {
       key: 'tiktokUserId',
       dataIndex: 'tiktokUserId',
       align: 'left',
-      render: (tiktokUserId?: number) => (
-        accountList.find((item: any) => item.id === tiktokUserId)?.nickname
+      render: (tiktokUserId: number) => (
+        accountList.find((item: TiktokList) => item.id === tiktokUserId)?.nickname
       ),
     },
     {
@@ -198,15 +189,15 @@ const Comments = (props: Props) => {
           autoAdjustOverflow
           title={
           (
-            messageList?.map((item: any, index: number, array: object[]) => (
-              item.msgType === 'text' ? <div className="tooltipContent" key={item.id}>{item?.text.content}</div> : <span style={{ color: '#65B083' }} key={item.id}>[图片]</span>
+            messageList?.map((item: ContentListType, index: number, array: object[]) => (
+              item.msgType === 'text' ? <div className="tooltipContent" key={item.id}>{item?.text?.content}</div> : <span style={{ color: '#65B083' }} key={item.id}>[图片]</span>
             ))
           )
         }
         >
           {
-            messageList?.map((item: any, index: number, array: object[]) => (
-              item.msgType === 'text' ? <Text key={item.id}>{item?.text.content}{index !== array.length - 1 && '，'}</Text> : <span style={{ color: '#65B083' }} key={item.id}>[图片]{index !== array.length - 1 && '，'}</span>
+            messageList?.map((item: ContentListType, index: number, array: object[]) => (
+              item.msgType === 'text' ? <Text key={item.id}>{item?.text?.content}{index !== array.length - 1 && '，'}</Text> : <span style={{ color: '#65B083' }} key={item.id}>[图片]{index !== array.length - 1 && '，'}</span>
             ))
           }
         </Tooltip>
@@ -214,14 +205,14 @@ const Comments = (props: Props) => {
     },
     {
       title: '启用规则',
-      width: 180,
+      width: 100,
       key: 'status',
       dataIndex: 'status',
-      align: 'left',
+      align: 'center',
       render: (status: number, record, index) => (
         <Switch
           checked={status === 1}
-          onChange={() => changeStatusHandler(status, record, index)}
+          onChange={() => changeStatusHandler(status, record)}
         />
       ),
     },
@@ -230,7 +221,7 @@ const Comments = (props: Props) => {
       width: 220,
       key: 'handler',
       dataIndex: 'handler',
-      align: 'left',
+      align: 'center',
       render: (text, record, index) => (
         <>
           <Button type="link" onClick={() => toDetail(record)}>详情</Button>
@@ -240,7 +231,7 @@ const Comments = (props: Props) => {
           <Popconfirm
             placement="topLeft"
             title="确认删除这条规则？"
-            onConfirm={() => confirm(record)}
+            onConfirm={() => deleteHandler(record)}
             okText="确认"
             cancelText="取消"
           >
@@ -265,7 +256,7 @@ const Comments = (props: Props) => {
             {
               accountList && accountList.map((item: any) => (
                 <Select.Option
-                  value={item.id}
+                  value={item?.id}
                   key={item.apiAuthorId}
                 >
                   {item.nickname}

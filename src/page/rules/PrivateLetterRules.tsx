@@ -90,6 +90,7 @@ const TextImg = (props: Props) => {
             <Input.TextArea
               placeholder="请输入回复内容"
               showCount
+              autoSize={{ minRows: 5, maxRows: 5 }}
               maxLength={300}
               value={value?.text?.content}
               onChange={(e) => handleText(e.target.value)}
@@ -270,7 +271,7 @@ const PrivateLetterRules = () => {
                         <InputShowCount style={{ width: 290 }} placeholder="请输入关键词" maxLength={30} />
                       </Form.Item>
                       {
-                        key === 0 ? null : <span style={{ fontSize: '14px', color: '#999999' }} className="font_family icon-shanchu" onClick={() => remove(name)} />
+                        key !== 0 && (<span className="font_family icon-shanchu" onClick={() => remove(name)} />)
                       }
                     </Space>
                   ))}
@@ -324,8 +325,7 @@ const PrivateLetterRules = () => {
                           <TextImg tiktokId={tiktokUserId && tiktokUserId} />
                         </Form.Item>
                         {
-                          fields.length !== 1
-                          && <span style={{ fontSize: '14px', color: '#999999', marginLeft: 10 }} className="font_family icon-shanchu" onClick={() => remove(name)} />
+                          fields.length !== 1 && (<span style={{ marginLeft: 10 }} className="font_family icon-shanchu" onClick={() => remove(name)} />)
                         }
                       </ItemBox>
                     ))}

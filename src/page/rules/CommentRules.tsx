@@ -3,8 +3,8 @@ import styled from '@emotion/styled';
 import http from 'utils/http';
 import { getUrlOption } from 'utils';
 import { TiktokList } from 'types/home';
-// import { KeyWordListType } from 'types/rules';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { KeyWordListType, RulesPropsType } from 'types/rules';
 import {
   Space, Typography, Card, Form, Select, Switch, Button, InputNumber, message, Input,
 } from 'antd';
@@ -12,13 +12,11 @@ import {
 import InputShowCount from './components/InputShowCount';
 import './create.css';
 
-const { Option } = Select;
 const { Text } = Typography;
 
 const CommentRules = () => {
   const navigate = useNavigate();
   const state = useLocation();
-  console.log(state);
   const openId = localStorage.getItem('openId') || '';
   const urlParams = getUrlOption(window.location.href);
   const id = Number(urlParams?.id) || '';
@@ -41,7 +39,7 @@ const CommentRules = () => {
     { label: '全匹配', value: 2 },
   ];
   const addRuleType = (
-    add: (defaultValue?: any, insertIndex?: number | undefined) => void,
+    add: (defaultValue?: RulesPropsType, insertIndex?: number) => void,
     type: string,
   ) => {
     add({ msgType: type });
@@ -57,9 +55,9 @@ const CommentRules = () => {
       });
     }
   };
-  const handleChange = (value: string) => {
-    console.log(value);
-  };
+  // const handleChange = (value: string) => {
+  //   console.log(value);
+  // };
   // 保存
   const saveRegulation = () => {
     const value = form.getFieldsValue();
@@ -165,7 +163,7 @@ const CommentRules = () => {
                         <InputShowCount style={{ width: 290 }} placeholder="请输入关键词" maxLength={30} />
                       </Form.Item>
                       {
-                        key === 0 ? null : <span style={{ fontSize: '14px', color: '#999999' }} className="font_family icon-shanchu" onClick={() => remove(name)} />
+                        key !== 0 && (<span className="font_family icon-shanchu" onClick={() => remove(name)} />)
                       }
                     </Space>
                   ))}
@@ -207,13 +205,14 @@ const CommentRules = () => {
                       >
                         <Input.TextArea
                           showCount
+                          autoSize={{ minRows: 5, maxRows: 5 }}
                           maxLength={300}
                           className="inputTextArea"
-                          onChange={(e) => handleChange(e.target.value)}
+                          // onChange={(e) => handleChange(e.target.value)}
                         />
                       </Form.Item>
                       {
-                        key === 0 ? null : <span style={{ fontSize: '14px', color: '#999999' }} className="font_family icon-shanchu" onClick={() => remove(name)} />
+                        key !== 0 && (<span className="font_family icon-shanchu" onClick={() => remove(name)} />)
                       }
                     </ItemBox>
                   ))}

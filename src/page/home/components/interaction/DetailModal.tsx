@@ -11,12 +11,10 @@ interface IProps {
   isShow?: boolean;
   content?: DetailContextType;
   onCancel?: () => void;
-  // eslint-disable-next-line no-unused-vars
-  onChange?: (val: string) => void; // 返回值没有类型，即返回值为空
 }
 const DetailModal = (props: IProps) => {
   const {
-    isShow, content, onChange, onCancel,
+    isShow, content, onCancel,
   } = props;
   const KeyWordContent = () => (
     <Typography className="keyBox" style={{ marginTop: 10 }}>

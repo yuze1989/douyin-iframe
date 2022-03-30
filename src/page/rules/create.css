@@ -38,3 +38,17 @@
 .tooltipsBox .tooltipContent:first-of-type {
   margin: 0;
 }
+
+/* 删除图标 */
+.icon-shanchu {
+  font-size: 14px;
+  color: #999999;
+  cursor: pointer;
+}
+.icon-shanchu:hover {
+  color: #1890ff;
+}
+
+.ant-input-textarea-show-count::after {
+  margin-right: 10px;
+}

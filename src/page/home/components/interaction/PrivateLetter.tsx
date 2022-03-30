@@ -5,7 +5,7 @@ import {
   RegulationDataType, TableDataType, ParmasType, TiktokList, paginationDataType, KeyWordListType,
 } from 'types/home';
 import { DetailContextType } from 'types/rules';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import {
   Form, Input, Select, Button, Table, Pagination, TablePaginationConfig, message,
   Switch, Popconfirm, Typography, Tooltip, Spin,
@@ -23,7 +23,6 @@ interface Props {
 
 const PrivateLetter = (props: Props) => {
   const { openId } = props;
-  const navigate = useNavigate();
   const { state } = useLocation();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
@@ -119,7 +118,7 @@ const PrivateLetter = (props: Props) => {
     setDetailContent(undefined);
   };
   const onFinish = () => {
-    getRegulationList();
+    getRegulationList({ pageIndex: 1, pageSize: 10 });
   };
   const onReset = () => {
     form.resetFields();
@@ -216,13 +215,13 @@ const PrivateLetter = (props: Props) => {
     },
     {
       title: '启用规则',
-      width: 180,
+      width: 100,
       key: 'status',
       dataIndex: 'status',
-      align: 'left',
+      align: 'center',
       render: (status: number, record, index) => (
         <Switch
-          defaultChecked={status === 1}
+          checked={status === 1}
           onChange={() => changeStatusHandler(status, record, index)}
         />
       ),
@@ -232,7 +231,7 @@ const PrivateLetter = (props: Props) => {
       width: 220,
       key: 'handler',
       dataIndex: 'handler',
-      align: 'left',
+      align: 'center',
       render: (text, record, index) => (
         <>
           <Button type="link" onClick={() => toDetail(record)}>详情</Button>

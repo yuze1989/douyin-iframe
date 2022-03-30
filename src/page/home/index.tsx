@@ -20,7 +20,12 @@ const Home = () => {
     setTabKey(key);
   };
   return (
-    <Card title={channel ? '蓝V获客' : ''} style={{ margin: '2rem 2rem 0' }}>
+    <Card
+      bordered={false}
+      title={channel ? '蓝V获客' : ''}
+      style={{ margin: '2rem 2rem 0' }}
+      // headStyle={{ border: 'none' }}
+    >
       {/* {!urlParams?.channel && (
         <Tabs
           activeKey={tabKey}
