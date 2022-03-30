@@ -32,7 +32,7 @@ const DetailModal = (props: IProps) => {
       <div className="tit">回复内容</div>
       {
         messageObject?.sort((first, second) => {
-          console.log('object');
+          console.log('');
           return first.msgType - second.msgType;
         })?.map((item: RulesPropsType) => (
           item.msgType === 1 ? <div className="txt" key={item.id}>{item?.text?.content}</div> : <div className="image" key={item.id}><img src={item?.image?.attachmentPath} alt="" /></div>
@@ -47,9 +47,9 @@ const DetailModal = (props: IProps) => {
     </Typography>
   );
   const messageObject = useMemo(() => {
-    console.log('content');
+    console.log('');
     return content?.messageList?.map((item: RulesPropsType) => {
-      console.log('object');
+      console.log('');
       return {
         ...item,
         msgType: item.msgType === 'text' ? 1 : 2,

@@ -20,11 +20,7 @@ const ConversationRules = () => {
   const [form] = Form.useForm();
   const [accountList, setAccountList] = useState<TiktokList[]>([]);
   const [msg, setMsg] = useState('亲，您好！');
-  // const onChange = (checked: boolean) => {
-  //   console.log(checked);
-  // };
   const onFinish = () => {
-    // console.log(form.getFieldsValue());
     saveRegulation();
   };
   // 获取适用账号

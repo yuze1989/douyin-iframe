@@ -143,7 +143,6 @@ const PrivateLetterRules = () => {
     setTiktokUserId(value);
   };
   const onFinish = (values: any) => {
-    console.log('onFinish:::', values);
     saveRegulation();
   };
   /* eslint-disable no-template-curly-in-string */
