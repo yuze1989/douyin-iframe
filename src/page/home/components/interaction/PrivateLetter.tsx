@@ -5,7 +5,7 @@ import {
   RegulationDataType, TableDataType, ParmasType, TiktokList, paginationDataType, KeyWordListType,
   InteractTableDataType,
 } from 'types/home';
-import { ContentListType, DetailContextType } from 'types/rules';
+import { ContentListType, DetailContextType, RulesPropsType } from 'types/rules';
 import { Link, useLocation } from 'react-router-dom';
 import {
   Form, Input, Select, Button, Table, Pagination, TablePaginationConfig, message,
@@ -16,7 +16,7 @@ import DetailModal from './DetailModal';
 
 import 'page/rules/create.css';
 
-const { Text, Paragraph } = Typography;
+const { Text } = Typography;
 
 interface Props {
   openId: String

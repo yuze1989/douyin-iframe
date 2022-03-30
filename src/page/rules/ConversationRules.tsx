@@ -13,7 +13,6 @@ const { Title, Paragraph } = Typography;
 const ConversationRules = () => {
   const navigate = useNavigate();
   const state = useLocation();
-  console.log(state);
   const openId = localStorage.getItem('openId') || '';
   const urlParams = getUrlOption(window.location.href);
   const id = Number(urlParams?.id) || '';
@@ -83,8 +82,8 @@ const ConversationRules = () => {
   };
   /* eslint-enable no-template-curly-in-string */
   const layout = {
-    labelCol: { span: 3 },
-    wrapperCol: { span: 9 },
+    labelCol: { span: 6 },
+    wrapperCol: { span: 18 },
   };
   return (
     <ContentBox>
@@ -95,72 +94,75 @@ const ConversationRules = () => {
         bodyStyle={{ padding: 0 }}
         extra={<a className="font_family icon-fanhui blue" onClick={() => navigate('/home', { ...state })}>返回</a>}
       >
-        <Form
-          className="formBox"
-          {...layout}
-          form={form}
-          onFinish={onFinish}
-          validateMessages={validateMessages}
-          initialValues={
-            { messageList: [{ msgType: 'text' }] }
-          }
-        >
-          <Form.Item label=" " colon={false} style={{ margin: 0 }}>
-            <Title className="title">进入会话自动触达</Title>
-          </Form.Item>
-          <Form.Item label="适用账号：" name={['tiktokUserId']} rules={[{ required: true }]}>
-            <Select
-              style={{ width: 200 }}
-              placeholder="请选择"
-            >
-              {
-                accountList && accountList?.map((item: any) => (
-                  <Select.Option value={item.id} key={item.apiAuthorId}>
-                    { item.nickname }
-                  </Select.Option>
-                ))
-              }
-            </Select>
-          </Form.Item>
-          <Form.Item label="功能启用" name={['status']} valuePropName="checked">
-            <Switch />
-          </Form.Item>
-          <Form.Item label="自动回复内容" className="requireTitle" rules={[{ required: true }]}>
-            <Form.List name="messageList">
-              {(fields, { add, remove }) => (
-                <>
-                  {fields.map(({ key, name, ...restField }) => (
-                    <TextareaBox key={key}>
-                      <Form.Item
-                        {...restField}
-                        className="textareaBox"
-                        name={[name, 'text', 'content']}
-                        rules={[{ required: true, message: '回复语不能为空' }]}
-                      >
-                        <Input.TextArea
-                          showCount
-                          placeholder="请输入回复语"
-                          maxLength={300}
-                          onChange={(e) => handleChange(e.target.value)}
-                        />
-                      </Form.Item>
-                    </TextareaBox>
-                  ))}
-                </>
-              )}
-            </Form.List>
-          </Form.Item>
-          <Form.Item label=" " colon={false}>
-            <Button style={{ marginRight: '10px' }} type="primary" htmlType="submit">保存</Button>
-          </Form.Item>
-        </Form>
-        <ChatModel>
-          <div className="chat-content">
-            <img src="https://jz-scrm.oss-cn-hangzhou.aliyuncs.com/web/douyin/avatar.png" alt="" />
-            <Paragraph className="text">{ msg }</Paragraph>
-          </div>
-          <img className="chat-input" src="https://jz-scrm.oss-cn-hangzhou.aliyuncs.com/web/douyin/chat-input.png" alt="" />
-        </ChatModel>
+        <ContentContainer>
+          <Form
+            className="formBox"
+            {...layout}
+            form={form}
+            onFinish={onFinish}
+            validateMessages={validateMessages}
+            initialValues={
+              { messageList: [{ msgType: 'text' }] }
+            }
+          >
+            <Form.Item label=" " colon={false} style={{ marginBottom: '1.2rem' }}>
+              <Title className="title">进入会话自动触达</Title>
+            </Form.Item>
+            <Form.Item label="适用账号：" name={['tiktokUserId']} rules={[{ required: true }]}>
+              <Select
+                style={{ width: 200 }}
+                placeholder="请选择"
+              >
+                {
+                  accountList && accountList?.map((item: any) => (
+                    <Select.Option value={item.id} key={item.apiAuthorId}>
+                      { item.nickname }
+                    </Select.Option>
+                  ))
+                }
+              </Select>
+            </Form.Item>
+            <Form.Item label="功能启用" name={['status']} valuePropName="checked">
+              <Switch />
+            </Form.Item>
+            <Form.Item label="自动回复内容" className="requireTitle" rules={[{ required: true }]}>
+              <Form.List name="messageList">
+                {(fields, { add, remove }) => (
+                  <>
+                    {fields.map(({ key, name, ...restField }) => (
+                      <TextareaBox key={key}>
+                        <Form.Item
+                          {...restField}
+                          className="textareaBox"
+                          name={[name, 'text', 'content']}
+                          rules={[{ required: true, message: '回复语不能为空' }]}
+                        >
+                          <Input.TextArea
+                            showCount
+                            autoSize={{ minRows: 5, maxRows: 5 }}
+                            placeholder="请输入回复语"
+                            maxLength={300}
+                            onChange={(e) => handleChange(e.target.value)}
+                          />
+                        </Form.Item>
+                      </TextareaBox>
+                    ))}
+                  </>
+                )}
+              </Form.List>
+            </Form.Item>
+            <Form.Item label=" " colon={false}>
+              <Button style={{ marginRight: '10px' }} type="primary" htmlType="submit">保存</Button>
+            </Form.Item>
+          </Form>
+          <ChatModel>
+            <div className="chat-content">
+              <img src="https://jz-scrm.oss-cn-hangzhou.aliyuncs.com/web/douyin/avatar.png" alt="" />
+              <Paragraph className="text">{ msg }</Paragraph>
+            </div>
+            <img className="chat-input" src="https://jz-scrm.oss-cn-hangzhou.aliyuncs.com/web/douyin/chat-input.png" alt="" />
+          </ChatModel>
+        </ContentContainer>
       </Card>
     </ContentBox>
   );
@@ -173,7 +175,8 @@ const ContentBox = styled.div`
   }
   .formBox{
     padding: 30px 0 0 0;
-    height: calc(100vh - 90px - 2rem);
+    width: 65.4rem;
+    height: calc(100vh - 7rem);
   }
   .title{
     position: relative;
@@ -192,6 +195,12 @@ const ContentBox = styled.div`
     }
   }
 `;
+const ContentContainer = styled.div`
+  display: flex;
+  .formBox{
+    width: 50%;
+  }
+`;
 const TextareaBox = styled.div`
   .textareaBox{
     padding-bottom: 22px;
@@ -208,9 +217,9 @@ const TextareaBox = styled.div`
   }
 `;
 const ChatModel = styled.div`
-  position: absolute;
-  right: 150px;
-  top: 100px;
+  position: relative;
+  top: 33px;
+  margin-left: 10rem;
   width: 254px;
   height: 510px;
   background: url("https://jz-scrm.oss-cn-hangzhou.aliyuncs.com/web/douyin/chat-bg.png") no-repeat center 100%/100%;

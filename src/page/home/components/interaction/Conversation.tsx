@@ -4,13 +4,14 @@ import http from 'utils/http';
 import {
   TableItem, TableDataType, TiktokList, RegulationDataType, ParmasType, paginationDataType,
 } from 'types/home';
-import { DetailContextType } from 'types/rules';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+// import { DetailContextType } from 'types/rules';
+import { Link, useLocation } from 'react-router-dom';
 import {
   Form, Input, Select, Button, Table, Pagination, TablePaginationConfig,
   Switch, Popconfirm, message, Spin, Tooltip, Typography,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
+import { ContentListType } from 'types/rules';
 
 const { Text } = Typography;
 interface Props {
@@ -19,7 +20,6 @@ interface Props {
 
 const Conversation = (props: Props) => {
   const { openId } = props;
-  const navigate = useNavigate();
   const { state } = useLocation();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
@@ -58,9 +58,6 @@ const Conversation = (props: Props) => {
         setTableData(res);
       }
     }).catch(() => setLoading(false));
-  };
-  const toEdit = (record: RegulationDataType, index: number) => {
-    navigate(`/save-rules-conversation?id=${record?.id}`);
   };
   const confirm = (record: RegulationDataType, index: number) => {
     deleteHandler({ id: record?.id });
@@ -116,7 +113,7 @@ const Conversation = (props: Props) => {
       dataIndex: 'tiktokUserId',
       align: 'left',
       render: (tiktokUserId?: number) => (
-        accountList.find((item: any) => item.id === tiktokUserId)?.nickname
+        accountList.find((item: TiktokList) => item.id === tiktokUserId)?.nickname
       ),
     },
     {
@@ -126,7 +123,7 @@ const Conversation = (props: Props) => {
       dataIndex: 'messageList',
       align: 'left',
       ellipsis: true,
-      render: (messageList: object[]) => (
+      render: (messageList: ContentListType[]) => (
         <Tooltip
           placement="bottomLeft"
           color="#FFFFFF"
@@ -134,15 +131,15 @@ const Conversation = (props: Props) => {
           autoAdjustOverflow
           title={
           (
-            messageList?.map((item: any, index: number, array: object[]) => (
-              item.msgType === 'text' ? <div className="tooltipContent" key={item.id}>{item?.text.content}</div> : <span style={{ color: '#65B083' }} key={item.id}>[图片]</span>
+            messageList?.map((item: ContentListType, index: number, array: object[]) => (
+              item.msgType === 'text' ? <div className="tooltipContent" key={item.id}>{item?.text?.content}</div> : <span style={{ color: '#65B083' }} key={item.id}>[图片]</span>
             ))
           )
         }
         >
           {
-            messageList?.map((item: any, index: number, array: object[]) => (
-              item.msgType === 'text' ? <Text key={item.id}>{item?.text.content}{index !== array.length - 1 && '，'}</Text> : <span style={{ color: '#65B083' }} key={item.id}>[图片]{index !== array.length - 1 && '，'}</span>
+            messageList?.map((item: ContentListType, index: number, array: object[]) => (
+              item.msgType === 'text' ? <Text key={item.id}>{item?.text?.content}{index !== array.length - 1 && '，'}</Text> : <span style={{ color: '#65B083' }} key={item.id}>[图片]{index !== array.length - 1 && '，'}</span>
             ))
           }
         </Tooltip>

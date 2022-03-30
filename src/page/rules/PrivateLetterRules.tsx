@@ -357,7 +357,7 @@ const PrivateLetterRules = () => {
             </Spin>
           </Form.Item>
           <ButtonBox>
-            <Form.Item wrapperCol={{ span: 24 }} style={{ textAlign: 'center', margin: '2rem 0' }}>
+            <Form.Item wrapperCol={{ span: 24 }} style={{ textAlign: 'center', margin: '1rem 0' }}>
               <Button type="primary" size="middle" htmlType="submit">保存</Button>
             </Form.Item>
           </ButtonBox>
@@ -371,8 +371,6 @@ const ContentBox = styled.div`
   padding: 0 2rem;
   `;
 const ButtonBox = styled.div`
-  margin: 20px 0;
-  padding: 20px 0;
   border-top: 1px solid #DDDDDD;
 `;
 const DropdownBox = styled.div`
