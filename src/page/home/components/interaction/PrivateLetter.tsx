@@ -14,7 +14,7 @@ import {
 import { ColumnsType } from 'antd/lib/table';
 import DetailModal from './DetailModal';
 
-import 'page/rules/create.css';
+import 'page/home/components/rules/create.css';
 
 const { Text } = Typography;
 
