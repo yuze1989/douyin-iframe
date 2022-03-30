@@ -1,0 +1,71 @@
+.requireTitle {
+}
+.requireTitle .ant-form-item-label {
+  position: relative;
+}
+
+.requireTitle .ant-form-item-label:before {
+  content: '*';
+  display: inline-block;
+  margin-right: 4px;
+  color: #ff4d4f;
+  font-size: 14px;
+  font-family: SimSun, sans-serif;
+  line-height: 1;
+}
+.tooltipsBox {
+  max-width: 60rem;
+  color: #000000;
+}
+.tooltipsBox .ant-tooltip-content {
+  /* padding: 2rem 2rem 2rem 1.9rem; */
+}
+.tooltipsBox .ant-tooltip-inner {
+  padding: 2rem 2rem 2rem 1.9rem;
+  box-shadow: 0 4px 20px 0 rgba(185, 193, 210, 0.5);
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  color: #666666;
+}
+.tooltipsBox .ant-tooltip-arrow {
+  display: none;
+}
+.tooltipsBox .tooltipContent {
+  margin-top: 1rem;
+}
+.tooltipsBox .tooltipContent:first-of-type {
+  margin: 0;
+}
+
+/* 删除图标 */
+.icon-shanchu {
+  font-size: 14px;
+  color: #999999;
+  cursor: pointer;
+}
+.icon-shanchu:hover {
+  color: #1890ff;
+}
+
+.ant-input-textarea-show-count::after {
+  margin-bottom: 24px;
+  margin-right: 10px;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.25);
+}
+
+.ant-btn-background-ghost.ant-btn-primary {
+  color: #1890ff;
+  border-color: rgba(24, 144, 255, 0.45);
+}
+.ant-btn-background-ghost.ant-btn-primary:hover {
+  box-shadow: 0 2px 4px 0 rgba(185, 221, 254, 0.3);
+  border: 1px solid #46a6ff;
+  color: #1890ff;
+}
+.ant-btn-background-ghost.ant-btn-primary:click {
+  border-color: #147ad9;
+  color: #147ad9;
+}

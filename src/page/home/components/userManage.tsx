@@ -1,21 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import styled from '@emotion/styled';
 import moment from 'moment';
-import {
-  Form,
-  Input,
-  DatePicker,
-  Select,
-  Button,
-  Table,
-  Pagination,
-  TablePaginationConfig,
-  InputNumber,
-} from 'antd';
-import { ColumnsType } from 'antd/lib/table';
 import http from 'utils/http';
+import styled from '@emotion/styled';
+import { ColumnsType } from 'antd/lib/table';
 import {
-  TableItem, TableDataType, MarketStatistics, ParmasType,
+  Form, Input, DatePicker, Select, Button, Table, Pagination, TablePaginationConfig, InputNumber,
+  Radio,
+} from 'antd';
+import {
+  TableItem, TableDataType, MarketStatistics, ParmasType, TiktokList,
 } from 'types/home';
 
 const { Option } = Select;
@@ -29,6 +22,8 @@ const UserManage = (props: Props) => {
   const [marketStatistics, setMarketStatistics] = useState<MarketStatistics>({});
   const [tableData, setTableData] = useState<TableDataType>();
   const { RangePicker } = DatePicker;
+  const [tiktokList, setTiktokList] = useState<TiktokList[]>();
+  const [tiktokUserId, setTiktokUserId] = useState<string | number>('');
   const defaultSelectDate = {
     startDate: moment().startOf('day').subtract(1, 'month'),
     endDate: moment().endOf('day'),
@@ -43,7 +38,7 @@ const UserManage = (props: Props) => {
       value.lastReachedTimeGE = moment(startTime).format('YYYY/MM/DD');
       value.lastReachedTimeLE = moment(endTime).format('YYYY/MM/DD');
     }
-    value.openId = openId;
+    value.tiktokUserId = tiktokUserId;
     delete value.lastReachedTime;
     if (openId) {
       http.get('/social/service-market/list-reach-record', { ...value, ...parmas }).then((res) => {
@@ -68,7 +63,7 @@ const UserManage = (props: Props) => {
   };
   const getStatistics = () => {
     if (openId) {
-      http.get('/social/service-market/statistics', { openId }).then((res) => {
+      http.get('/social/service-market/statistics', { tiktokUserId }).then((res) => {
         const { success, data } = res;
         if (success) {
           setMarketStatistics(data);
@@ -76,9 +71,22 @@ const UserManage = (props: Props) => {
       });
     }
   };
+  const getTiktokAccount = () => {
+    if (openId) {
+      http.get('/social/auto-reply-rule/list-tiktok-user', {}).then((res) => {
+        const { success, data } = res;
+        if (success) {
+          setTiktokList(data);
+        }
+      });
+    }
+  };
   useEffect(() => {
     getStatistics();
     getTiktokList();
+  }, [tiktokUserId]);
+  useEffect(() => {
+    getTiktokAccount();
   }, []);
 
   const columns: ColumnsType<TableItem> = [
@@ -106,7 +114,7 @@ const UserManage = (props: Props) => {
       ),
     },
     {
-      title: '抖音号',
+      title: '蓝V号',
       width: 180,
       key: 'tiktokNumber',
       dataIndex: 'tiktokNumber',
@@ -136,9 +144,28 @@ const UserManage = (props: Props) => {
   ];
   return (
     <div>
+      <AccountBox>
+        <div>
+          匹配蓝V号：
+          <Radio.Group
+            defaultValue=""
+            buttonStyle="solid"
+            onChange={(e) => {
+              setTiktokUserId(e.target.value);
+            }}
+          >
+            <Radio.Button value="">全部</Radio.Button>
+            {
+              tiktokList && tiktokList.map((item) => (
+                <Radio.Button value={item.id} key={item.id}>{item.nickname}</Radio.Button>
+              ))
+            }
+          </Radio.Group>
+        </div>
+      </AccountBox>
       <TopBox>
         <div style={{ background: '#fff', padding: '0 2rem' }}>
-          <Title>今日实时监控数据</Title>
+          {/* <Title>今日实时监控数据</Title> */}
           <Box>
             <ShowBox>
               <Flex>
@@ -289,6 +316,34 @@ const MyAvatar = styled.div`
     font-size: 12px;
     color: #ffffff;
     text-align: center;
+  }
+`;
+const AccountBox = styled.div`
+  margin-bottom: 16px; 
+  padding: 0 2rem;
+  .ant-radio-button-wrapper{
+    margin: 0 16px;
+    padding: 0 40px;
+    height: 36px;
+    line-height: 36px;
+    border-radius: 4px;
+    border: none;
+    color: #000000;
+    background: #F9F9F9;
+  }
+  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):hover,
+  .ant-radio-button-wrapper-checked:hover{
+    color: #1890FF;
+    border:none;
+    background: rgba(24,144,255,0.06);
+  }
+  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled){
+    color: #1890FF;
+    border:none;
+    background: rgba(24,144,255,0.06);
+  }
+  .ant-radio-button-wrapper:not(:first-child)::before{
+    content: none;
   }
 `;
 const TopBox = styled.div`

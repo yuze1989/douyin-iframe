@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ConfigProvider } from 'antd';
 import moment from 'moment';
 import DouyinISV from 'douyin-isv';
@@ -27,9 +27,14 @@ const getAuth = async () => {
 
 const App = () => {
   const urlParams = getUrlOption(window.location.href);
+  const channel = urlParams?.channel || localStorage.getItem('channel');
+  const openId = urlParams?.openId || localStorage.getItem('openId');
   // !!urlParams?.channel: 其他环境; !urlParams?.channel: 抖音环境
-  if (!urlParams?.channel) {
+  if (!channel) {
     getAuth();
+  } else {
+    localStorage.setItem('channel', channel);
+    localStorage.setItem('openId', openId);
   }
   const customizeRenderEmpty = () => (
     <div style={{ textAlign: 'center' }}>
@@ -37,6 +42,8 @@ const App = () => {
       <p>暂无数据</p>
     </div>
   );
+  useEffect(() => {
+  });
   return (
     <ConfigProvider locale={zhCN} renderEmpty={customizeRenderEmpty}>
       <Router />

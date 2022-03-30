@@ -1,0 +1,30 @@
+.detailModalBox {
+  position: relative;
+}
+.detailModalBox .ant-modal-header {
+  padding-top: 0;
+  padding-bottom: 0;
+  height: 44px;
+  box-sizing: border-box;
+}
+.detailModalBox .ant-modal-close-x {
+  width: 44px;
+  height: 44px;
+}
+.detailModalBox .ant-modal-header .ant-modal-title {
+  line-height: 44px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.detailModalBox .ant-modal-body {
+  padding: 2.7rem 2.3rem;
+}
+
+.detailModalBox .saveBox {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 64rem;
+  height: 1.6rem;
+  background: #ffffff;
+}

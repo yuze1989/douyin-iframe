@@ -12,9 +12,9 @@ html {
   /*1rem === 10px*/
   font-size: 62.5%;
 }
-.ant-card > .ant-card-body {
-  padding: 20px 0;
-  padding-bottom: 0;
+.ant-card .ant-card-body {
+  /* padding: 20px 0; */
+  padding: 0;
 }
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
