@@ -2,8 +2,9 @@
 import styled from '@emotion/styled';
 import { Modal, Typography } from 'antd';
 import React, { useEffect } from 'react';
-
-import { DetailContextType } from 'types/rules';
+import { KeyWordListType } from 'types/home';
+import { DetailContextType, RulesPropsType } from 'types/rules';
+import './modal.css';
 
 const { Title, Text } = Typography;
 
@@ -17,28 +18,36 @@ const DetailModal = (props: IProps) => {
     isShow, content, onCancel,
   } = props;
   const KeyWordContent = () => (
-    <Typography className="keyBox" style={{ marginTop: 10 }}>
-      <Title className="tit" level={5}>关键词</Title>
+    <Typography className="keyBox">
+      <div className="tit">关键词</div>
       <div>
         {
-          content?.keyWordList?.map((item: any) => (<div className="tips" key={item.id}>{item?.keyWord}<span>（{item.type === 1 ? '半匹配' : '全匹配'}）</span></div>))
+          content?.keyWordList?.map((item: KeyWordListType) => (<div className="tips" key={item.id}>{item?.keyWord}<span>（{item.type === 1 ? '半匹配' : '全匹配'}）</span></div>))
         }
       </div>
     </Typography>
   );
   const MessageList = () => (
-    <Typography className="keyBox" style={{ marginTop: 10 }}>
-      <Title className="tit" level={5}>回复内容</Title>
+    <Typography className="keyBox">
+      <div className="tit">回复内容</div>
       {
-        content?.messageList?.map((item: any) => (
+        content?.messageList?.sort((a: any, b: any) => {
+          if (a.msgType > b.msgType) {
+            return -1;
+          }
+          if (a.msgType < b.msgType) {
+            return 1;
+          }
+          return 0;
+        })?.map((item: RulesPropsType) => (
           item.msgType === 'text' ? <div className="txt" key={item.id}>{item?.text?.content}</div> : <div className="image" key={item.id}><img src={item?.image?.attachmentPath} alt="" /></div>
         ))
       }
     </Typography>
   );
   const ReplyTimesLimit = () => (
-    <Typography className="keyBox" style={{ marginTop: 10 }}>
-      <Title className="tit" level={5}>单个视频回复条数</Title>
+    <Typography className="keyBox">
+      <div className="tit">单个视频回复条数</div>
       <Text className="txt">{content?.replyTimesLimit}</Text>
     </Typography>
   );
@@ -46,10 +55,12 @@ const DetailModal = (props: IProps) => {
   }, []);
   return (
     <Modal
+      className="detailModalBox"
       title="规则详情"
       visible={isShow}
       footer={null}
-      bodyStyle={{ minHeight: 350, maxHeight: 570, overflowY: 'auto' }}
+      width={640}
+      bodyStyle={{ minHeight: 390, maxHeight: 580, overflowY: 'auto' }}
       destroyOnClose
       onCancel={onCancel}
     >
@@ -68,31 +79,37 @@ const DetailModal = (props: IProps) => {
   );
 };
 const DetailContent = styled.div`
-  .tit{
+  .keyBox{
+    margin-bottom: 1.8rem;
     font-size: 14px;
-    font-weight: 500;
-    color: #000000;
-  }
-  .tips{
-    display: inline-block;
-    margin-right: 40px;
-    font-size: 14px;
-    color: rgba(0, 0, 0, .65);
-    span{
-      color: rgba(0, 0, 0, .45);
+    .tit{
+      font-weight: 500;
+      color: #000000;
     }
-  }
-  .txt{
-    font-size: 12px;
-    color: #666666;
-  }
-  .image{
-    margin-right: 12px;
-    width: 86px;
-    height: 86px;
-    img{
-      width: 100%;
-      height: 100%;
+    .tips{
+      margin: 0.6rem 4rem 0.6rem 0;
+      display: inline-block;
+      font-weight: 400;
+      color: rgba(0, 0, 0, .65);
+      span{
+        color: rgba(0, 0, 0, .45);
+      }
+    }
+    .txt{
+      margin: 0.6rem 0;
+      font-weight: 400;
+      font-size: 14px;
+      color: #666666;
+    }
+    .image{
+      display: inline-block;
+      margin: 1.2rem 1.2rem 0 0;
+      width: 86px;
+      height: 86px;
+      img{
+        width: 100%;
+        height: 100%;
+      }
     }
   }
 `;

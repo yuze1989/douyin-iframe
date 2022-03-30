@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import styled from '@emotion/styled';
 import moment from 'moment';
+import http from 'utils/http';
+import styled from '@emotion/styled';
+import { ColumnsType } from 'antd/lib/table';
 import {
   Form, Input, DatePicker, Select, Button, Table, Pagination, TablePaginationConfig, InputNumber,
   Radio,
 } from 'antd';
-import { ColumnsType } from 'antd/lib/table';
-import http from 'utils/http';
 import {
   TableItem, TableDataType, MarketStatistics, ParmasType, TiktokList,
 } from 'types/home';
-import { Link } from 'react-router-dom';
 
 const { Option } = Select;
 interface Props {
@@ -164,10 +163,9 @@ const UserManage = (props: Props) => {
           </Radio.Group>
         </div>
       </AccountBox>
-      {/* <a href="https://www.baidu.com">qubaidu</a> */}
       <TopBox>
         <div style={{ background: '#fff', padding: '0 2rem' }}>
-          <Title>今日实时监控数据</Title>
+          {/* <Title>今日实时监控数据</Title> */}
           <Box>
             <ShowBox>
               <Flex>

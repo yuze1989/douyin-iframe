@@ -258,10 +258,10 @@ const Conversation = (props: Props) => {
   );
 };
 const SearchBox = styled.div`
-  margin:0 0 16px 0;
+  margin:0 0 1.6rem 0;
   padding: 0 2rem;
 `;
 const ButtonBox = styled.div`
-  margin: 20px 0;
+  margin: 2.4rem 0 1.6rem 0;
 `;
 export default Conversation;

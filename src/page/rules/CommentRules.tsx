@@ -143,11 +143,12 @@ const CommentRules = () => {
               {(fields, { add, remove }) => (
                 <>
                   {fields.map(({ key, name, ...restField }) => (
-                    <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
+                    <Space key={key} style={{ display: 'flex' }} align="baseline">
                       <Form.Item
                         {...restField}
                         name={[name, 'type']}
                         rules={[{ required: true, message: '请选择匹配模式' }]}
+                        style={{ marginBottom: 16 }}
                       >
                         <Select
                           style={{ width: 100, display: 'inline-block', margin: '0 10px 0 0' }}
@@ -159,15 +160,16 @@ const CommentRules = () => {
                         {...restField}
                         name={[name, 'keyWord']}
                         rules={[{ required: true, message: '关键词不能为空！' }]}
+                        style={{ marginBottom: 16 }}
                       >
                         <InputShowCount style={{ width: 290 }} placeholder="请输入关键词" maxLength={30} />
                       </Form.Item>
                       {
-                        key !== 0 && (<span className="font_family icon-shanchu" onClick={() => remove(name)} />)
+                        fields.length !== 1 && (<span className="font_family icon-shanchu" onClick={() => remove(name)} />)
                       }
                     </Space>
                   ))}
-                  <Form.Item>
+                  <Form.Item style={{ marginBottom: 16 }}>
                     {
                       fields.length < 10 && (
                         <Button type="primary" onClick={() => add()} ghost>
@@ -216,7 +218,7 @@ const CommentRules = () => {
                       }
                     </ItemBox>
                   ))}
-                  <Form.Item>
+                  <Form.Item style={{ marginBottom: 16 }}>
                     {
                       fields.length < 10 && (
                         <Button type="primary" onClick={() => addRuleType(add, 'text')} ghost>
@@ -239,7 +241,7 @@ const CommentRules = () => {
               required: true,
             }]}
           >
-            <InputNumber style={{ marginBottom: '16px' }} min={1} max={200} placeholder="请输入" />
+            <InputNumber style={{ marginBottom: '1.6rem' }} min={1} max={200} placeholder="请输入" />
           </Form.Item>
           <ButtonBox>
             <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>

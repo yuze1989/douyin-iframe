@@ -251,11 +251,12 @@ const PrivateLetterRules = () => {
               {(fields, { add, remove }) => (
                 <>
                   {fields.map(({ key, name, ...restField }) => (
-                    <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
+                    <Space key={key} style={{ display: 'flex' }} align="baseline">
                       <Form.Item
                         {...restField}
                         name={[name, 'type']}
                         rules={[{ required: true, message: '请选择匹配模式' }]}
+                        style={{ marginBottom: '1.6rem' }}
                       >
                         <Select
                           style={{ width: 100, display: 'inline-block', margin: '0 10px 0 0' }}
@@ -267,15 +268,16 @@ const PrivateLetterRules = () => {
                         {...restField}
                         name={[name, 'keyWord']}
                         rules={[{ required: true, message: '关键词不能为空！' }]}
+                        style={{ marginBottom: '1.6rem' }}
                       >
                         <InputShowCount style={{ width: 290 }} placeholder="请输入关键词" maxLength={30} />
                       </Form.Item>
                       {
-                        key !== 0 && (<span className="font_family icon-shanchu" onClick={() => remove(name)} />)
+                        fields.length !== 1 && (<span className="font_family icon-shanchu" onClick={() => remove(name)} />)
                       }
                     </Space>
                   ))}
-                  <Form.Item>
+                  <Form.Item style={{ marginBottom: '1.6rem' }}>
                     {
                       fields.length < 10 && (
                         <Button type="primary" onClick={() => add()} ghost>
@@ -321,6 +323,7 @@ const PrivateLetterRules = () => {
                               },
                             },
                           ]}
+                          style={{ marginBottom: '1.6rem' }}
                         >
                           <TextImg tiktokId={tiktokUserId && tiktokUserId} />
                         </Form.Item>
@@ -329,7 +332,7 @@ const PrivateLetterRules = () => {
                         }
                       </ItemBox>
                     ))}
-                    <Form.Item>
+                    <Form.Item style={{ marginBottom: '1.6rem' }}>
                       {
                         fields.length < 10 && (
                           <DropdownBox>

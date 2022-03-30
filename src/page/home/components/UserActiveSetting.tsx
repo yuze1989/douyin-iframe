@@ -6,11 +6,7 @@ import Comments from './interaction/Comments';
 import Conversation from './interaction/Conversation';
 import PrivateLetter from './interaction/PrivateLetter';
 
-interface Props {
-  // openId: string;
-}
-const UserActiveSetting = (props: Props) => {
-  // const { openId } = props;
+const UserActiveSetting = () => {
   const { state } = useLocation();
   const [optionKey, setOptionKey] = useState(state?.optionKey || '1');
   const openId = localStorage.getItem('openId') || '';
@@ -45,6 +41,10 @@ const TabsBox = styled.div`
   .ant-radio-button-wrapper{
     height: 36px;
     line-height: 36px;
+  }
+  .ant-radio-button-wrapper-checked{
+    border: 1px solid rgba(24,144,255,0.45);
+    background: rgba(24,144,255,0.06);
   }
 `;
 
