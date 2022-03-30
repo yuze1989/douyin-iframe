@@ -151,7 +151,7 @@ const PrivateLetter = (props: Props) => {
       dataIndex: 'tiktokUserId',
       align: 'left',
       render: (tiktokUserId?: number) => (
-        accountList.find((item: any) => item.id === tiktokUserId)?.nickname
+        accountList.find((item: TiktokList) => item.id === tiktokUserId)?.nickname
       ),
     },
     {
