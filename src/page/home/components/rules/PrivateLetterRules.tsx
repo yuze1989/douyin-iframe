@@ -142,7 +142,7 @@ const PrivateLetterRules = () => {
   const changeAccount = (value: number) => {
     setTiktokUserId(value);
   };
-  const onFinish = (values: any) => {
+  const onFinish = () => {
     saveRegulation();
   };
   /* eslint-disable no-template-curly-in-string */
