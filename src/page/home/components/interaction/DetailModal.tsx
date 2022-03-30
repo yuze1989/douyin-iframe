@@ -79,6 +79,7 @@ const DetailModal = (props: IProps) => {
         {
           content?.businessType === 1 && content?.replyTimesLimit && <ReplyTimesLimit />
         }
+        <div className="saveBox" />
       </DetailContent>
     </Modal>
   );
