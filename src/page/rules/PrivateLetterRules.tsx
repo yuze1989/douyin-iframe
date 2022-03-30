@@ -27,7 +27,10 @@ const TextImg = (props: Props) => {
   const headers = { 'tiktok-token': openId };
   const { ossData, getExtraData, uploadAttachment } = useCloudUpload('messagecenter');
   const uploadButton = (
-    <div><span style={{ fontSize: '14px' }} className="font_family icon-tianjiafujian">添加</span></div>
+    <div>
+      <span style={{ fontSize: '14px', color: 'rgba(0,0,0,0.25)', display: 'block' }} className="font_family icon-tianjia1" />
+      <span style={{ color: 'rgba(0,0,0,0.25)' }}>上传图片</span>
+    </div>
   );
   const handleChange = async (fileInfo: UploadChangeParam<UploadFile<any>>) => {
     const {
@@ -355,8 +358,8 @@ const PrivateLetterRules = () => {
             </Spin>
           </Form.Item>
           <ButtonBox>
-            <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
-              <Button type="primary" size="large" htmlType="submit">保存</Button>
+            <Form.Item wrapperCol={{ span: 24 }} style={{ textAlign: 'center', margin: '2rem 0' }}>
+              <Button type="primary" size="middle" htmlType="submit">保存</Button>
             </Form.Item>
           </ButtonBox>
         </Form>
@@ -408,6 +411,10 @@ const DropdownBox = styled.div`
       }
       &:hover{
         color: #1890FF;
+        background: rgba(69,141,255,0.04);
+      }
+      &:click{
+        color: #147AD9;
         background: rgba(69,141,255,0.04);
       }
     }

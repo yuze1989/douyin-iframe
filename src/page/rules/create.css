@@ -14,7 +14,7 @@
   line-height: 1;
 }
 .tooltipsBox {
-  max-width: 40rem;
+  max-width: 60rem;
   color: #000000;
 }
 .tooltipsBox .ant-tooltip-content {
@@ -50,6 +50,7 @@
 }
 
 .ant-input-textarea-show-count::after {
+  margin-bottom: 24px;
   margin-right: 10px;
   font-size: 14px;
   color: rgba(0, 0, 0, 0.25);

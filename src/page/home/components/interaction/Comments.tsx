@@ -242,66 +242,73 @@ const Comments = (props: Props) => {
     },
   ];
   return (
-    <SearchBox>
-      <Form
-        layout="inline"
-        form={form}
-        onFinish={onFinish}
-      >
-        <Form.Item label="适用账号：" name="tiktokUserId">
-          <Select
-            style={{ width: 200 }}
-            placeholder="请选择"
-          >
-            {
-              accountList && accountList.map((item: any) => (
-                <Select.Option
-                  value={item?.id}
-                  key={item.apiAuthorId}
-                >
-                  {item.nickname}
-                </Select.Option>
-              ))
-            }
-          </Select>
-        </Form.Item>
-        <Form.Item label="关键词：" name="content">
-          <Input placeholder="请输入" />
-        </Form.Item>
-        <Form.Item>
-          <Button style={{ marginRight: '10px' }} type="primary" htmlType="submit">
-            <span style={{ fontSize: '14px' }} className="font_family icon-sousuo2">
-              &nbsp;查询
-            </span>
-          </Button>
-          <Button htmlType="reset" onClick={onReset}>
-            <span style={{ fontSize: '14px' }} className="font_family icon-zhongzhi1">
-              &nbsp;重置
-            </span>
-          </Button>
-        </Form.Item>
-      </Form>
-      <ButtonBox>
-        <Link to="/comment-rules" state={{ tabKey: '2', optionKey: '1' }}>
-          <Button type="primary">
-            <span style={{ fontSize: '14px' }} className="font_family icon-xinjiansvg1">
-              &nbsp;添加规则
-            </span>
-          </Button>
-        </Link>
-      </ButtonBox>
-      <Spin spinning={loading}>
-        <TableBox>
-          <Table
-            // style={{ margin: '0 2rem' }}
-            bordered
-            columns={columns}
-            dataSource={tableData?.data}
-            pagination={false}
-            scroll={{ x: 1300 }}
-          />
-        </TableBox>
-      </Spin>
+    <>
+      <SearchBox>
+        <Form
+          layout="inline"
+          form={form}
+          onFinish={onFinish}
+        >
+          <Form.Item label="适用账号：" name="tiktokUserId">
+            <Select
+              style={{ width: 200 }}
+              placeholder="请选择"
+            >
+              {
+                accountList && accountList.map((item: any) => (
+                  <Select.Option
+                    value={item?.id}
+                    key={item.apiAuthorId}
+                  >
+                    {item.nickname}
+                  </Select.Option>
+                ))
+              }
+            </Select>
+          </Form.Item>
+          <Form.Item label="关键词：" name="content">
+            <Input placeholder="请输入" />
+          </Form.Item>
+          <Form.Item>
+            <Button style={{ marginRight: '10px' }} type="primary" htmlType="submit">
+              <span style={{ fontSize: '14px' }} className="font_family icon-sousuo2">
+                &nbsp;查询
+              </span>
+            </Button>
+            <Button htmlType="reset" onClick={onReset}>
+              <span style={{ fontSize: '14px' }} className="font_family icon-zhongzhi1">
+                &nbsp;重置
+              </span>
+            </Button>
+          </Form.Item>
+        </Form>
+        <ButtonBox>
+          <Link to="/comment-rules" state={{ tabKey: '2', optionKey: '1' }}>
+            <Button type="primary">
+              <span style={{ fontSize: '14px' }} className="font_family icon-xinjiansvg1">
+                &nbsp;添加规则
+              </span>
+            </Button>
+          </Link>
+        </ButtonBox>
+        <Spin spinning={loading}>
+          <TableBox>
+            <Table
+              // style={{ margin: '0 2rem' }}
+              bordered
+              columns={columns}
+              dataSource={tableData?.data}
+              pagination={false}
+              scroll={{ x: 1300 }}
+            />
+          </TableBox>
+        </Spin>
+        <DetailModal
+          isShow={isModalVisible}
+          onCancel={handleCancel}
+          content={detailContent}
+        />
+      </SearchBox>
       <div className="footer-sticky">
         <Pagination
           current={tableData?.pageIndex || 0}
@@ -312,12 +319,7 @@ const Comments = (props: Props) => {
           onChange={(current, pageSize) => pageChange({ current, pageSize })}
         />
       </div>
-      <DetailModal
-        isShow={isModalVisible}
-        onCancel={handleCancel}
-        content={detailContent}
-      />
-    </SearchBox>
+    </>
   );
 };
 const SearchBox = styled.div`

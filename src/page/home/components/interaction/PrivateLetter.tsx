@@ -3,8 +3,9 @@ import styled from '@emotion/styled';
 import http from 'utils/http';
 import {
   RegulationDataType, TableDataType, ParmasType, TiktokList, paginationDataType, KeyWordListType,
+  InteractTableDataType,
 } from 'types/home';
-import { DetailContextType } from 'types/rules';
+import { ContentListType, DetailContextType } from 'types/rules';
 import { Link, useLocation } from 'react-router-dom';
 import {
   Form, Input, Select, Button, Table, Pagination, TablePaginationConfig, message,
@@ -31,7 +32,7 @@ const PrivateLetter = (props: Props) => {
     pageSize: 10,
   });
   const [accountList, setAccountList] = useState<TiktokList[]>([]);
-  const [tableData, setTableData] = useState<TableDataType>();
+  const [tableData, setTableData] = useState<InteractTableDataType>();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [detailContent, setDetailContent] = useState<DetailContextType>();
   // 获取适用账号
@@ -191,7 +192,7 @@ const PrivateLetter = (props: Props) => {
       dataIndex: 'messageList',
       align: 'left',
       ellipsis: true,
-      render: (messageList: object[]) => (
+      render: (messageList: ContentListType[]) => (
         <Tooltip
           placement="bottomLeft"
           color="#FFFFFF"
@@ -199,15 +200,17 @@ const PrivateLetter = (props: Props) => {
           autoAdjustOverflow
           title={
           (
-            messageList?.map((item: any, index: number, array: object[]) => (
-              item.msgType === 'text' ? <div className="tooltipContent" key={item.id}>{item?.text.content}</div> : <span style={{ color: '#65B083' }} key={item.id}>[图片]</span>
+            messageList?.map((item: ContentListType, index: number, array: object[]) => (
+              // item.msgType === 'text'
+              // && <div className="tooltipContent" key={item.id}>{item?.text?.content}</div>
+              item.msgType === 'text' ? <div className="tooltipContent" key={item.id}>{item?.text?.content}</div> : <span style={{ color: '#65B083' }} key={item.id}>[图片]</span>
             ))
           )
         }
         >
           {
-            messageList?.map((item: any, index: number, array: object[]) => (
-              item.msgType === 'text' ? <Text key={item.id}>{item?.text.content}{index !== array.length - 1 && '，'}</Text> : <span style={{ color: '#65B083' }} key={item.id}>[图片]{index !== array.length - 1 && '，'}</span>
+            messageList?.map((item: ContentListType, index: number, array: object[]) => (
+              item.msgType === 'text' ? <Text key={item.id}>{item?.text?.content}{index !== array.length - 1 && '，'}</Text> : <span style={{ color: '#65B083' }} key={item.id}>[图片]{index !== array.length - 1 && '，'}</span>
             ))
           }
         </Tooltip>
@@ -252,55 +255,62 @@ const PrivateLetter = (props: Props) => {
     },
   ];
   return (
-    <SearchBox>
-      <Form layout="inline" form={form} onFinish={onFinish}>
-        <Form.Item label="适用账号：" name="tiktokUserId">
-          <Select style={{ width: 200 }} placeholder="请选择">
-            {
-              accountList && accountList.map((item: any) => (
-                <Select.Option value={item.id} key={item.apiAuthorId}>
-                  {item.nickname}
-                </Select.Option>
-              ))
-            }
-          </Select>
-        </Form.Item>
-        <Form.Item label="关键词" name="content">
-          <Input placeholder="请输入" />
-        </Form.Item>
-        <Form.Item>
-          <Button style={{ marginRight: '10px' }} type="primary" htmlType="submit">
-            <span style={{ fontSize: '14px' }} className="font_family icon-sousuo2">
-              &nbsp;查询
-            </span>
-          </Button>
-          <Button htmlType="reset" onClick={onReset}>
-            <span style={{ fontSize: '14px' }} className="font_family icon-zhongzhi1">
-              &nbsp;重置
-            </span>
-          </Button>
-        </Form.Item>
-      </Form>
-      <ButtonBox>
-        <Link to="/save-rules-private-letter" state={{ tabKey: '2', optionKey: '3' }}>
-          <Button type="primary">
-            <span style={{ fontSize: '14px' }} className="font_family icon-xinjiansvg1">
-              &nbsp;添加规则
-            </span>
-          </Button>
-        </Link>
-      </ButtonBox>
-      <Spin spinning={loading}>
-        <TableBox>
-          <Table
-            bordered
-            columns={columns}
-            dataSource={tableData?.data}
-            pagination={false}
-            scroll={{ x: 1300 }}
-          />
-        </TableBox>
-      </Spin>
+    <>
+      <SearchBox>
+        <Form layout="inline" form={form} onFinish={onFinish}>
+          <Form.Item label="适用账号：" name="tiktokUserId">
+            <Select style={{ width: 200 }} placeholder="请选择">
+              {
+                accountList && accountList.map((item: any) => (
+                  <Select.Option value={item.id} key={item.apiAuthorId}>
+                    {item.nickname}
+                  </Select.Option>
+                ))
+              }
+            </Select>
+          </Form.Item>
+          <Form.Item label="关键词" name="content">
+            <Input placeholder="请输入" />
+          </Form.Item>
+          <Form.Item>
+            <Button style={{ marginRight: '10px' }} type="primary" htmlType="submit">
+              <span style={{ fontSize: '14px' }} className="font_family icon-sousuo2">
+                &nbsp;查询
+              </span>
+            </Button>
+            <Button htmlType="reset" onClick={onReset}>
+              <span style={{ fontSize: '14px' }} className="font_family icon-zhongzhi1">
+                &nbsp;重置
+              </span>
+            </Button>
+          </Form.Item>
+        </Form>
+        <ButtonBox>
+          <Link to="/save-rules-private-letter" state={{ tabKey: '2', optionKey: '3' }}>
+            <Button type="primary">
+              <span style={{ fontSize: '14px' }} className="font_family icon-xinjiansvg1">
+                &nbsp;添加规则
+              </span>
+            </Button>
+          </Link>
+        </ButtonBox>
+        <Spin spinning={loading}>
+          <TableBox>
+            <Table
+              bordered
+              columns={columns}
+              dataSource={tableData?.data}
+              pagination={false}
+              scroll={{ x: 1300 }}
+            />
+          </TableBox>
+        </Spin>
+        <DetailModal
+          isShow={isModalVisible}
+          onCancel={handleCancel}
+          content={detailContent}
+        />
+      </SearchBox>
       <div className="footer-sticky">
         <Pagination
           current={tableData?.pageIndex || 0}
@@ -311,12 +321,7 @@ const PrivateLetter = (props: Props) => {
           onChange={(current, pageSize) => pageChange({ current, pageSize })}
         />
       </div>
-      <DetailModal
-        isShow={isModalVisible}
-        onCancel={handleCancel}
-        content={detailContent}
-      />
-    </SearchBox>
+    </>
   );
 };
 const SearchBox = styled.div`

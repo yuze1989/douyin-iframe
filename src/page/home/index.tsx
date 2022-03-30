@@ -11,7 +11,6 @@ const { TabPane } = Tabs;
 const Home = () => {
   const { state } = useLocation();
   const [tabKey, setTabKey] = useState(state?.tabKey || '1');
-  console.log('tabKey', tabKey);
   const urlParams = getUrlOption(window.location.href);
   const channel = urlParams?.channel || localStorage.getItem('channel');
   const openId = localStorage.getItem('openId') || urlParams?.openId;
@@ -24,7 +23,7 @@ const Home = () => {
       bordered={false}
       title={channel ? '蓝V获客' : ''}
       style={{ margin: '2rem 2rem 0' }}
-      // headStyle={{ border: 'none' }}
+      headStyle={{ border: 'none' }}
     >
       {/* {!urlParams?.channel && (
         <Tabs

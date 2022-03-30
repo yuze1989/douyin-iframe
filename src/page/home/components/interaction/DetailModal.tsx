@@ -1,9 +1,9 @@
 /* eslint-disable react/require-default-props */
 import styled from '@emotion/styled';
 import { Modal, Typography } from 'antd';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { KeyWordListType } from 'types/home';
-import { DetailContextType, RulesPropsType } from 'types/rules';
+import { ContentListType, DetailContextType, RulesPropsType } from 'types/rules';
 import './modal.css';
 
 const { Title, Text } = Typography;
@@ -31,16 +31,11 @@ const DetailModal = (props: IProps) => {
     <Typography className="keyBox">
       <div className="tit">回复内容</div>
       {
-        content?.messageList?.sort((a: any, b: any) => {
-          if (a.msgType > b.msgType) {
-            return -1;
-          }
-          if (a.msgType < b.msgType) {
-            return 1;
-          }
-          return 0;
+        messageObject?.sort((first, second) => {
+          console.log('object');
+          return first.msgType - second.msgType;
         })?.map((item: RulesPropsType) => (
-          item.msgType === 'text' ? <div className="txt" key={item.id}>{item?.text?.content}</div> : <div className="image" key={item.id}><img src={item?.image?.attachmentPath} alt="" /></div>
+          item.msgType === 1 ? <div className="txt" key={item.id}>{item?.text?.content}</div> : <div className="image" key={item.id}><img src={item?.image?.attachmentPath} alt="" /></div>
         ))
       }
     </Typography>
@@ -51,6 +46,16 @@ const DetailModal = (props: IProps) => {
       <Text className="txt">{content?.replyTimesLimit}</Text>
     </Typography>
   );
+  const messageObject = useMemo(() => {
+    console.log('content');
+    return content?.messageList?.map((item: RulesPropsType) => {
+      console.log('object');
+      return {
+        ...item,
+        msgType: item.msgType === 'text' ? 1 : 2,
+      };
+    });
+  }, [content]);
   useEffect(() => {
   }, []);
   return (

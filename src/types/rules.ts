@@ -42,7 +42,7 @@ export interface DetailContextType {
 export interface RulesPropsType {
   id?: number;
   image?: RulesPropsImage;
-  msgType?: string;
+  msgType?: string | number;
   text?: RulesPropsText;
 }
 

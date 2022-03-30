@@ -214,11 +214,11 @@ const CommentRules = () => {
                         />
                       </Form.Item>
                       {
-                        key !== 0 && (<span className="font_family icon-shanchu" onClick={() => remove(name)} />)
+                        fields.length !== 1 && (<span className="font_family icon-shanchu" onClick={() => remove(name)} />)
                       }
                     </ItemBox>
                   ))}
-                  <Form.Item style={{ marginBottom: 16 }}>
+                  <Form.Item style={{ marginBottom: '1.6rem' }}>
                     {
                       fields.length < 10 && (
                         <Button type="primary" onClick={() => addRuleType(add, 'text')} ghost>
@@ -244,8 +244,8 @@ const CommentRules = () => {
             <InputNumber style={{ marginBottom: '1.6rem' }} min={1} max={200} placeholder="请输入" />
           </Form.Item>
           <ButtonBox>
-            <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
-              <Button type="primary" size="large" htmlType="submit">
+            <Form.Item wrapperCol={{ span: 24 }} style={{ textAlign: 'center', margin: '2rem 0' }}>
+              <Button type="primary" size="middle" htmlType="submit">
                 保存
               </Button>
             </Form.Item>
