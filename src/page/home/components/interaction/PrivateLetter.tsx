@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import styled from '@emotion/styled';
 import http from 'utils/http';
 import {
@@ -17,6 +17,29 @@ import DetailModal from './DetailModal';
 import 'page/home/components/rules/create.css';
 
 const { Text } = Typography;
+
+interface TextBitmapProps {
+  value?: RulesPropsType[],
+  onChange?: (val: any) => void;
+}
+
+const TextBitmap = (props: TextBitmapProps) => {
+  const { value, onChange } = props;
+  console.log('TextBitmap', value);
+  const list = useMemo(() => value?.map((item: RulesPropsType) => ({
+    ...item,
+    msgType: item.msgType === 'text' ? 1 : 2,
+  })), [value]);
+  return (
+    <>
+      {
+        list?.sort((first, second) => second.msgType - first.msgType).map((item) => (
+          item?.msgType === 1 ? <span>{item?.text?.content}</span> : <span style={{ color: 'rgb(101, 176, 131)' }}>[图片]，</span>
+        ))
+      }
+    </>
+  );
+};
 
 interface Props {
   openId: String
@@ -104,16 +127,12 @@ const PrivateLetter = (props: Props) => {
       const { success, data, errMessage } = res;
       if (success) {
         setDetailContent(data);
-        showModal();
+        setIsModalVisible(true);
       } else {
         message.error(errMessage);
       }
     });
   };
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
   const handleCancel = () => {
     setIsModalVisible(false);
     setDetailContent(undefined);
@@ -183,6 +202,18 @@ const PrivateLetter = (props: Props) => {
             ))
           }
         </Tooltip>
+      ),
+    },
+    {
+      title: '回复内容',
+      key: 'messageList',
+      dataIndex: 'messageList',
+      align: 'left',
+      ellipsis: true,
+      render: (messageList: any) => (
+        <>
+          <TextBitmap value={messageList} />
+        </>
       ),
     },
     {
