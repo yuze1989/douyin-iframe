@@ -204,18 +204,18 @@ const PrivateLetter = (props: Props) => {
         </Tooltip>
       ),
     },
-    {
-      title: '回复内容',
-      key: 'messageList',
-      dataIndex: 'messageList',
-      align: 'left',
-      ellipsis: true,
-      render: (messageList: any) => (
-        <>
-          <TextBitmap value={messageList} />
-        </>
-      ),
-    },
+    // {
+    //   title: '回复内容',
+    //   key: 'messageList',
+    //   dataIndex: 'messageList',
+    //   align: 'left',
+    //   ellipsis: true,
+    //   render: (messageList: any) => (
+    //     <>
+    //       <TextBitmap value={messageList} />
+    //     </>
+    //   ),
+    // },
     {
       title: '回复内容',
       // width: 500,

@@ -10,8 +10,9 @@ import 'moment/locale/zh-cn';
 import zhCN from 'antd/lib/locale/zh_CN';
 
 moment.locale('zh-cn');
-const douyinISV = new DouyinISV();
+const douyinISV = new DouyinISV({ debug: true });
 const getAuth = async () => {
+  console.log('getAuth-111');
   const code = await douyinISV.getAuth({
     scope: 'user_info,video.list,mobile_alert',
   });
@@ -22,6 +23,8 @@ const getAuth = async () => {
       console.log('授权成功');
       localStorage.setItem('openId', authInfo.data);
     }
+  } else {
+    console.log('没有获取到code');
   }
 };
 
@@ -30,7 +33,7 @@ const App = () => {
   const channel = urlParams?.channel || localStorage.getItem('channel');
   const openId = urlParams?.openId || localStorage.getItem('openId');
   // !!urlParams?.channel: 其他环境; !urlParams?.channel: 抖音环境
-  if (!channel) {
+  if (!openId) {
     getAuth();
   } else {
     localStorage.setItem('channel', channel);
