@@ -33,9 +33,9 @@ const getAuth = () => {
   try {
     douyinISV.getAuth({
       // scope: 'user_info,video.list,mobile_alert',
-      scope: 'user_info',
+      // scope: 'user_info',
+      scope: 'user_info,following.list,fans.list,fans.check,renew_refresh_token,item.comment,video.comment,enterprise.im',
     }).then((response) => {
-      console.log('success: ', response, response.code);
       http.get('/social/douyin/api-callback/author', { code: response.code }).then((res) => {
         console.log('授权成功', res);
         localStorage.setItem('openId', res.data);
@@ -46,7 +46,6 @@ const getAuth = () => {
   } catch (error) {
     console.log('catch::::为什么跑这里来了呢？');
   }
-  console.log('为什么走这里来了呢？');
 };
 
 const App = () => {
