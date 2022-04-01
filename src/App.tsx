@@ -30,7 +30,8 @@ const douyinISV = new DouyinISV({ debug: true });
 
 const getAuth = () => {
   douyinISV.getAuth({
-    scope: 'user_info,video.list,mobile_alert',
+    // scope: 'user_info,video.list,mobile_alert',
+    scope: 'user_info,mobile_alert',
   }).then((code) => {
     console.log('success: ', code);
     http.get('/social/douyin/api-callback/author', { code }).then((res) => {
@@ -38,8 +39,9 @@ const getAuth = () => {
       localStorage.setItem('openId', res.data);
     }).catch((err) => console.log('err', err));
   }).catch((err) => {
-    console.error('error: ', err);
+    console.log('error: ', err);
   });
+  console.log('为什么走这里来了呢？');
 };
 
 const App = () => {
