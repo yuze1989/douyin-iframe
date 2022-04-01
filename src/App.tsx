@@ -33,7 +33,7 @@ const getAuth = () => {
   try {
     douyinISV.getAuth({
       // scope: 'user_info,video.list,mobile_alert',
-      scope: 'user_info,mobile_alert',
+      scope: 'user_info',
     }).then((response) => {
       console.log('success: ', response, response.code);
       http.get('/social/douyin/api-callback/author', { code: response.code }).then((res) => {
