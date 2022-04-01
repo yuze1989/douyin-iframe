@@ -11,42 +11,42 @@ import zhCN from 'antd/lib/locale/zh_CN';
 
 moment.locale('zh-cn');
 const douyinISV = new DouyinISV({ debug: true });
-// const getAuth = async () => {
-//   console.log('getAuth-111');
-//   const code = await douyinISV.getAuth({
-//     scope: 'user_info,video.list,mobile_alert',
-//   });
-//   console.log('code', code);
-//   if (code) {
-//     const authInfo = await http.get('/social/douyin/api-callback/author', { code });
-//     if (authInfo.success) {
-//       console.log('授权成功');
-//       localStorage.setItem('openId', authInfo.data);
-//     }
-//   } else {
-//     console.log('没有获取到code');
-//   }
-//   console.log('为什么跑这里来了');
-// };
-
-const getAuth = () => {
-  try {
-    douyinISV.getAuth({
-      // scope: 'user_info,video.list,mobile_alert',
-      // scope: 'user_info',
-      scope: 'user_info,following.list,fans.list,fans.check,renew_refresh_token,item.comment,video.comment,enterprise.im',
-    }).then((response) => {
-      http.get('/social/douyin/api-callback/author', { code: response.code }).then((res) => {
-        console.log('授权成功', res);
-        localStorage.setItem('openId', res.data);
-      }).catch((err) => console.log('err', err));
-    }).catch((err) => {
-      console.log('error: ', err);
+const getAuth = async () => {
+  console.log('getAuth-111');
+  // 获取scope权限
+  const scope = await http.get('social/api-application/get/douyin_app', {});
+  console.log('scope', scope);
+  if (scope) {
+    const code = await douyinISV.getAuth({
+      scope: 'user_info,video.list,mobile_alert',
     });
-  } catch (error) {
-    console.log('catch::::为什么跑这里来了呢？');
+    console.log('code', code);
+    if (code) {
+      const authInfo = await http.get('/social/douyin/api-callback/author', { code });
+      if (authInfo.success) {
+        console.log('授权成功');
+        localStorage.setItem('openId', authInfo.data);
+      }
+    }
   }
 };
+
+// const getAuth = () => {
+//   try {
+//     douyinISV.getAuth({
+//       scope: 'user_info,following.list,fans.list,fans.check',
+//     }).then((response) => {
+//       http.get('/social/douyin/api-callback/author', { code: response.code }).then((res) => {
+//         console.log('授权成功', res);
+//         localStorage.setItem('openId', res.data);
+//       }).catch((err) => console.log('err', err));
+//     }).catch((err) => {
+//       console.log('error: ', err);
+//     });
+//   } catch (error) {
+//     console.log('catch::::为什么跑这里来了呢？');
+//   }
+// };
 
 const App = () => {
   const urlParams = getUrlOption(window.location.href);
