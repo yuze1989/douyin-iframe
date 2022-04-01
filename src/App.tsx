@@ -11,21 +11,35 @@ import zhCN from 'antd/lib/locale/zh_CN';
 
 moment.locale('zh-cn');
 const douyinISV = new DouyinISV({ debug: true });
-const getAuth = async () => {
-  console.log('getAuth-111');
-  const code = await douyinISV.getAuth({
+// const getAuth = async () => {
+//   console.log('getAuth-111');
+//   const code = await douyinISV.getAuth({
+//     scope: 'user_info,video.list,mobile_alert',
+//   });
+//   console.log('code', code);
+//   if (code) {
+//     const authInfo = await http.get('/social/douyin/api-callback/author', { code });
+//     if (authInfo.success) {
+//       console.log('授权成功');
+//       localStorage.setItem('openId', authInfo.data);
+//     }
+//   } else {
+//     console.log('没有获取到code');
+//   }
+// };
+
+const getAuth = () => {
+  douyinISV.getAuth({
     scope: 'user_info,video.list,mobile_alert',
+  }).then((code) => {
+    console.log('success: ', code);
+    http.get('/social/douyin/api-callback/author', { code }).then((res) => {
+      console.log('授权成功', res);
+      localStorage.setItem('openId', res.data);
+    }).catch((err) => console.log('err', err));
+  }).catch((err) => {
+    console.error('error: ', err);
   });
-  console.log('code', code);
-  if (code) {
-    const authInfo = await http.get('/social/douyin/api-callback/author', { code });
-    if (authInfo.success) {
-      console.log('授权成功');
-      localStorage.setItem('openId', authInfo.data);
-    }
-  } else {
-    console.log('没有获取到code');
-  }
 };
 
 const App = () => {
