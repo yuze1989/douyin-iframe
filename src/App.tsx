@@ -31,7 +31,7 @@ const douyinISV = new DouyinISV({ debug: true });
 const getAuth = () => {
   douyinISV.getAuth({
     // scope: 'user_info,video.list,mobile_alert',
-    scope: 'user_info,mobile_alert',
+    scope: 'user_info',
   }).then((code) => {
     console.log('success: ', code);
     http.get('/social/douyin/api-callback/author', { code }).then((res) => {
