@@ -34,9 +34,9 @@ const getAuth = () => {
     douyinISV.getAuth({
       // scope: 'user_info,video.list,mobile_alert',
       scope: 'user_info',
-    }).then((code) => {
-      console.log('success: ', code);
-      http.get('/social/douyin/api-callback/author', { code }).then((res) => {
+    }).then((response) => {
+      console.log('success: ', response, response.code);
+      http.get('/social/douyin/api-callback/author', { code: response.code }).then((res) => {
         console.log('授权成功', res);
         localStorage.setItem('openId', res.data);
       }).catch((err) => console.log('err', err));
