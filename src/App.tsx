@@ -47,7 +47,7 @@ const App = () => {
   const channel = urlParams?.channel || localStorage.getItem('channel');
   const openId = urlParams?.openId || localStorage.getItem('openId');
   // !!urlParams?.channel: 其他环境; !urlParams?.channel: 抖音环境
-  if (!openId) {
+  if (openId === 'null') {
     getAuth();
   } else {
     localStorage.setItem('channel', channel);
