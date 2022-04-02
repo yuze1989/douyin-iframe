@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+import { message } from 'antd';
 import axios from 'axios';
 
 declare module 'axios' {
@@ -36,9 +37,9 @@ instance.interceptors.request.use(
     const globalOpt = !globalOptStr ? {} : JSON.parse(globalOptStr);
     const configTemp = config;
     const token = localStorage.getItem('token');
-    const tiktokToken = localStorage.getItem('openId') || 'tiktok-token';
+    const tiktokToken = localStorage.getItem('openId');
     configTemp.headers = {
-      'tiktok-token': tiktokToken,
+      'tiktok-token': tiktokToken || '',
     };
     Object.assign(config.headers, globalOpt);
     configTemp.headers.token = token || '';
@@ -51,7 +52,15 @@ instance.interceptors.request.use(
 
 // 响应拦截
 instance.interceptors.response.use(
-  (response) => response.data,
+  (response) => {
+    const { errCode, errMessage } = response.data;
+    if (errCode === '0480000008') {
+      // message.error(errMessage);
+      localStorage.clear();
+      return false;
+    }
+    return response.data;
+  },
   (error) => Promise.reject(error),
 );
 
