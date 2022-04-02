@@ -16,9 +16,9 @@ const getAuth = async () => {
   // 获取scope权限
   const scope = await http.get('social/api-application/get/douyin_app', {});
   console.log('scope', scope);
-  if (scope) {
+  if (scope.data) {
     const code = await douyinISV.getAuth({
-      scope: 'user_info,video.list,mobile_alert',
+      scope: scope.data,
     });
     console.log('code', code);
     if (code) {
@@ -30,23 +30,6 @@ const getAuth = async () => {
     }
   }
 };
-
-// const getAuth = () => {
-//   try {
-//     douyinISV.getAuth({
-//       scope: 'user_info,following.list,fans.list,fans.check',
-//     }).then((response) => {
-//       http.get('/social/douyin/api-callback/author', { code: response.code }).then((res) => {
-//         console.log('授权成功', res);
-//         localStorage.setItem('openId', res.data);
-//       }).catch((err) => console.log('err', err));
-//     }).catch((err) => {
-//       console.log('error: ', err);
-//     });
-//   } catch (error) {
-//     console.log('catch::::为什么跑这里来了呢？');
-//   }
-// };
 
 const App = () => {
   const urlParams = getUrlOption(window.location.href);
