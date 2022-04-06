@@ -55,8 +55,11 @@ instance.interceptors.response.use(
   (response) => {
     const { errCode, errMessage } = response.data;
     if (errCode === '0480000008') {
-      // message.error(errMessage);
+      message.error(errMessage);
       localStorage.clear();
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
       return false;
     }
     return response.data;
