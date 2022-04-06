@@ -28,8 +28,8 @@ const TextImg = (props: Props) => {
   const { ossData, getExtraData, uploadAttachment } = useCloudUpload('messagecenter');
   const uploadButton = (
     <div>
-      <span style={{ fontSize: '14px', color: 'rgba(0,0,0,0.25)', display: 'block' }} className="font_family icon-tianjia1" />
-      <span style={{ color: 'rgba(0,0,0,0.25)' }}>上传图片</span>
+      <span className="font_family icon-tianjia1 preImgIcon" />
+      <span className="preImgText">上传图片</span>
     </div>
   );
   const handleChange = async (fileInfo: UploadChangeParam<UploadFile<any>>) => {
@@ -115,7 +115,7 @@ const TextImg = (props: Props) => {
             maxCount={1}
             onChange={(fileInfo) => handleChange(fileInfo)}
           >
-            {value?.image?.attachmentPath ? <img src={value?.image?.attachmentPath} alt="avatar" style={{ width: '100%', maxHeight: '100%' }} /> : uploadButton}
+            {value?.image?.attachmentPath ? <img src={value?.image?.attachmentPath} alt="avatar" className="thumbImg" /> : uploadButton}
           </Upload>
           <Text className="tips">上传图片须小于1500像素，小于5M。</Text>
         </>
@@ -149,7 +149,6 @@ const PrivateLetterRules = () => {
   const validateMessages = {
     required: '${label} 不能为空!',
   };
-  /* eslint-enable no-template-curly-in-string */
   const rulesOption = [
     { label: '半匹配', value: 1 },
     { label: '全匹配', value: 2 },
@@ -212,15 +211,15 @@ const PrivateLetterRules = () => {
   return (
     <ContentBox>
       <Card
+        className="cardBox"
         title={id ? '编辑规则' : '添加规则'}
-        style={{ margin: '2rem 2rem 0' }}
         bodyStyle={{ padding: 0 }}
         extra={<a className="font_family icon-fanhui blue" onClick={() => navigate('/home', { ...state })}>返回</a>}
       >
         <Form
           {...layout}
           form={form}
-          style={{ padding: '30px 0 0 0' }}
+          className="paddingTop30"
           onFinish={onFinish}
           validateMessages={validateMessages}
           initialValues={
@@ -228,11 +227,7 @@ const PrivateLetterRules = () => {
           }
         >
           <Form.Item name={['tiktokUserId']} label="适用账号" rules={[{ required: true }]}>
-            <Select
-              style={{ width: 200 }}
-              placeholder="请选择"
-              onChange={changeAccount}
-            >
+            <Select className="width200" placeholder="请选择" onChange={changeAccount}>
               {
                 accountList?.map((item: any) => (
                   <Select.Option value={item.id} key={item.apiAuthorId}>
@@ -253,15 +248,15 @@ const PrivateLetterRules = () => {
               {(fields, { add, remove }) => (
                 <>
                   {fields.map(({ key, name, ...restField }) => (
-                    <Space key={key} style={{ display: 'flex' }} align="baseline">
+                    <Space key={key} className="displayFlex" align="baseline">
                       <Form.Item
                         {...restField}
                         name={[name, 'type']}
                         rules={[{ required: true, message: '请选择匹配模式' }]}
-                        style={{ marginBottom: '1.6rem' }}
+                        className="marginBottom16"
                       >
                         <Select
-                          style={{ width: 100, display: 'inline-block', margin: '0 10px 0 0' }}
+                          className="selectList"
                           placeholder="请选择"
                           options={rulesOption}
                         />
@@ -270,7 +265,7 @@ const PrivateLetterRules = () => {
                         {...restField}
                         name={[name, 'keyWord']}
                         rules={[{ required: true, message: '关键词不能为空！' }]}
-                        style={{ marginBottom: '1.6rem' }}
+                        className="marginBottom16"
                       >
                         <InputShowCount style={{ width: 290 }} placeholder="请输入关键词" maxLength={30} />
                       </Form.Item>
@@ -279,11 +274,11 @@ const PrivateLetterRules = () => {
                       }
                     </Space>
                   ))}
-                  <Form.Item style={{ marginBottom: '1.6rem' }}>
+                  <Form.Item className="marginBottom16">
                     {
                       fields.length < 10 && (
                         <Button type="primary" onClick={() => add()} ghost>
-                          <span style={{ fontSize: '14px' }} className="font_family icon-tianjia1 font_14">
+                          <span className="font_family icon-tianjia1 font_14">
                             &nbsp;添加关键词
                           </span>
                         </Button>
@@ -293,7 +288,7 @@ const PrivateLetterRules = () => {
                 </>
               )}
             </Form.List>
-            <Space direction="vertical" style={{ display: 'block' }}>
+            <Space direction="vertical">
               <Text type="secondary">半匹配是指评论中命中一个关键词就执行自动回复。</Text>
               <Text type="secondary">全匹配是指评论中所有关键词全部命中执行自动回复。</Text>
             </Space>
@@ -314,6 +309,7 @@ const PrivateLetterRules = () => {
                         <Form.Item
                           {...fields}
                           name={name}
+                          className="marginBottom16"
                           required
                           rules={[
                             {
@@ -325,7 +321,6 @@ const PrivateLetterRules = () => {
                               },
                             },
                           ]}
-                          style={{ marginBottom: '1.6rem' }}
                         >
                           <TextImg tiktokId={tiktokUserId && tiktokUserId} />
                         </Form.Item>
@@ -334,12 +329,12 @@ const PrivateLetterRules = () => {
                         }
                       </ItemBox>
                     ))}
-                    <Form.Item style={{ marginBottom: '1.6rem' }}>
+                    <Form.Item className="marginBottom16">
                       {
                         fields.length < 10 && (
                           <DropdownBox>
                             <Button type="primary" ghost>
-                              <span style={{ fontSize: '14px' }} className="font_family icon-tianjia1 font_14">
+                              <span className="font_family icon-tianjia1 font_14">
                                 &nbsp;添加回复内容
                               </span>
                             </Button>
@@ -357,7 +352,7 @@ const PrivateLetterRules = () => {
             </Spin>
           </Form.Item>
           <ButtonBox>
-            <Form.Item wrapperCol={{ span: 24 }} style={{ textAlign: 'center', margin: '1rem 0' }}>
+            <Form.Item wrapperCol={{ span: 24 }} className="saveButton">
               <Button type="primary" size="middle" htmlType="submit">保存</Button>
             </Form.Item>
           </ButtonBox>
@@ -369,6 +364,30 @@ const PrivateLetterRules = () => {
 const ContentBox = styled.div`
   margin:0 0 16px 0;
   padding: 0 2rem;
+  .cardBox{
+    margin: 2rem 2rem 0;
+  }
+  .paddingTop30{
+    padding-top: 3rem;
+  }
+  .width200{
+    width: 20rem;
+  }
+  .displayFlex{
+    display: flex;
+  }
+  .marginBottom16{
+    margin-bottom: 1.6rem;
+  }
+  .saveButton{
+    margin: 1rem 0;
+    text-align: center;
+  }
+  .selectList{
+    display: inline-block;
+    margin: 0 1rem 0 0;
+    width: 10rem;
+  }
   `;
 const ButtonBox = styled.div`
   border-top: 1px solid #DDDDDD;
@@ -431,6 +450,18 @@ const ItemBox = styled.div`
     left: calc(100% + 10px);
     font-size: 12px;
     color: rgba(0, 0, 0, 0.45);
+  }
+  .thumbImg{
+    width: 100%;
+    max-height: 100%;
+  }
+  .preImgIcon{
+    display: block;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.25);
+  }
+  .preImgText{
+    color: rgba(0,0,0,0.25);
   }
 `;
 const TextAreaBox = styled.div`

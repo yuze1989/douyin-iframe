@@ -30,7 +30,7 @@ const UserInformation = (props: Props) => {
   return (
     <UserBox>
       <Text>
-        <i className="font_family icon-a-" style={{ color: '#1890FF', marginRight: 8 }} />
+        <i className="font_family icon-a- textIcon" />
         <span>企业编码和企业秘钥是与巨准scrm绑定的关键属性，请妥善保管!</span>
       </Text>
       <Msg>
@@ -64,6 +64,10 @@ const Text = styled.div`
   margin-top: 0;
   margin-bottom: 10px;
   padding-left: 10px;
+  .textIcon{
+    margin-right: 0.8rem;
+    color: #1890FF;
+  }
 `;
 const Name = styled.span`
   font-family: PingFangSC-Medium;

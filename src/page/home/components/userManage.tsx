@@ -99,7 +99,7 @@ const UserManage = (props: Props) => {
       align: 'left',
       render: (text, record) => (
         <>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div className="userInfoBox">
             <MyAvatar>
               <div className="imgbox">
                 {record.avatar && (
@@ -164,7 +164,7 @@ const UserManage = (props: Props) => {
         </div>
       </AccountBox>
       <TopBox>
-        <div style={{ background: '#fff', padding: '0 2rem' }}>
+        <div className="numberChart">
           {/* <Title>今日实时监控数据</Title> */}
           <Box>
             <ShowBox>
@@ -174,11 +174,7 @@ const UserManage = (props: Props) => {
                   <Total>{marketStatistics.todayReachCount}</Total>
                 </div>
                 <div>
-                  <img
-                    style={{ width: '54px', height: '50px' }}
-                    src="https://jz-scrm.oss-cn-hangzhou.aliyuncs.com/web/douyin/touch.png"
-                    alt=""
-                  />
+                  <img className="chartIcon" src="https://jz-scrm.oss-cn-hangzhou.aliyuncs.com/web/douyin/touch.png" alt="" />
                 </div>
               </Flex>
               <User>
@@ -192,11 +188,7 @@ const UserManage = (props: Props) => {
                   <Total>{marketStatistics.todayReplyCount}</Total>
                 </div>
                 <div>
-                  <img
-                    style={{ width: '54px', height: '50px' }}
-                    src="https://jz-scrm.oss-cn-hangzhou.aliyuncs.com/web/douyin/reply.png"
-                    alt=""
-                  />
+                  <img className="chartIcon" src="https://jz-scrm.oss-cn-hangzhou.aliyuncs.com/web/douyin/reply.png" alt="" />
                 </div>
               </Flex>
               <User>
@@ -221,13 +213,12 @@ const UserManage = (props: Props) => {
             <Form.Item label="消息发送时间" name="lastReachedTime">
               <RangePicker allowClear={false} />
             </Form.Item>
-            <Form.Item label="地区" name="address" style={{ marginLeft: '10px' }}>
+            <Form.Item label="地区" name="address" className="marginLeft10">
               <Input placeholder="请输入地址" />
             </Form.Item>
             <Form.Item
               name="searchType"
-              label=""
-              style={{ marginLeft: '10px', width: '90px', marginRight: '0px' }}
+              className="nameCondition marginLeft10"
             >
               <Select onChange={(e: string) => setSearchType(e)}>
                 <Option value="nickname">昵称</Option>
@@ -247,12 +238,12 @@ const UserManage = (props: Props) => {
             )}
             <div className="search-btns">
               <Button style={{ marginRight: '10px' }} type="primary" htmlType="submit">
-                <span style={{ fontSize: '14px' }} className="font_family icon-sousuo2">
+                <span className="font_family icon-sousuo2 fontSize14">
                   &nbsp;查询
                 </span>
               </Button>
               <Button htmlType="reset" onClick={reset}>
-                <span style={{ fontSize: '14px' }} className="font_family icon-zhongzhi1">
+                <span className="font_family icon-zhongzhi1 fontSize14">
                   &nbsp;重置
                 </span>
               </Button>
@@ -345,10 +336,21 @@ const AccountBox = styled.div`
   .ant-radio-button-wrapper:not(:first-child)::before{
     content: none;
   }
+  .ant-radio-button-wrapper:first-child{
+    border-left: none;
+  }
 `;
 const TopBox = styled.div`
   background: #f0f2f5;
   padding-bottom: 2rem;
+  .numberChart{
+    padding: 0 2rem;
+    background: #FFFFFF;
+  }
+  .chartIcon{
+    width: 5.4rem;
+    height: 5rem;
+  }
 `;
 const Box = styled.div`
   display: flex;
@@ -380,9 +382,23 @@ const User = styled.div`
 `;
 const BottomBox = styled.div`
   padding-top: 4px;
+  .userInfoBox{
+    display: flex;
+    align-items: center;
+  }
 `;
 const SearchBox = styled.div`
   margin: 2rem 2rem;
+  .fontSize14{
+    font-size: 14px;
+  }
+  .marginLeft10{
+    margin-left: 1rem;
+  }
+  .nameCondition{
+    margin-right: 0px;
+    width: 90px;
+  }
   .ant-select:not(.ant-select-customize-input) .ant-select-selector {
     border-right: 0;
     border-radius: 0;

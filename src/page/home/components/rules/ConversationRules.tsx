@@ -80,7 +80,6 @@ const ConversationRules = () => {
   const validateMessages = {
     required: '${label} 不能为空!',
   };
-  /* eslint-enable no-template-curly-in-string */
   const layout = {
     labelCol: { span: 6 },
     wrapperCol: { span: 18 },
@@ -90,7 +89,6 @@ const ConversationRules = () => {
       <Card
         className="cardBox"
         title={id ? '编辑规则' : '添加规则'}
-        style={{ margin: '2rem 2rem 0' }}
         bodyStyle={{ padding: 0 }}
         extra={<a className="font_family icon-fanhui blue" onClick={() => navigate('/home', { ...state })}>返回</a>}
       >
@@ -105,14 +103,11 @@ const ConversationRules = () => {
               { messageList: [{ msgType: 'text' }] }
             }
           >
-            <Form.Item label=" " colon={false} style={{ marginBottom: '1.2rem' }}>
+            <Form.Item label=" " colon={false} className="marginBottom12">
               <Title className="title">进入会话自动触达</Title>
             </Form.Item>
             <Form.Item label="适用账号：" name={['tiktokUserId']} rules={[{ required: true }]}>
-              <Select
-                style={{ width: 200 }}
-                placeholder="请选择"
-              >
+              <Select className="width200" placeholder="请选择">
                 {
                   accountList && accountList?.map((item: any) => (
                     <Select.Option value={item.id} key={item.apiAuthorId}>
@@ -152,7 +147,7 @@ const ConversationRules = () => {
               </Form.List>
             </Form.Item>
             <Form.Item label=" " colon={false}>
-              <Button style={{ marginRight: '10px' }} type="primary" htmlType="submit">保存</Button>
+              <Button type="primary" htmlType="submit">保存</Button>
             </Form.Item>
           </Form>
           <ChatModel>
@@ -172,11 +167,18 @@ const ContentBox = styled.div`
   padding: 0 2rem;
   .cardBox{
     position: relative;
+    margin: 2rem 2rem 0;
   }
   .formBox{
     padding: 30px 0 0 0;
     width: 65.4rem;
     height: calc(100vh - 7rem);
+  }
+  .width200{
+    width: 20rem;
+  }
+  .marginBottom12{
+    margin-bottom: 1.2rem;
   }
   .title{
     position: relative;
