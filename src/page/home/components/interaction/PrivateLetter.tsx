@@ -19,25 +19,52 @@ import 'page/home/components/rules/create.css';
 const { Text } = Typography;
 
 interface TextBitmapProps {
-  value?: RulesPropsType[],
-  onChange?: (val: any) => void;
+  value?: ContentListType[]
 }
 
 const TextBitmap = (props: TextBitmapProps) => {
-  const { value, onChange } = props;
-  console.log('TextBitmap', value);
-  const list = useMemo(() => value?.map((item: RulesPropsType) => ({
-    ...item,
-    msgType: item.msgType === 'text' ? 1 : 2,
-  })), [value]);
+  const { value } = props;
+  const compare = (first?: any, second?: any) => {
+    if (first?.msgType > second?.msgType) return 1;
+    if (first?.msgType < second?.msgType) return -1;
+    return 0;
+  };
+  const list = useMemo(() => {
+    const result: RulesPropsType[] = [];
+    let count = 0;
+    value?.sort(compare).forEach((item: RulesPropsType) => {
+      if (item.msgType === 'image') {
+        if (!count) {
+          result.push(item);
+          count += 1;
+        }
+      } else {
+        result.push(item);
+      }
+    });
+    return result;
+  }, [value]);
   return (
-    <>
+    <Tooltip
+      placement="bottomLeft"
+      color="#FFFFFF"
+      overlayClassName="tooltipsBox"
+      destroyTooltipOnHide
+      autoAdjustOverflow
+      title={
+        (
+          list?.map((item: RulesPropsType, index, array) => (
+            item?.msgType === 'text' ? <span key={item.id}>{item?.text?.content}{index !== array.length - 1 && '，'}</span> : <span key={item.id} style={{ color: 'rgb(101, 176, 131)' }}>[图片]{index !== array.length - 1 && '，'}</span>
+          ))
+        )
+      }
+    >
       {
-        list?.sort((first, second) => second.msgType - first.msgType).map((item) => (
-          item?.msgType === 1 ? <span>{item?.text?.content}</span> : <span style={{ color: 'rgb(101, 176, 131)' }}>[图片]，</span>
+        list.map((item: RulesPropsType, index, array) => (
+          item?.msgType === 'text' ? <span key={item.id}>{item?.text?.content}{index !== array.length - 1 && '，'}</span> : <span key={item.id} style={{ color: 'rgb(101, 176, 131)' }}>[图片]{index !== array.length - 1 && '，'}</span>
         ))
       }
-    </>
+    </Tooltip>
   );
 };
 
