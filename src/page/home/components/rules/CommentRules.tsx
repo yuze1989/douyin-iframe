@@ -4,7 +4,7 @@ import http from 'utils/http';
 import { getUrlOption } from 'utils';
 import { TiktokList } from 'types/home';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { KeyWordListType, RulesPropsType } from 'types/rules';
+import { RulesPropsType } from 'types/rules';
 import {
   Space, Typography, Card, Form, Select, Switch, Button, InputNumber, message, Input,
 } from 'antd';

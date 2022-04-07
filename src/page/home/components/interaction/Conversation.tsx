@@ -7,7 +7,7 @@ import {
 // import { DetailContextType } from 'types/rules';
 import { Link, useLocation } from 'react-router-dom';
 import {
-  Form, Input, Select, Button, Table, Pagination, TablePaginationConfig,
+  Form, Select, Button, Table, Pagination, TablePaginationConfig,
   Switch, Popconfirm, message, Spin, Tooltip, Typography,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';

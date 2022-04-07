@@ -1,11 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import http from 'utils/http';
 import {
-  RegulationDataType, TableDataType, ParmasType, TiktokList, paginationDataType, KeyWordListType,
+  RegulationDataType, ParmasType, TiktokList, paginationDataType, KeyWordListType,
   InteractTableDataType,
 } from 'types/home';
-import { ContentListType, DetailContextType, RulesPropsType } from 'types/rules';
+import { ContentListType, DetailContextType } from 'types/rules';
 import { Link, useLocation } from 'react-router-dom';
 import {
   Form, Input, Select, Button, Table, Pagination, TablePaginationConfig, message,
