@@ -118,7 +118,7 @@ const CommentRules = () => {
           <Form.Item name={['tiktokUserId']} label="适用账号" rules={[{ required: true }]}>
             <Select className="width200" placeholder="请选择">
               {
-                accountList?.map((item: any) => (
+                accountList?.map((item) => (
                   <Select.Option
                     value={item.id}
                     key={item.apiAuthorId}

@@ -109,7 +109,7 @@ const ConversationRules = () => {
             <Form.Item label="适用账号：" name={['tiktokUserId']} rules={[{ required: true }]}>
               <Select className="width200" placeholder="请选择">
                 {
-                  accountList && accountList?.map((item: any) => (
+                  accountList?.map((item) => (
                     <Select.Option value={item.id} key={item.apiAuthorId}>
                       { item.nickname }
                     </Select.Option>

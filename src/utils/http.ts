@@ -9,6 +9,12 @@ declare module 'axios' {
   }
 }
 
+message.config({
+  duration: 1.5,
+  maxCount: 1,
+  rtl: true,
+});
+
 const info: {
   [key: string]: any;
 } = {
@@ -55,11 +61,8 @@ instance.interceptors.response.use(
   (response) => {
     const { errCode, errMessage } = response.data;
     if (errCode === '0480000008') {
-      message.error(errMessage);
+      message.error('登录状态失效，请重新登录');
       localStorage.clear();
-      setTimeout(() => {
-        window.location.reload();
-      }, 1500);
       return false;
     }
     return response.data;

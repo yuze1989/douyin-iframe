@@ -257,7 +257,7 @@ const PrivateLetter = (props: Props) => {
           <Form.Item label="适用账号：" name="tiktokUserId">
             <Select className="selectBox" placeholder="请选择">
               {
-                accountList && accountList.map((item: any) => (
+                accountList?.map((item) => (
                   <Select.Option value={item.id} key={item.apiAuthorId}>
                     {item.nickname}
                   </Select.Option>

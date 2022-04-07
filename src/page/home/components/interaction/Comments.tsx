@@ -255,7 +255,7 @@ const Comments = (props: Props) => {
               placeholder="请选择"
             >
               {
-                accountList && accountList.map((item: any) => (
+                accountList?.map((item) => (
                   <Select.Option
                     value={item?.id}
                     key={item.apiAuthorId}
