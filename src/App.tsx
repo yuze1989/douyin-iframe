@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, message } from 'antd';
 import moment from 'moment';
 import DouyinISV from 'douyin-isv';
 import Router from 'router/index';
@@ -10,19 +10,16 @@ import 'moment/locale/zh-cn';
 import zhCN from 'antd/lib/locale/zh_CN';
 
 moment.locale('zh-cn');
-const douyinISV = new DouyinISV();
+const douyinISV = new DouyinISV({ debug: true });
 const getAuth = async () => {
   // 获取scope权限
   const scope = await http.get('social/api-application/get/douyin_app', {});
-  console.log('scope', scope, scope.data);
   if (scope?.data) {
-    const response = await douyinISV.getAuth({
-      scope: scope.data,
-    });
+    console.log('scope', scope, scope.data);
+    const response = await douyinISV.getAuth({ scope: scope.data });
     console.log('response', response, response.code);
     if (response?.code) {
       const authInfo = await http.get('/social/douyin/api-callback/author', { code: response?.code });
-      console.log('authInfo', authInfo, authInfo.data);
       if (authInfo?.success) {
         localStorage.setItem('openId', authInfo.data);
         window.location.reload();
