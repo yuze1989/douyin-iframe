@@ -18,7 +18,7 @@ const UserActiveSetting = () => {
       <TabsBox>
         <Radio.Group
           defaultValue={optionKey}
-          style={{ padding: '0 2rem', margin: '4px 0 20px' }}
+          className="radioBox"
           onChange={(e) => {
             changeOptionKey(e.target.value);
           }}
@@ -38,6 +38,10 @@ const UserActiveSetting = () => {
 };
 
 const TabsBox = styled.div`
+  .radioBox{
+    margin: 4px 0 20px;
+    padding: 0 2rem;
+  }
   .ant-radio-button-wrapper{
     height: 36px;
     line-height: 36px;

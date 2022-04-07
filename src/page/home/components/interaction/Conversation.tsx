@@ -7,7 +7,7 @@ import {
 // import { DetailContextType } from 'types/rules';
 import { Link, useLocation } from 'react-router-dom';
 import {
-  Form, Input, Select, Button, Table, Pagination, TablePaginationConfig,
+  Form, Select, Button, Table, Pagination, TablePaginationConfig,
   Switch, Popconfirm, message, Spin, Tooltip, Typography,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
@@ -191,12 +191,9 @@ const Conversation = (props: Props) => {
           onFinish={onFinish}
         >
           <Form.Item label="适用账号：" name="tiktokUserId">
-            <Select
-              style={{ width: 200 }}
-              placeholder="请选择"
-            >
+            <Select className="selectBox" placeholder="请选择">
               {
-                accountList && accountList.map((item: any) => (
+                accountList?.map((item) => (
                   <Select.Option
                     value={item.id}
                     key={item.apiAuthorId}
@@ -211,13 +208,13 @@ const Conversation = (props: Props) => {
             <Input placeholder="请输入" />
           </Form.Item> */}
           <Form.Item>
-            <Button style={{ marginRight: '10px' }} type="primary" htmlType="submit">
-              <span style={{ fontSize: '14px' }} className="font_family icon-sousuo2">
+            <Button className="submitButton" type="primary" htmlType="submit">
+              <span className="font_family icon-sousuo2 fontSize14">
                 &nbsp;查询
               </span>
             </Button>
             <Button htmlType="reset" onClick={onReset}>
-              <span style={{ fontSize: '14px' }} className="font_family icon-zhongzhi1">
+              <span className="font_family icon-zhongzhi1 fontSize14">
                 &nbsp;重置
               </span>
             </Button>
@@ -226,7 +223,7 @@ const Conversation = (props: Props) => {
         <ButtonBox>
           <Link to="/save-rules-conversation" state={{ tabKey: '2', optionKey: '2' }}>
             <Button type="primary" disabled={tableData?.data?.length === 2}>
-              <span style={{ fontSize: '14px' }} className="font_family icon-xinjiansvg1">
+              <span className="font_family icon-xinjiansvg1 fontSize14">
                 &nbsp;添加规则
               </span>
             </Button>
@@ -259,6 +256,15 @@ const Conversation = (props: Props) => {
 const SearchBox = styled.div`
   margin:0 0 1.6rem 0;
   padding: 0 2rem;
+  .selectBox{
+    width: 20rem;
+  }
+  .submitButton{
+    margin-right: 1rem;
+  }
+  .fontSize14{
+    font-size: 14px;
+  }
 `;
 const ButtonBox = styled.div`
   margin: 2.4rem 0 1.6rem 0;

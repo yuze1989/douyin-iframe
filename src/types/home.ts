@@ -46,7 +46,7 @@ export interface TiktokList {
   gender?: number;
   gmtCreate?: string;
   gmtModified?: string;
-  id?: number;
+  id: number;
   mobile?: number;
   modifier?: string;
   nickname?: string;

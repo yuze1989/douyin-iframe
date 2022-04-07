@@ -4,7 +4,7 @@ import http from 'utils/http';
 import { getUrlOption } from 'utils';
 import { TiktokList } from 'types/home';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { KeyWordListType, RulesPropsType } from 'types/rules';
+import { RulesPropsType } from 'types/rules';
 import {
   Space, Typography, Card, Form, Select, Switch, Button, InputNumber, message, Input,
 } from 'antd';
@@ -98,14 +98,14 @@ const CommentRules = () => {
     <ContentBox>
       <Card
         title={id ? '编辑规则' : '添加规则'}
-        style={{ margin: '2rem 2rem 0' }}
+        className="cardBox"
         bodyStyle={{ padding: 0 }}
         extra={<a className="font_family icon-fanhui blue" onClick={() => navigate('/home', { ...state })}>返回</a>}
       >
         <Form
           {...layout}
           form={form}
-          style={{ padding: '30px 0 0 0' }}
+          className="formBox"
           onFinish={onFinish}
           validateMessages={validateMessages}
           initialValues={
@@ -116,12 +116,9 @@ const CommentRules = () => {
           }
         >
           <Form.Item name={['tiktokUserId']} label="适用账号" rules={[{ required: true }]}>
-            <Select
-              style={{ width: 200 }}
-              placeholder="请选择"
-            >
+            <Select className="width200" placeholder="请选择">
               {
-                accountList?.map((item: any) => (
+                accountList?.map((item) => (
                   <Select.Option
                     value={item.id}
                     key={item.apiAuthorId}
@@ -143,24 +140,20 @@ const CommentRules = () => {
               {(fields, { add, remove }) => (
                 <>
                   {fields.map(({ key, name, ...restField }) => (
-                    <Space key={key} style={{ display: 'flex' }} align="baseline">
+                    <Space key={key} className="displayFlex" align="baseline">
                       <Form.Item
                         {...restField}
                         name={[name, 'type']}
                         rules={[{ required: true, message: '请选择匹配模式' }]}
-                        style={{ marginBottom: 16 }}
+                        className="marginBottom16"
                       >
-                        <Select
-                          style={{ width: 100, display: 'inline-block', margin: '0 10px 0 0' }}
-                          placeholder="请选择"
-                          options={rulesOption}
-                        />
+                        <Select className="selectBox" placeholder="请选择" options={rulesOption} />
                       </Form.Item>
                       <Form.Item
                         {...restField}
                         name={[name, 'keyWord']}
                         rules={[{ required: true, message: '关键词不能为空！' }]}
-                        style={{ marginBottom: 16 }}
+                        className="marginBottom16"
                       >
                         <InputShowCount style={{ width: 290 }} placeholder="请输入关键词" maxLength={30} />
                       </Form.Item>
@@ -169,11 +162,11 @@ const CommentRules = () => {
                       }
                     </Space>
                   ))}
-                  <Form.Item style={{ marginBottom: 16 }}>
+                  <Form.Item className="marginBottom16">
                     {
                       fields.length < 10 && (
                         <Button type="primary" onClick={() => add()} ghost>
-                          <span style={{ fontSize: '14px' }} className="font_family icon-tianjia1 font_14">
+                          <span className="font_family icon-tianjia1 fontSize14">
                             &nbsp;添加关键词
                           </span>
                         </Button>
@@ -183,7 +176,7 @@ const CommentRules = () => {
                 </>
               )}
             </Form.List>
-            <Space direction="vertical" style={{ display: 'block' }}>
+            <Space direction="vertical" className="displayBlock">
               <Text type="secondary">半匹配是指评论中命中一个关键词就执行自动回复。</Text>
               <Text type="secondary">全匹配是指评论中所有关键词全部命中执行自动回复。</Text>
             </Space>
@@ -218,11 +211,11 @@ const CommentRules = () => {
                       }
                     </ItemBox>
                   ))}
-                  <Form.Item style={{ marginBottom: '1.6rem' }}>
+                  <Form.Item className="marginBottom16">
                     {
                       fields.length < 10 && (
                         <Button type="primary" onClick={() => addRuleType(add, 'text')} ghost>
-                          <span style={{ fontSize: '14px' }} className="font_family icon-tianjia1 font_14">
+                          <span className="font_family icon-tianjia1 fontSize14">
                             &nbsp;添加回复内容
                           </span>
                         </Button>
@@ -241,10 +234,10 @@ const CommentRules = () => {
               required: true,
             }]}
           >
-            <InputNumber style={{ marginBottom: '1.6rem' }} min={1} max={200} placeholder="请输入" />
+            <InputNumber className="marginBottom16" min={1} max={200} placeholder="请输入" />
           </Form.Item>
           <ButtonBox>
-            <Form.Item wrapperCol={{ span: 24 }} style={{ textAlign: 'center', margin: '1rem 0' }}>
+            <Form.Item wrapperCol={{ span: 24 }} className="saveButton">
               <Button type="primary" size="middle" htmlType="submit">
                 保存
               </Button>
@@ -258,6 +251,36 @@ const CommentRules = () => {
 const ContentBox = styled.div`
   margin:0 0 16px 0;
   padding: 0 2rem;
+  .cardBox{
+    margin: 2rem 2rem 0;
+  }
+  .fontSize14{
+    font-size: 14px;
+  }
+  .formBox{
+    padding: 30px 0 0 0;
+  }
+  .width200{
+    width: 20rem;
+  }
+  .displayFlex{
+    display: flex;
+  }
+  .displayBlock{
+    display: block;
+  }
+  .selectBox{
+    width: 100;
+    display: inline-block;
+    margin: 0 10px 0 0;
+  }
+  .marginBottom16{
+    margin-bottom: 1.6rem;
+  }
+  .saveButton{
+    margin: 1rem 0;
+    text-align: center;
+  }
   `;
 const ButtonBox = styled.div`
   border-top: 1px solid #DDDDDD;
@@ -285,16 +308,6 @@ const ItemBox = styled.div`
       height: 115px;
       border: none;
     }
-  }
-`;
-const TextareaBox = styled.div`
-  position: relative;
-  margin-bottom: 16px;
-  .ant-input-textarea-show-count::after{
-    position: absolute;
-    right: 12px;
-    bottom: 30px;
-    color: rgba(0, 0, 0, 0.25);
   }
 `;
 export default CommentRules;

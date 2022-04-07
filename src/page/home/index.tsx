@@ -14,7 +14,6 @@ const Home = () => {
   const urlParams = getUrlOption(window.location.href);
   const channel = urlParams?.channel || localStorage.getItem('channel');
   const openId = localStorage.getItem('openId') || urlParams?.openId;
-  localStorage.setItem('openId', openId);
   const goTabs = (key: string) => {
     setTabKey(key);
   };

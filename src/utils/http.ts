@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+import { message } from 'antd';
 import axios from 'axios';
 
 declare module 'axios' {
@@ -7,6 +8,12 @@ declare module 'axios' {
     (config: AxiosRequestConfig): Promise<any>;
   }
 }
+
+message.config({
+  duration: 1.5,
+  maxCount: 1,
+  rtl: true,
+});
 
 const info: {
   [key: string]: any;
@@ -36,9 +43,9 @@ instance.interceptors.request.use(
     const globalOpt = !globalOptStr ? {} : JSON.parse(globalOptStr);
     const configTemp = config;
     const token = localStorage.getItem('token');
-    const tiktokToken = localStorage.getItem('openId') || 'tiktok-token';
+    const tiktokToken = localStorage.getItem('openId');
     configTemp.headers = {
-      'tiktok-token': tiktokToken,
+      'tiktok-token': tiktokToken || '',
     };
     Object.assign(config.headers, globalOpt);
     configTemp.headers.token = token || '';
@@ -51,7 +58,15 @@ instance.interceptors.request.use(
 
 // 响应拦截
 instance.interceptors.response.use(
-  (response) => response.data,
+  (response) => {
+    const { errCode } = response.data;
+    if (errCode === '0480000008') {
+      message.error('登录状态失效，请重新登录');
+      localStorage.clear();
+      return false;
+    }
+    return response.data;
+  },
   (error) => Promise.reject(error),
 );
 
