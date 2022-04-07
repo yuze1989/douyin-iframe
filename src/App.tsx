@@ -14,14 +14,18 @@ const douyinISV = new DouyinISV();
 const getAuth = async () => {
   // 获取scope权限
   const scope = await http.get('social/api-application/get/douyin_app', {});
-  if (scope.data) {
+  console.log('scope', scope, scope.data);
+  if (scope?.data) {
     const response = await douyinISV.getAuth({
       scope: scope.data,
     });
+    console.log('response', response, response.code);
     if (response?.code) {
       const authInfo = await http.get('/social/douyin/api-callback/author', { code: response?.code });
-      if (authInfo.success) {
+      console.log('authInfo', authInfo, authInfo.data);
+      if (authInfo?.success) {
         localStorage.setItem('openId', authInfo.data);
+        window.location.reload();
       }
     }
   }
