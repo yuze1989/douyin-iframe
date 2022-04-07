@@ -19,7 +19,7 @@ const { Text } = Typography;
 interface Props {
   value?: RulesPropsType;
   tiktokId?: number;
-  onChange?: (val: any) => void;
+  onChange?: (val: RulesPropsType) => void;
 }
 const TextImg = (props: Props) => {
   const { value, tiktokId, onChange } = props;

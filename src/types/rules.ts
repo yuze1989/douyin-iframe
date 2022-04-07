@@ -47,6 +47,7 @@ export interface RulesPropsType {
 }
 
 export interface RulesPropsImage {
+  uid?: number | string;
   title?: string;
   attachmentId?: number;
   attachmentPath?: string;
