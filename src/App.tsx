@@ -22,6 +22,7 @@ const getAuth = async () => {
     console.log('response', response, response.code);
     if (response?.code) {
       const authInfo = await http.get('/social/douyin/api-callback/author', { code: response?.code });
+      console.log('authInfo', authInfo, authInfo.data);
       if (authInfo?.success) {
         localStorage.setItem('openId', authInfo.data);
         window.location.reload();
