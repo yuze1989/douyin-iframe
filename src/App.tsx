@@ -18,11 +18,9 @@ const getAuth = async () => {
     const response = await douyinISV.getAuth({
       scope: scope.data,
     });
-    // console.log('response', response);
     if (response?.code) {
       const authInfo = await http.get('/social/douyin/api-callback/author', { code: response?.code });
       if (authInfo.success) {
-        // console.log('授权成功');
         localStorage.setItem('openId', authInfo.data);
       }
     }
